@@ -4,7 +4,7 @@
 
 JobCompass is an advanced job search platform that helps you find ideal positions with smart filtering capabilities, commute calculations, and personalized matching. Tell us your skills, role, and location, and we'll steer you to the right job with the least commute time.
 
-The repo is a monorepo with a Vite/React Frontend and an Express/PostgreSQL Backend that also integrates Google Maps for transit times, RapidAPI (LinkedIn jobs), Firebase Storage for avatars, and email-based password recovery.
+The monorepo features a Vite/React Frontend and an Express/PostgreSQL backend, which also integrates Google Maps for transit times, RapidAPI (for LinkedIn jobs), Firebase Storage for avatars, and email-based password recovery.
 
 ## 🎯 Mission
 
@@ -182,3 +182,4 @@ ISC
 
 - Built as part of [HackYourFuture](https://www.hackyourfuture.net/) curriculum
 - Special thanks to all mentors and contributors who made this project possible
+
