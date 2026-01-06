@@ -180,6 +180,5 @@ ISC
 
 ## 🙏 Acknowledgments
 
-- Built as part of [HackYourFuture](https://www.hackyourfuture.net/) curriculum
+- Based on [c53-final-project-group-A](https://github.com/HackYourFutureProjects/c53-final-project-group-A), which was a part of the [HackYourFuture](https://www.hackyourfuture.net/) curriculum
 - Special thanks to all mentors and contributors who made this project possible
-
