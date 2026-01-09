@@ -10,8 +10,6 @@ import { fixUserSkills } from "../util/fixUserSkills";
 import useFetch from "../hooks/useFetch";
 import { userReducer } from "../reducers/userReducer";
 
-
-
 const UserContext = createContext();
 
 function UserContextProvider({ children }) {
