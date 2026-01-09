@@ -1,104 +1,9 @@
 import "./Header.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { images, icons } from "../../assets";
+import { images } from "../../assets";
 import { UseUser } from "../../context/UserContext";
-import { defaultUser } from "../../data/defaultUser.js";
-//dropdown menu
-function UserMenu() {
-  const { user, logout } = UseUser();
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const onDocClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
-  const toggle = () => setOpen((v) => !v);
-
-  const handleLogout = async () => {
-    await logout(); // log out the user
-    setOpen(false); // close dropdown
-  };
-
-  return (
-    <div className="user-menu" ref={ref}>
-      <button
-        type="button"
-        className="user-trigger"
-        onClick={toggle}
-        aria-expanded={open}
-        aria-haspopup="menu"
-      >
-        <img
-          src={user.avatar || defaultUser.avatar}
-          alt={user?.name || "User"}
-          className="user-avatar"
-        />
-        <span className="divider"></span>
-        <span className="user-name">{user?.firstname}</span>
-
-        <img
-          src={icons.arrow}
-          alt=""
-          className={`arrow ${open ? "arrow-open" : ""}`}
-        />
-      </button>
-
-      {open && (
-        <div className="user-dropdown" role="menu">
-          <NavLink
-            to="/profile"
-            className={({ isActive }) =>
-              isActive ? "user-item active" : "user-item"
-            }
-            role="menuitem"
-            onClick={() => setOpen(false)}
-          >
-            Profile
-          </NavLink>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              isActive ? "user-item active" : "user-item"
-            }
-            role="menuitem"
-            onClick={() => setOpen(false)}
-          >
-            About
-          </NavLink>
-          {user.email !== defaultUser.email ? (
-            <NavLink
-              to="/"
-              className="user-item"
-              role="menuitem"
-              onClick={() => {
-                handleLogout();
-                setOpen(false);
-              }}
-            >
-              Logout
-            </NavLink>
-          ) : (
-            <NavLink
-              to="/login"
-              className={({ isActive }) =>
-                isActive ? "user-item active" : "user-item"
-              }
-              role="menuitem"
-              onClick={() => setOpen(false)}
-            >
-              Login
-            </NavLink>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+import UserMenu from "../UserMenu";
 
 export default function Header() {
   const { message, clearMessage } = UseUser();
@@ -112,6 +17,7 @@ export default function Header() {
       return () => clearTimeout(timer);
     }
   }, [message, clearMessage]);
+
   return (
     <header className="app-header">
       {message && (

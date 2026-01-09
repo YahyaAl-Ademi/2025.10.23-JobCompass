@@ -7,8 +7,8 @@ import "./index.css";
 import MyFavorites from "./pages/MyFavorites/MyFavorites";
 import AuthForms from "./components/AuthForms/AuthForms";
 import About from "./pages/About/About";
-import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import ResetPasswordForm from "./pages/ResetPassword/ResetPassword";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ResetPasswordForm from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -27,7 +27,6 @@ function App() {
         <Route path="favorites" element={<MyFavorites />} />
         <Route path="reset-password" element={<ResetPasswordForm />} />
         <Route path="login" element={<AuthForms />} />
-        <Route path="auth" element={<AuthForms />} />
         <Route path="about" element={<About />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

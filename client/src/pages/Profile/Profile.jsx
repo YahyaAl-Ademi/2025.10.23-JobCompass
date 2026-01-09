@@ -2,223 +2,165 @@ import { useState, useRef, useEffect } from "react";
 import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
 import AddressSettings from "../../components/AddressSettings/AddressSettings";
 import AlertMessage from "../../components/AlertMessage/AlertMessage";
+import ChangePassword from "../../components/ChangePassword";
 import { cleanUpText } from "../../util/cleanUpText";
 import { validateAddressTextInputs } from "../../util/addressTextsValidation";
 import { validateHouseNoInput } from "../../util/addressHouseNoValidation";
 import { UseUser } from "../../context/UserContext";
-import {
-  validatePassword,
-  validatePasswordMatch,
-} from "../../util/AuthValidation";
-import { Eye, EyeOff } from "lucide-react";
+import useFetch from "../../hooks/useFetch";
+import { fixUserSkills } from "../../util/fixUserSkills";
 import AvatarUploader from "../../components/AvatarUploader/AvatarUploader";
 import DeleteProfilePopup from "../../components/DeleteProfilePopup/DeleteProfilePopup";
 import "./Profile.css";
+import { gif } from "../../assets/index.js";
 
 export default function Profile() {
   const [alert, setAlert] = useState({ type: "", message: "" });
   const firstnameInputRef = useRef(null);
   const lastnameInputRef = useRef(null);
-  const currentPasswordInputRef = useRef(null);
-  const newPasswordInputRef = useRef(null);
-  const confirmPasswordInputRef = useRef(null);
+  const changePasswordRef = useRef(null);
   const streetInputRef = useRef(null);
   const houseInputRef = useRef(null);
   const cityInputRef = useRef(null);
   const countryInputRef = useRef(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmationPassword, setShowConfirmationPassword] =
-    useState(false);
-  const [newPassword, setNewPassword] = useState(false);
-  const { user, updateProfile, changePassword } = UseUser();
+  const { user, dispatch } = UseUser();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      if (firstnameInputRef.current)
-        firstnameInputRef.current.value = user?.firstname || "";
-      if (lastnameInputRef.current)
-        lastnameInputRef.current.value = user?.lastname || "";
-      if (streetInputRef.current)
-        streetInputRef.current.value = user?.street || "";
-      if (houseInputRef.current)
-        houseInputRef.current.value = user?.housenumber || "";
-      if (cityInputRef.current) cityInputRef.current.value = user?.city || "";
-      if (countryInputRef.current)
-        countryInputRef.current.value = user?.country || "";
-    }
-  }, [user]);
-
   function handleClearAlert() {
-    if (!alert.message) return;
     setAlert({ type: "", message: "" });
   }
+
+  function delayedClearAlert() {
+    setTimeout(() => {
+      handleClearAlert();
+    }, 2000);
+  }
+
+  const {
+    error: updateProfileError,
+    isLoading: isUpdateLoading,
+    performFetch: performUpdateProfile,
+  } = useFetch("/users/profile", (data) => {
+    dispatch({
+      type: "UPDATE_USER",
+      payload: {
+        ...data.user,
+        skills: fixUserSkills(data.user.skills),
+      },
+    });
+    setAlert({ type: "success", message: "Profile updated successfully!" });
+    delayedClearAlert();
+  });
+
+  useEffect(() => {
+    if (updateProfileError)
+      setAlert({ type: "error", message: String(updateProfileError) });
+    delayedClearAlert();
+  }, [updateProfileError]);
+
+  useEffect(() => {
+    if (
+      firstnameInputRef.current &&
+      lastnameInputRef.current &&
+      streetInputRef.current &&
+      houseInputRef.current &&
+      cityInputRef.current &&
+      countryInputRef.current
+    ) {
+      firstnameInputRef.current.value = user.firstname;
+      lastnameInputRef.current.value = user.lastname;
+      streetInputRef.current.value = user.street;
+      houseInputRef.current.value = user.housenumber;
+      cityInputRef.current.value = user.city;
+      countryInputRef.current.value = user.country;
+    }
+  }, [user]);
 
   const handleDeleteClick = () => {
     setShowDeletePopup(true);
   };
 
+  const handlePasswordChangeSuccess = () => {
+    setAlert({
+      type: "success",
+      message: "Password changed successfully!",
+    });
+    delayedClearAlert();
+  };
+
+  const handlePasswordChangeError = (message) => {
+    setAlert({ type: "error", message: String(message) });
+    delayedClearAlert();
+  };
+
   async function handleSaveClick() {
     handleClearAlert();
 
-    const firstnameEl = firstnameInputRef.current;
-    const lastnameEl = lastnameInputRef.current;
-    const currentPasswordEl = currentPasswordInputRef.current;
-    const newPasswordEl = newPasswordInputRef.current;
-    const confirmPasswordEl = confirmPasswordInputRef.current;
-    const streetEl = streetInputRef.current;
-    const housenumberEl = houseInputRef.current;
-    const cityEl = cityInputRef.current;
-    const countryEl = countryInputRef.current;
+    const passwordResult =
+      await changePasswordRef.current.handlePasswordChange();
 
-    if (
-      !firstnameEl ||
-      !lastnameEl ||
-      !streetEl ||
-      !housenumberEl ||
-      !cityEl ||
-      !countryEl
-    ) {
-      setAlert({
-        type: "error",
-        message: "Error: Input fields references are missing.",
-      });
+    if (passwordResult.validationError) {
+      setAlert({ type: "error", message: passwordResult.validationError });
+      delayedClearAlert();
       return;
     }
 
-    if (user) {
-      const updatedFields = {};
+    const updatedFields = {};
 
-      const firstname = cleanUpText(firstnameEl.value || "");
-      const lastname = cleanUpText(lastnameEl.value || "");
+    const firstname = cleanUpText(firstnameInputRef?.current.value);
+    const lastname = cleanUpText(lastnameInputRef?.current.value);
+    const street = cleanUpText(streetInputRef?.current.value);
+    const housenumber = cleanUpText(houseInputRef?.current.value);
+    const city = cleanUpText(cityInputRef?.current.value);
+    const country = cleanUpText(countryInputRef?.current.value);
 
-      // FIX: Use String() for comparison to ensure changes are detected even if the value is null or undefined
-      const currentFirstName = String(user.firstname || "");
-      const currentLastName = String(user.lastname || "");
+    if (firstname !== user.firstname) updatedFields.firstname = firstname;
+    if (lastname !== user.lastname) updatedFields.lastname = lastname;
 
-      if (String(firstname) !== currentFirstName)
-        updatedFields.firstname = firstname;
-      if (String(lastname) !== currentLastName)
-        updatedFields.lastname = lastname;
+    const streetValidationError = validateAddressTextInputs({ text: street });
+    const cityValidationError = validateAddressTextInputs({
+      text: city,
+      type: "city",
+    });
+    const countryValidationError = validateAddressTextInputs({
+      text: country,
+      type: "country",
+    });
+    const houseValidationError = validateHouseNoInput({ text: housenumber });
 
-      const newPassword = newPasswordEl.value || "";
-      const confirmPassword = confirmPasswordEl.value || "";
-      const currentPassword = currentPasswordEl.value || "";
-
-      // --- Password change handling ---
-      if (newPassword || confirmPassword || currentPassword) {
-        if (!currentPassword) {
-          setAlert({
-            type: "error",
-            message: "Current password is required to change password.",
-          });
-          return;
-        }
-
-        // Validate password strength
-        if (!validatePassword(newPassword)) {
-          setAlert({
-            type: "error",
-            message:
-              "Password must be at least 8 characters and meet at least 2 complexity rules.",
-          });
-          return;
-        }
-
-        // Validate password match
-        const matchCheck = validatePasswordMatch(newPassword, confirmPassword);
-        if (!matchCheck.valid) {
-          setAlert({ type: "error", message: matchCheck.message });
-          return;
-        }
-
-        // Call API
-        try {
-          await changePassword(currentPassword, newPassword);
-
-          setAlert({
-            type: "success",
-            message: "Password updated successfully!",
-          });
-
-          // Clear input fields
-          currentPasswordEl.value = "";
-          newPasswordEl.value = "";
-          confirmPasswordInputRef.current.value = "";
-          return;
-        } catch (err) {
-          setAlert({
-            type: "error",
-            message: err.message || "Failed to change password.",
-          });
-          return;
-        }
-      }
-
-      const street = cleanUpText(streetEl.value || "");
-      const housenumber = cleanUpText(housenumberEl.value || "");
-      const city = cleanUpText(cityEl.value || "");
-      const country = cleanUpText(countryEl.value || "");
-
-      const streetValidationError = validateAddressTextInputs({ text: street });
-      const cityValidationError = validateAddressTextInputs({
-        text: city,
-        type: "city",
-      });
-      const countryValidationError = validateAddressTextInputs({
-        text: country,
-        type: "country",
-      });
-      const houseValidationError = validateHouseNoInput({ text: housenumber });
-
-      if (
+    if (
+      streetValidationError ||
+      cityValidationError ||
+      countryValidationError ||
+      houseValidationError
+    ) {
+      setAlert(
         streetValidationError ||
-        cityValidationError ||
-        countryValidationError ||
-        houseValidationError
-      ) {
-        setAlert(
-          streetValidationError ||
-            cityValidationError ||
-            countryValidationError ||
-            houseValidationError,
-        );
-        return;
-      }
+          cityValidationError ||
+          countryValidationError ||
+          houseValidationError,
+      );
+      delayedClearAlert();
+      return;
+    }
 
-      // Compare against the top-level address fields
-      const currentStreet = String(user?.street);
-      const currentCity = String(user?.city);
-      const currentCountry = String(user?.country);
-      const currentHouseNo = String(user?.housenumber || "");
+    if (street !== user.street) updatedFields.street = street;
+    if (city !== user.city) updatedFields.city = city;
+    if (country !== user.country) updatedFields.country = country;
+    if (housenumber !== user.housenumber)
+      updatedFields.housenumber = housenumber;
 
-      if (String(street) !== currentStreet) updatedFields.street = street;
-      if (String(city) !== currentCity) updatedFields.city = city;
-      if (String(country) !== currentCountry) updatedFields.country = country;
-
-      if (String(housenumber) !== currentHouseNo)
-        updatedFields.housenumber = housenumber;
-
-      if (Object.keys(updatedFields).length === 0) {
+    if (Object.keys(updatedFields).length === 0) {
+      if (passwordResult.inputsFilled === false)
         setAlert({ type: "info", message: "No changes detected." });
-        return;
-      }
-
-      try {
-        await updateProfile(updatedFields);
-        setAlert({ type: "success", message: "Profile updated successfully!" });
-
-        if (newPassword) {
-          currentPasswordEl.value = "";
-          newPasswordEl.value = "";
-          confirmPasswordInputRef.current.value = "";
-        }
-      } catch (error) {
-        setAlert({
-          type: "error",
-          message: error.message || "Failed to save profile. Check connection.",
-        });
-      }
+      delayedClearAlert();
+      return;
+    } else {
+      performUpdateProfile({
+        method: "PUT",
+        body: JSON.stringify(updatedFields),
+        credentials: "include",
+      });
     }
   }
 
@@ -232,11 +174,7 @@ export default function Profile() {
 
       <div className="profile-avatar-row">
         {/* <!-- Avatar with the editing/updating button --> */}
-        <AvatarUploader
-          user={user}
-          updateProfile={updateProfile}
-          setAlert={setAlert}
-        />
+        <AvatarUploader setAlert={setAlert} />
         <div className="avatar-uploader-info">
           <h3 className="avatar-uploader-title">Profile photo</h3>
           <span className="avatar-uploader-subtitle">
@@ -285,95 +223,13 @@ export default function Profile() {
         />
       </div>
 
-      <div className="profile-section">
-        <h3 className="profile-section-title">Change password</h3>
-        <div className="profile-password-single">
-          <label className="profile-field-label">
-            Type your current password
-          </label>
-          <div className="profile-input-wrapper">
-            <input
-              id="currentPasswordInput"
-              ref={currentPasswordInputRef}
-              type={showPassword ? "text" : "password"}
-              placeholder="Type 8 characters or more"
-              className="profile-input profile-input-with-icon"
-              onKeyDown={pressEnterKey}
-              onChange={handleClearAlert}
-            />
-            {showPassword ? (
-              <EyeOff
-                size={18}
-                className="profile-input-icon"
-                onClick={() => setShowPassword(false)}
-              />
-            ) : (
-              <Eye
-                size={18}
-                className="profile-input-icon"
-                onClick={() => setShowPassword(true)}
-              />
-            )}
-          </div>
-        </div>
-        <div className="profile-fields-grid">
-          <div>
-            <label className="profile-field-label">Set new password</label>
-            <div className="profile-input-wrapper">
-              <input
-                id="newPasswordInput"
-                ref={newPasswordInputRef}
-                type={newPassword ? "text" : "password"}
-                placeholder="Type 8 characters or more"
-                className="profile-input profile-input-with-icon"
-                onKeyDown={pressEnterKey}
-                onChange={handleClearAlert}
-              />
-              {newPassword ? (
-                <EyeOff
-                  size={18}
-                  className="profile-input-icon"
-                  onClick={() => setNewPassword(false)}
-                />
-              ) : (
-                <Eye
-                  size={18}
-                  className="profile-input-icon"
-                  onClick={() => setNewPassword(true)}
-                />
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="profile-field-label">Confirm password</label>
-            <div className="profile-input-wrapper">
-              <input
-                id="confirmPasswordInput"
-                ref={confirmPasswordInputRef}
-                type={showConfirmationPassword ? "text" : "password"}
-                placeholder="Write the same password again"
-                className="profile-input profile-input-with-icon"
-                onKeyDown={pressEnterKey}
-                onChange={handleClearAlert}
-              />
-              {showConfirmationPassword ? (
-                <EyeOff
-                  size={18}
-                  className="profile-input-icon"
-                  onClick={() => setShowConfirmationPassword(false)}
-                />
-              ) : (
-                <Eye
-                  size={18}
-                  className="profile-input-icon"
-                  onClick={() => setShowConfirmationPassword(true)}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <ChangePassword
+        ref={changePasswordRef}
+        onKeyDown={pressEnterKey}
+        onInputChange={handleClearAlert}
+        onSuccess={handlePasswordChangeSuccess}
+        onError={handlePasswordChangeError}
+      />
       {/* <!-- Save Button --> */}
       <div className="profile-save-row">
         {alert.message && (
@@ -388,6 +244,9 @@ export default function Profile() {
             className="profile-save-btn"
           >
             Save
+            {isUpdateLoading && (
+              <img src={gif.spinner} alt="Loading..." className="spinner" />
+            )}
           </button>
         </div>
       </div>

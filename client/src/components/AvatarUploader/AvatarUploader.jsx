@@ -1,29 +1,46 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import { UseUser } from "../../context/UserContext";
 import "./AvatarUploader.css";
 import useFetch from "../../hooks/useFetch";
+import { gif } from "../../assets";
 
-export default function AvatarUploader({ user, updateProfile, setAlert }) {
+export default function AvatarUploader({ setAlert }) {
+  const { user, dispatch } = UseUser();
   const fileInputRef = useRef(null);
 
-  const { performFetch } = useFetch("/users/update-avatar", (result) => {
-    if (result.success && result.url) {
-      updateProfile({ avatar: result.url });
-      setAlert({ type: "success", message: "Avatar updated!" });
-    } else {
-      setAlert({ type: "error", message: "Failed to upload avatar." });
-    }
-  });
+  function delayedClearAlert() {
+    setTimeout(() => {
+      setAlert({ type: "", message: "" });
+    }, 2000);
+  }
 
-  const handleButtonClick = () => {
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
+  const { isLoading, error, performFetch } = useFetch(
+    "/users/update-avatar",
+    (result) => {
+      dispatch({
+        type: "UPDATE_USER",
+        payload: {
+          avatar: result.url,
+        },
+      });
+      setAlert({ type: "success", message: "Avatar updated!" });
+      delayedClearAlert();
+    },
+  );
+
+  useEffect(() => {
+    if (error) {
+      console.error("Avatar upload error:", error);
+      setAlert({ type: "error", message: "Failed to upload avatar." });
+      delayedClearAlert();
+    }
+  }, [error]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
       return;
     }
-
     const formData = new FormData();
     formData.append("pic", file);
 
@@ -39,21 +56,28 @@ export default function AvatarUploader({ user, updateProfile, setAlert }) {
       <button
         type="button"
         className="avatar-edit-btn"
-        onClick={handleButtonClick}
+        onClick={() => {
+          if (fileInputRef.current) fileInputRef.current.click();
+        }}
+        disabled={isLoading}
       >
-        <svg
-          className="avatar-edit-icon"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-          ></path>
-        </svg>
+        {isLoading ? (
+          <img src={gif.spinner} alt="Loading..." className="spinner" />
+        ) : (
+          <svg
+            className="avatar-edit-icon"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+            ></path>
+          </svg>
+        )}
       </button>
       <input
         type="file"

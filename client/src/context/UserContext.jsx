@@ -7,175 +7,20 @@ import {
 } from "react";
 import { defaultUser } from "../data/defaultUser";
 import { fixUserSkills } from "../util/fixUserSkills";
+import useFetch from "../hooks/useFetch";
+import { userReducer } from "../reducers/userReducer";
 
 const UserContext = createContext();
 
-function userReducer(state, action) {
-  switch (action.type) {
-    case "REGISTER":
-    case "LOGIN":
-      return { ...defaultUser, ...action.payload };
-    case "UPDATE_USER": {
-      const payload = action.payload || {};
-      const next = { ...state, ...payload };
-      return next;
-    }
-    case "LOGOUT":
-      return action.payload || defaultUser;
-    case "SET_SKILLS": {
-      return { ...state, skills: action.payload };
-    }
-    case "TOGGLE_FAVORITE": {
-      const job = action.payload;
-      const jobId = job?.id;
-      const prevFavorites = Array.isArray(state?.favorites)
-        ? state.favorites
-        : [];
-
-      const exists = prevFavorites.some((fav) => fav.id === jobId);
-      const newFavorites = exists
-        ? prevFavorites.filter((fav) => fav.id !== jobId)
-        : [...prevFavorites, job];
-
-      return { ...state, favorites: newFavorites };
-    }
-
-    default:
-      return state;
-  }
-}
-
 function UserContextProvider({ children }) {
   const [user, dispatch] = useReducer(userReducer, defaultUser);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
-  const API_URL = "/users";
-
-  // -------------------- CLEAR ERROR --------------------
-  const clearError = () => setError(null);
   const clearMessage = () => setMessage(null);
 
-  async function authFetch(route, options = {}) {
-    setLoading(true);
-    clearError();
-    clearMessage();
-
-    const url = `/api${API_URL}${route}`;
-
-    const baseOptions = {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    };
-
-    try {
-      const res = await fetch(url, { ...baseOptions, ...options });
-      const text = await res.text();
-      let data;
-      try {
-        data = JSON.parse(text || "{}");
-      } catch {
-        throw new Error("Server returned invalid JSON or is down");
-      }
-
-      if (!res.ok) {
-        throw new Error(
-          data.msg || `Server responded with status ${res.status} for ${url}`,
-        );
-      }
-
-      if (!data.success) {
-        throw new Error(data.msg || "Operation failed due to API policy.");
-      }
-
-      return data;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }
-
   // -------------------- GET CURRENT USER --------------------
-
-  async function getCurrentUser() {
-    try {
-      const data = await authFetch("/me", { method: "GET" });
-
-      if (data.user) {
-        //  FIX SKILLS HERE
-        const normalizedSkills = fixUserSkills(data.user.skills);
-
-        const favoriteJobs = Array.isArray(data.user.favorites)
-          ? data.user.favorites.map((job) => ({
-              id: job.id,
-              title: job.title,
-              organization: job.organization,
-              organization_url: job.organization_url,
-              employment_type: job.employment_type,
-              url: job.url,
-              organization_logo: job.organization_logo,
-              display_location: job.display_location,
-              work_mode: job.work_mode,
-              seniority: job.seniority,
-              description_text: job.description_text,
-              date_posted: job.date_posted,
-              travel_time: job.travel_time,
-              least_transfers: job.least_transfers,
-              normalized_description: job.normalized_description,
-            }))
-          : [];
-
-        //  SEND THE FIXED USER TO THE STATE
-        dispatch({
-          type: "LOGIN",
-          payload: {
-            ...data.user,
-            skills: normalizedSkills,
-            favorites: favoriteJobs,
-          },
-        });
-      } else {
-        console.log("logging out due to missing user data");
-        // No JSON returned — treat as not authenticated
-        dispatch({ type: "LOGOUT", payload: defaultUser });
-      }
-
-      clearMessage();
-    } catch (err) {
-      if (
-        err.message.includes("token") ||
-        err.message.includes("Token") ||
-        err.message.includes("not provided")
-      ) {
-        dispatch({ type: "LOGOUT", payload: defaultUser });
-        clearError(); // removes red error message on reload
-        return;
-      }
-
-      console.error("Error fetching current user:", err);
-      dispatch({ type: "LOGOUT", payload: defaultUser });
-    }
-  }
-
-  useEffect(() => {
-    getCurrentUser();
-  }, []);
-
-  // -------------------- LOGIN --------------------
-  async function login(email, password) {
-    if (email === defaultUser.email) throw new Error("Invalid credentials");
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const data = await authFetch("/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      });
-
+  function handleFetchMeResults(data) {
+    if (data.user) {
       const normalizedSkills = fixUserSkills(data.user.skills);
-
       const favoriteJobs = Array.isArray(data.user.favorites)
         ? data.user.favorites.map((job) => ({
             id: job.id,
@@ -195,7 +40,6 @@ function UserContextProvider({ children }) {
             normalized_description: job.normalized_description,
           }))
         : [];
-
       dispatch({
         type: "LOGIN",
         payload: {
@@ -204,189 +48,40 @@ function UserContextProvider({ children }) {
           favorites: favoriteJobs,
         },
       });
-      return data.user;
-    } catch (err) {
-      throw err;
+    } else {
+      dispatch({ type: "LOGOUT" });
     }
-  }
-  // -------------------- SIGNUP --------------------
-  async function signup(firstname, lastname, email, password) {
-    if (email === defaultUser.email)
-      throw new Error("Email already registered");
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const data = await authFetch("", {
-        method: "POST",
-        body: JSON.stringify({
-          user: {
-            ...defaultUser,
-            skills: defaultUser.skills.map((s) => s.skill),
-            firstname,
-            lastname,
-            email,
-            password,
-          },
-        }),
-      });
-      // Set the user and token received from the server
-      const normalizedSkills = fixUserSkills(data.user.skills);
-      dispatch({
-        type: "REGISTER",
-        payload: {
-          ...data.user,
-          skills: normalizedSkills,
-          favorites: [],
-        },
-      });
-      return data.user;
-    } catch (err) {
-      throw err;
-    }
-  }
-  // -------------------- LOGOUT --------------------
-  async function logout() {
-    try {
-      // Attempt to log out on the server side
-      await authFetch("/logout", {
-        method: "POST",
-      });
-      setMessage("Logged out successfully!");
-    } catch (err) {
-      console.error("Error logging out:", err);
-      // We clear the user and token state even if the server request fails
-      setMessage("Failed to log out from server, but local state cleared.");
-    } finally {
-      dispatch({ type: "LOGOUT", payload: defaultUser });
-      clearError();
-    }
-  }
-  // -------------------- UPDATE PROFILE --------------------
-  async function updateProfile(updatedFields) {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const data = await authFetch("/profile", {
-        method: "PUT",
-        body: JSON.stringify(updatedFields),
-      });
-
-      const normalizedSkills = fixUserSkills(data.user.skills);
-      dispatch({
-        type: "UPDATE_USER",
-        payload: {
-          ...data.user,
-          skills: normalizedSkills,
-        },
-      });
-      setMessage("Profile updated successfully!");
-      return data.user;
-    } catch (err) {
-      throw err;
-    }
-  }
-  // -------------------- DELETE USER --------------------
-  async function deleteUser() {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const data = await authFetch(`/delete/${user.id}`, {
-        method: "DELETE",
-      });
-
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  }
-  // -------------------- CHANGE PASSWORD --------------------
-  const changePassword = async (currentPassword, newPassword) => {
-    if (!currentPassword || !newPassword) {
-      throw new Error("Current password and new password are required.");
-    }
-
-    try {
-      const data = await authFetch("/change-password", {
-        method: "POST",
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-
-      return data;
-    } catch (err) {
-      console.error("Change password error:", err);
-      throw err;
-    }
-  };
-  // -------------------- FAVORITES --------------------
-  async function toggleFavorite(job) {
-    try {
-      const data = await authFetch("/favorites/toggle", {
-        method: "POST",
-        body: JSON.stringify({ job }),
-      });
-
-      dispatch({ type: "TOGGLE_FAVORITE", payload: job });
-
-      setMessage(
-        data.action === "added"
-          ? "Job added to favorites!"
-          : "Job removed from favorites!",
-      );
-    } catch (err) {
-      console.error("toggleFavorite error:", err);
-    }
+    clearMessage();
   }
 
-  async function requestPasswordReset(email) {
-    clearError();
-    try {
-      const data = await authFetch("/forgot-password", {
-        method: "POST",
-        body: JSON.stringify({ email }),
-      });
-      // success guaranteed by authFetch (it throws if !data.success)
-      setMessage(data.msg || "Reset email sent");
-      return true;
-    } catch (err) {
-      console.error(err);
-      return false;
-    }
-  }
+  const {
+    isLoading: isMeLoading,
+    error: fetchMeError,
+    performFetch: performFetchMe,
+  } = useFetch("/users/me", handleFetchMeResults);
 
-  async function resetPassword(token, newPassword) {
-    clearError();
-    try {
-      // authFetch will call: /api/users/reset-password
-      const data = await authFetch("/reset-password", {
-        method: "POST",
-        body: JSON.stringify({ token, newPassword }),
-      });
-      setMessage(data.msg || "Password updated");
-      return true;
-    } catch (err) {
-      console.error(err);
-      return false;
+  useEffect(() => {
+    performFetchMe({ credentials: "include" });
+  }, []);
+
+  useEffect(() => {
+    if (!fetchMeError) return;
+    // "No token provided" is expected when browsing as a guest, so avoid noisy logs.
+    if (fetchMeError !== "No token provided") {
+      console.error("Error fetching current user:", fetchMeError);
     }
-  }
+    dispatch({ type: "LOGOUT" });
+  }, [fetchMeError]);
 
   return (
     <UserContext.Provider
       value={{
         user,
-        authFetch,
         dispatch,
-        loading,
-        error,
-        login,
-        signup,
-        logout,
-        clearError,
         message,
         setMessage,
         clearMessage,
-        updateProfile,
-        toggleFavorite,
-        deleteUser,
-        changePassword,
-        requestPasswordReset,
-        resetPassword,
+        isMeLoading,
       }}
     >
       {children}

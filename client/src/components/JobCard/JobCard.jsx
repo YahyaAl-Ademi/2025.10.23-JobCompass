@@ -1,13 +1,5 @@
-import Skills from "../Skills";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
-import PopupForMoreAndApply from "../SuccessPopup/PopupForMoreAndApply";
-import PopupForFavorites from "../SuccessPopup/PopupForFavorites";
-import "./JobCard.css";
-import { icons, gif } from "../../assets";
-
-import { defaultUser } from "../../data/defaultUser";
+import { useNavigate } from "react-router-dom";
 import {
   Bus,
   Briefcase,
@@ -16,6 +8,17 @@ import {
   MapPin,
   Monitor,
 } from "lucide-react";
+// Assets & data
+import { icons, gif } from "../../assets";
+import { defaultUser } from "../../data/defaultUser";
+// Context, Components, styles
+import { UseUser } from "../../context/UserContext";
+import { UseJobs } from "../../context/JobsContext";
+import useFetch from "../../hooks/useFetch";
+import Skills from "../Skills";
+import PopupForMoreAndApply from "../SuccessPopup/PopupForMoreAndApply";
+import PopupForFavorites from "../SuccessPopup/PopupForFavorites";
+import "./JobCard.css";
 
 function formatTravelTime(minutes) {
   if (minutes < 60) return `${minutes} min`;
@@ -24,30 +27,48 @@ function formatTravelTime(minutes) {
   return m === 0 ? `${h} h` : `${h} h ${m} min`;
 }
 
-export default function JobCard({
-  job,
-  onApplyClick,
-  isTravelLoading,
-  user,
-  toggleFavorite,
-  isInFavorites,
-}) {
+export default function JobCard({ job, onApplyClick, isInFavorites }) {
   const navigate = useNavigate();
+  const { user, dispatch, setMessage } = UseUser();
+  const { isTravelLoading } = UseJobs();
 
   //  New state for showing popup
   const [showApplyPopup, setShowApplyPopup] = useState(false);
   const [showFavoritesPopup, setShowFavoritesPopup] = useState(false);
 
+  const { isLoading: isToggleFavoriteLoading, performFetch } = useFetch(
+    "/users/favorites/toggle",
+    (data) => {
+      dispatch({ type: "TOGGLE_FAVORITE", payload: data.job });
+      setMessage(
+        data.action === "added"
+          ? "Job added to favorites!"
+          : "Job removed from favorites!",
+      );
+    },
+  );
+
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    if (user.email !== defaultUser.email) {
+      performFetch({
+        method: "POST",
+        body: JSON.stringify({ job }),
+        credentials: "include",
+      });
+    } else {
+      setShowFavoritesPopup(true);
+    }
+  };
+
   const handleApplyClick = (e) => {
     e.stopPropagation();
-
-    if (user && user.email !== defaultUser.email) {
+    if (user.email !== defaultUser.email) {
       if (onApplyClick) {
         window.open(job.applyLink || job.url, "_blank");
       }
       return;
     }
-
     setShowApplyPopup(true);
   };
 
@@ -55,16 +76,6 @@ export default function JobCard({
     setShowApplyPopup(false);
     setShowFavoritesPopup(false);
     navigate("/login", {});
-  };
-
-  const handleFavoriteClick = (e) => {
-    e.stopPropagation();
-
-    if (user && user.email !== defaultUser.email) {
-      toggleFavorite(job);
-    } else {
-      setShowFavoritesPopup(true);
-    }
   };
 
   return (
@@ -95,13 +106,20 @@ export default function JobCard({
               <button
                 className={`favorite-btn ${isInFavorites ? "favorited" : ""}`}
                 onClick={handleFavoriteClick}
+                disabled={isToggleFavoriteLoading}
                 title={
                   isInFavorites
                     ? "Remove from favourites"
                     : "Save to favourites"
                 }
               >
-                {isInFavorites ? "♥" : "♡"}
+                {isToggleFavoriteLoading ? (
+                  <img src={gif.spinner} alt="Loading..." className="spinner" />
+                ) : isInFavorites ? (
+                  "♥"
+                ) : (
+                  "♡"
+                )}
               </button>
             </div>
 
@@ -173,18 +191,20 @@ export default function JobCard({
 
               {/* commute info block*/}
               <div className="job-commute-info">
-                {isTravelLoading && (
+                {isTravelLoading ? (
                   <img src={gif.spinner} alt="Loading..." className="spinner" />
-                )}
-                {job.travel_time !== null && job.least_transfers !== null && (
-                  <>
-                    <Bus className="job-icon" />
-                    <span className="job-commute">
-                      {formatTravelTime(job.travel_time)}, {job.least_transfers}{" "}
-                      transfer
-                      {job.least_transfers !== 1 ? "s" : ""}
-                    </span>
-                  </>
+                ) : (
+                  job.travel_time != null &&
+                  job.least_transfers != null && (
+                    <>
+                      <Bus className="job-icon" />
+                      <span className="job-commute">
+                        {formatTravelTime(job.travel_time)},{" "}
+                        {job.least_transfers} transfer
+                        {job.least_transfers !== 1 ? "s" : ""}
+                      </span>
+                    </>
+                  )
                 )}
               </div>
             </div>

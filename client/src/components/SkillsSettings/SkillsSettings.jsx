@@ -1,40 +1,75 @@
-import { useRef, useState } from "react";
+// React imports
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// Context, Component imports
+import { UseUser } from "../../context/UserContext";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import PopupForSave from "../SuccessPopup/PopupForSave";
-import { UseUser } from "../../context/UserContext";
+// Hook & Utility imports
+import useFetch from "../../hooks/useFetch";
 import { cleanUpText } from "../../util/cleanUpText";
 import { regexEndNormalizeSkill } from "../../util/regexEndNormalizeSkill";
 import { validateSkillInput } from "../../util/skillValidation";
+import { gif } from "../../assets/index.js";
+// Styles
 import "./SkillsSettings.css";
+
 export default function SkillsSettings() {
   const navigate = useNavigate();
   const skillInputRef = useRef(null);
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [showAll, setShowAll] = useState(false);
   const maxVisible = 4;
-  const { user, dispatch, authFetch } = UseUser();
+  const { user, dispatch } = UseUser();
   const { skills } = user;
   const [showSavePopup, setShowSavePopup] = useState(false);
+  const handleSkillsResultsRef = useRef(() => {});
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
   }
 
   function delayedClearAlert() {
-    return new Promise(() => {
-      setTimeout(() => {
-        handleClearAlert();
-      }, 2000);
-    });
+    setTimeout(() => {
+      handleClearAlert();
+    }, 2000);
+  }
+
+  const {
+    isLoading,
+    error: fetchError,
+    performFetch,
+  } = useFetch("/users/change-skills", (result) =>
+    handleSkillsResultsRef.current(result),
+  );
+
+  useEffect(() => {
+    if (fetchError) {
+      setAlert({ type: "error", message: String(fetchError) });
+      delayedClearAlert();
+    }
+  }, [fetchError]);
+
+  function prepareSkillsUpdate(nextSkills, successMessage) {
+    handleSkillsResultsRef.current = async () => {
+      dispatch({
+        type: "SET_SKILLS",
+        payload: nextSkills,
+      });
+      setAlert({
+        type: "success",
+        message: successMessage,
+      });
+    };
   }
 
   async function changeSkillsHelper(skills) {
     const skillNames = skills.map((s) => s.skill);
 
-    await authFetch("/change-skills", {
+    performFetch({
       method: "POST",
       body: JSON.stringify({ skills: skillNames }),
+      credentials: "include",
     });
   }
 
@@ -50,7 +85,7 @@ export default function SkillsSettings() {
     const validationError = validateSkillInput({ text: newSkill, skills });
     if (validationError) {
       setAlert({ type: "error", message: String(validationError) });
-      await delayedClearAlert();
+      delayedClearAlert();
       return;
     }
 
@@ -62,21 +97,12 @@ export default function SkillsSettings() {
         ),
     );
 
-    try {
-      await changeSkillsHelper(combined);
-      dispatch({
-        type: "SET_SKILLS",
-        payload: combined,
-      });
-      setAlert({
-        type: "success",
-        message: "The skill has been added to the user's profile!",
-      });
-      await delayedClearAlert();
-    } catch (err) {
-      setAlert({ type: "error", message: String(err?.message || err) });
-      await delayedClearAlert();
-    }
+    prepareSkillsUpdate(
+      combined,
+      "The skill has been added to the user's profile!",
+    );
+    await changeSkillsHelper(combined);
+    delayedClearAlert();
 
     if (skillInput) {
       skillInput.value = "";
@@ -92,21 +118,13 @@ export default function SkillsSettings() {
     }
     const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
     const filtered = prevSkills.filter((s) => s.skill !== skill.skill);
-    try {
-      await changeSkillsHelper(filtered);
-      dispatch({
-        type: "SET_SKILLS",
-        payload: filtered,
-      });
-      setAlert({
-        type: "success",
-        message: "The skill has been removed from the user's profile!",
-      });
-      await delayedClearAlert();
-    } catch (err) {
-      setAlert({ type: "error", message: String(err?.message || err) });
-      await delayedClearAlert();
-    }
+
+    prepareSkillsUpdate(
+      filtered,
+      "The skill has been removed from the user's profile!",
+    );
+    await changeSkillsHelper(filtered);
+    delayedClearAlert();
   }
   // -------------------- REMOVE ALL SKILLS --------------------
   async function removeAllSkills() {
@@ -114,21 +132,13 @@ export default function SkillsSettings() {
       setShowSavePopup(true);
       return;
     }
-    try {
-      await changeSkillsHelper([]);
-      dispatch({
-        type: "SET_SKILLS",
-        payload: [],
-      });
-      setAlert({
-        type: "success",
-        message: "All skills have been removed from the user's profile!",
-      });
-      await delayedClearAlert();
-    } catch (err) {
-      setAlert({ type: "error", message: String(err?.message || err) });
-      await delayedClearAlert();
-    }
+
+    prepareSkillsUpdate(
+      [],
+      "All skills have been removed from the user's profile!",
+    );
+    await changeSkillsHelper([]);
+    delayedClearAlert();
   }
   const visibleSkills = showAll ? skills : skills.slice(0, maxVisible);
 
@@ -136,7 +146,6 @@ export default function SkillsSettings() {
     <div className="skills-container">
       <div className="skills-section">
         <h3 className="skills-heading">Skills</h3>
-
         {/* Skills management */}
         <div className="skills-controls">
           <input
@@ -158,6 +167,9 @@ export default function SkillsSettings() {
             type="button"
           >
             Add skill
+            {isLoading && (
+              <img src={gif.spinner} alt="Loading..." className="spinner" />
+            )}
           </button>
 
           <button
@@ -167,6 +179,9 @@ export default function SkillsSettings() {
             type="button"
           >
             Remove all
+            {isLoading && (
+              <img src={gif.spinner} alt="Loading..." className="spinner" />
+            )}
           </button>
         </div>
 
@@ -180,20 +195,25 @@ export default function SkillsSettings() {
                 onClick={() => removeSkill(s)}
                 aria-label={`Remove ${s.skill}`}
                 type="button"
+                disabled={isLoading}
               >
-                <svg
-                  className="skill-remove-icon"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                {isLoading ? (
+                  <img src={gif.spinner} alt="Loading..." className="spinner" />
+                ) : (
+                  <svg
+                    className="skill-remove-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
           ))}
