@@ -1,0 +1,145 @@
+.app-header {
+  height: 80px;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px 0 24px;
+  border-bottom: 1px solid #e2e6e9;
+  position: sticky;
+  top: 0;
+  box-shadow: 0 4px 8px rgba(44, 44, 44, 0.08);
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.logo-image-header {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.logo-text-header {
+  color: #164387;
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  width: 100%;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-trigger {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background-color: #d6e6ff;
+  border-radius: 60px;
+  transition: background 0.2s;
+}
+
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 12rem;
+  background: white;
+  border: 1px solid #e6e6e6;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 110;
+}
+
+.divider {
+  width: 1px;
+  height: 35px;
+  background: white;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.arrow {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.2s;
+}
+
+.arrow-open {
+  transform: rotate(180deg);
+}
+
+.user-item {
+  display: block;
+  padding: 0.75rem 1rem;
+  outline: none;
+  text-decoration: none;
+  color: #333333;
+  transition: all 0.2s;
+}
+
+.user-item:hover {
+  color: #4a87e1;
+}
+
+.user-item.active {
+  color: #4a87e1;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.alert-message {
+  background-color: #4a87e1;
+  color: white;
+  padding: 16px 20px;
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 1000;
+  border-radius: 7px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.alert-message p {
+  margin: 0;
+}

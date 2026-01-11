@@ -1,0 +1,96 @@
+/* --- Global Container --- */
+.job-search-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: "Inter", Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  padding: 20px;
+}
+
+.mission-section {
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+/* Main headline */
+.mission-section h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #111;
+  line-height: 1.3;
+  margin-bottom: 20px;
+}
+
+.mission-section span {
+  color: #4a87e1;
+}
+
+/* Subtitle below headline */
+.mission-section .subtitle {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.6;
+  max-width: 650px;
+  margin: 0 auto;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Section title: Search for Jobs */
+.guest-notice {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: #eff6ff;
+  border-radius: 3px;
+  border: 1px solid #bfdbfe;
+  width: 600px;
+  color: #374151;
+  text-align: left;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start;
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.info-icon {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  vertical-align: text-top;
+}
+
+.login-link {
+  text-decoration: underline;
+  color: #0975cd;
+  font-weight: 500;
+}
+
+/* --- Responsive adjustments (Mobile/Tablet) --- */
+@media (max-width: 768px) {
+  .job-search-container {
+    padding: 40px 15px;
+  }
+
+  .mission-section h1 {
+    font-size: 2rem;
+  }
+
+  .mission-section .subtitle {
+    font-size: 1rem;
+    padding: 0;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+}

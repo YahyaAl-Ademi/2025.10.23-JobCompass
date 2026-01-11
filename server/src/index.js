@@ -1,24 +1,18 @@
-// Load our .env variables
-import dotenv from "dotenv";
+// Load our .env variables as early as possible so other modules that read
+// process.env at module-evaluation time receive the values.
+import "dotenv/config";
 import express from "express";
-dotenv.config();
 
 import app from "./app.js";
 import { logInfo, logError } from "./util/logging.js";
-import connectDB from "./db/connectDB.js";
-import testRouter from "./testRouter.js";
 
-// The environment should set the port
 const port = process.env.PORT;
-
 if (port == null) {
-  // If this fails, make sure you have created a `.env` file in the right place with the PORT set
   logError(new Error("Cannot find a PORT number, did you create a .env file?"));
 }
 
 const startServer = async () => {
   try {
-    await connectDB();
     app.listen(port, () => {
       logInfo(`Server started on port ${port}`);
     });
@@ -44,10 +38,7 @@ if (process.env.NODE_ENV === "production") {
   );
 }
 
-/****** For cypress we want to provide an endpoint to seed our data ******/
-if (process.env.NODE_ENV !== "production") {
-  app.use("/api/test", testRouter);
-}
+/****** Removed test router import and mounting. The `testRouter.js` file was deleted and is no longer used. ******/
 
 // Start the server
 startServer();

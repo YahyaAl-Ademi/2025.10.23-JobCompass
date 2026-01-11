@@ -1,0 +1,40 @@
+.avatar-uploader-container {
+  position: relative;
+  display: inline-block;
+  margin: 32px;
+}
+
+.avatar-image {
+  width: 100px;
+  height: 100px;
+  background: #e2e8f0;
+  border-radius: 50%;
+  object-fit: cover;
+  overflow: hidden;
+  display: block;
+}
+
+.avatar-edit-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: #d4dcff;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.avatar-edit-btn:hover {
+  background: #f3f4f6;
+}
+
+.avatar-edit-icon {
+  width: 20px;
+  height: 20px;
+}
