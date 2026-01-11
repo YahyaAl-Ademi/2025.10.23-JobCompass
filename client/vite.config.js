@@ -12,6 +12,7 @@ export default defineConfig(({ command, mode }) => {
       // Vite will automatically try the next available port so this may not be the actual port
       // the server ends up listening on.
       port: 5173,
+      host: true,
 
       // Automatically open the app in the browser on server start.
       open: "/",
