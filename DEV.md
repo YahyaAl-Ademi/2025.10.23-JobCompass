@@ -4,7 +4,7 @@ We have set up a CI/CD pipeline that will automatically run tests and deploy the
 
 ## 1. Development
 
-To start developing, make sure you have created the `.env` files and did the setup step as described in the main [README](./README.md). This will run both the client and the server. If you want to run them in separate terminals you can run `npm run dev` in each folder to just start that one.
+To start developing, make sure you have created the `.env` files and did the setup step as described in the main [DEVREADME](./DEVREADME.md). This will run both the client and the server. If you want to run them in separate terminals you can run `npm run dev` in each folder to just start that one.
 
 ### 1.1 Client
 
