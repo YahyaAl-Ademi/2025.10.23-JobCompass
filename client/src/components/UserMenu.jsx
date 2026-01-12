@@ -39,7 +39,7 @@ export default function UserMenu() {
           className="user-avatar"
         />
         <span className="divider"></span>
-        <span className="user-name">{user?.firstname}</span>
+        <span className="user-name">{user?.first_name}</span>
         {(isMeLoading || isLogoutLoading) && (
           <img src={gif.spinner} className="spinner" />
         )}

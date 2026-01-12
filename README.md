@@ -83,7 +83,7 @@ c53-final-project-group-A/
 - `GET /api/users/me` – current user; `PUT /api/users/profile` – update profile fields.
 - `POST /api/users/update-avatar` – upload avatar (Multer memory storage → Firebase Storage).
 - `POST /api/users/change-password` / `/change-skills` – profile mutations.
-- `POST /api/users/favorites/toggle` – save/unsave a job; `DELETE /api/users/delete/:userid` – delete account.
+- `POST /api/users/favorites/toggle` – save/unsave a job; `DELETE /api/users/delete/:user_id` – delete account.
 - `POST /api/users/forgot-password` / `/reset-password` – email reset flow.
 - `POST /api/jobs/search` – search jobs (RapidAPI LinkedIn + local processing).
 - `POST /api/travel/batch` – batch transit time + transfer counts for job locations.

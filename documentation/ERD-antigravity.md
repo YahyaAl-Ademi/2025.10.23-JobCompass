@@ -8,14 +8,14 @@ erDiagram
     jobs ||--o{ user_favorites : "is saved by"
 
     users {
-        uuid userid PK
+        uuid user_id PK
         varchar email UK "Unique, not null"
         varchar password "Hashed password"
-        varchar firstname
-        varchar lastname
+        varchar first_name
+        varchar last_name
         varchar avatar "Avatar URL/path"
         varchar street "Address field"
-        varchar housenumber "Address field"
+        varchar house_number "Address field"
         varchar city "Address field"
         varchar country "Address field"
         text skills "Comma-separated list"

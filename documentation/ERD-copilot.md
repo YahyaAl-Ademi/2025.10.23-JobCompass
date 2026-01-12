@@ -12,14 +12,14 @@ erDiagram
     JOBS ||--o{ USER_FAVORITES : referenced_by
 
     USERS {
-        uuid userid PK "Primary Key (UUID)"
+        uuid user_id PK "Primary Key (UUID)"
         varchar email UK "Unique, not null"
         varchar password "Hashed password"
-        varchar firstname
-        varchar lastname
+        varchar first_name
+        varchar last_name
         varchar avatar "Avatar URL/path"
         varchar street "Address field"
-        varchar housenumber "Address field"
+        varchar house_number "Address field"
         varchar city "Address field"
         varchar country "Address field"
         text skills "Comma-separated list"
@@ -44,7 +44,7 @@ erDiagram
     }
 
     USER_FAVORITES {
-        uuid user_id FK "Foreign Key to users.userid"
+        uuid user_id FK "Foreign Key to users.user_id"
         varchar job_id FK "Foreign Key to jobs.id"
         integer travel_time "User-specific travel time"
         integer least_transfers "User-specific transfer count"
@@ -59,11 +59,11 @@ The `users` table stores registered user accounts with authentication and profil
 
 **Key Fields:**
 
-- **userid**: UUID primary key, generated using uuidv4()
+- **user_id**: UUID primary key, generated using uuidv4()
 - **email**: Unique identifier for login, not null
 - **password**: Bcrypt hashed password (12 salt rounds)
-- **Profile fields**: firstname, lastname, avatar
-- **Address fields**: street, housenumber, city, country
+- **Profile fields**: first_name, last_name, avatar
+- **Address fields**: street, house_number, city, country
 - **skills**: Stored as comma-separated string, converted to/from array in application layer
 - **Password reset**: reset_token, reset_token_expires for forgot password functionality
 
@@ -97,7 +97,7 @@ The `user_favorites` table is a junction/bridge table that creates a many-to-man
 
 **Key Fields:**
 
-- **user_id**: Foreign key to users.userid
+- **user_id**: Foreign key to users.user_id
 - **job_id**: Foreign key to jobs.id
 - **travel_time**: User-specific travel time to job location
 - **least_transfers**: User-specific minimum number of transfers for travel
@@ -132,7 +132,7 @@ The `user_favorites` table is a junction/bridge table that creates a many-to-man
 ### JWT Token
 
 - Generated during login and signup
-- Contains: `{ id: userid, email: email }`
+- Contains: `{ id: user_id, email: email }`
 - Expiry: Configurable via JWT_EXPIRES_IN environment variable
 - Stored in httpOnly cookie for security
 
@@ -166,12 +166,12 @@ A common query pattern used across multiple controllers:
 
 ```sql
 SELECT
-    u.userid, u.email, u.password, u.firstname, u.lastname, u.avatar,
-    u.street, u.housenumber, u.city, u.country, u.skills,
+    u.user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
+    u.street, u.house_number, u.city, u.country, u.skills,
     uf.travel_time, uf.least_transfers,
     j.*
 FROM users u
-LEFT JOIN user_favorites uf ON u.userid = uf.user_id
+LEFT JOIN user_favorites uf ON u.user_id = uf.user_id
 LEFT JOIN jobs j ON uf.job_id = j.id
 ```
 

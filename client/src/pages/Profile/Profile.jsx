@@ -16,8 +16,8 @@ import { gif } from "../../assets/index.js";
 
 export default function Profile() {
   const [alert, setAlert] = useState({ type: "", message: "" });
-  const firstnameInputRef = useRef(null);
-  const lastnameInputRef = useRef(null);
+  const first_nameInputRef = useRef(null);
+  const last_nameInputRef = useRef(null);
   const changePasswordRef = useRef(null);
   const streetInputRef = useRef(null);
   const houseInputRef = useRef(null);
@@ -60,17 +60,17 @@ export default function Profile() {
 
   useEffect(() => {
     if (
-      firstnameInputRef.current &&
-      lastnameInputRef.current &&
+      first_nameInputRef.current &&
+      last_nameInputRef.current &&
       streetInputRef.current &&
       houseInputRef.current &&
       cityInputRef.current &&
       countryInputRef.current
     ) {
-      firstnameInputRef.current.value = user.firstname;
-      lastnameInputRef.current.value = user.lastname;
+      first_nameInputRef.current.value = user.first_name;
+      last_nameInputRef.current.value = user.last_name;
       streetInputRef.current.value = user.street;
-      houseInputRef.current.value = user.housenumber;
+      houseInputRef.current.value = user.house_number;
       cityInputRef.current.value = user.city;
       countryInputRef.current.value = user.country;
     }
@@ -107,15 +107,15 @@ export default function Profile() {
 
     const updatedFields = {};
 
-    const firstname = cleanUpText(firstnameInputRef?.current.value);
-    const lastname = cleanUpText(lastnameInputRef?.current.value);
+    const first_name = cleanUpText(first_nameInputRef?.current.value);
+    const last_name = cleanUpText(last_nameInputRef?.current.value);
     const street = cleanUpText(streetInputRef?.current.value);
-    const housenumber = cleanUpText(houseInputRef?.current.value);
+    const house_number = cleanUpText(houseInputRef?.current.value);
     const city = cleanUpText(cityInputRef?.current.value);
     const country = cleanUpText(countryInputRef?.current.value);
 
-    if (firstname !== user.firstname) updatedFields.firstname = firstname;
-    if (lastname !== user.lastname) updatedFields.lastname = lastname;
+    if (first_name !== user.first_name) updatedFields.first_name = first_name;
+    if (last_name !== user.last_name) updatedFields.last_name = last_name;
 
     const streetValidationError = validateAddressTextInputs({ text: street });
     const cityValidationError = validateAddressTextInputs({
@@ -126,7 +126,7 @@ export default function Profile() {
       text: country,
       type: "country",
     });
-    const houseValidationError = validateHouseNoInput({ text: housenumber });
+    const houseValidationError = validateHouseNoInput({ text: house_number });
 
     if (
       streetValidationError ||
@@ -147,8 +147,8 @@ export default function Profile() {
     if (street !== user.street) updatedFields.street = street;
     if (city !== user.city) updatedFields.city = city;
     if (country !== user.country) updatedFields.country = country;
-    if (housenumber !== user.housenumber)
-      updatedFields.housenumber = housenumber;
+    if (house_number !== user.house_number)
+      updatedFields.house_number = house_number;
 
     if (Object.keys(updatedFields).length === 0) {
       if (passwordResult.inputsFilled === false)
@@ -190,9 +190,9 @@ export default function Profile() {
           <div className="profile-info-left">
             <label className="profile-field-label">First name</label>
             <input
-              ref={firstnameInputRef}
+              ref={first_nameInputRef}
               type="text"
-              defaultValue={user?.firstname || ""}
+              defaultValue={user?.first_name || ""}
               className="profile-input"
               onKeyDown={pressEnterKey}
               onChange={handleClearAlert}
@@ -201,9 +201,9 @@ export default function Profile() {
           <div className="profile-info">
             <label className="profile-field-label">Last name</label>
             <input
-              ref={lastnameInputRef}
+              ref={last_nameInputRef}
               type="text"
-              defaultValue={user?.lastname || ""}
+              defaultValue={user?.last_name || ""}
               className="profile-input"
               onKeyDown={pressEnterKey}
               onChange={handleClearAlert}

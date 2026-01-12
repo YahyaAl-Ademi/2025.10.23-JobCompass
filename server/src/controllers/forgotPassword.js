@@ -27,21 +27,21 @@ export async function forgotPassword(req, res) {
 
   try {
     const result = await connectedClient.query(
-      "SELECT userid FROM users WHERE email=$1",
+      "SELECT user_id FROM users WHERE email=$1",
       [email],
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, msg: "Email not found" });
     }
 
-    const userId = result.rows[0].userid;
+    const user_id = result.rows[0].user_id;
 
     const token = uuidv4();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // expires in 10 minutes
 
     await connectedClient.query(
-      "UPDATE users SET reset_token=$1, reset_token_expires=$2 WHERE userid=$3",
-      [token, expiresAt, userId],
+      "UPDATE users SET reset_token=$1, reset_token_expires=$2 WHERE user_id=$3",
+      [token, expiresAt, user_id],
     );
 
     const frontendUrl =

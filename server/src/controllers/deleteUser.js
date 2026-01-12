@@ -7,10 +7,10 @@ export const deleteUser = async (req, res) => {
 
   // We strictly enforce "Self-Deletion" by using the user ID extracted
   // from the token payload (req.user.id) as the target ID.
-  const targetUserId = req.user.id;
+  const targetuser_id = req.user.id;
 
   // --- ID Validation Check ---
-  if (!targetUserId) {
+  if (!targetuser_id) {
     // If the authenticated token somehow lacks a valid ID payload, respond with 401.
     // This suggests an issue with the token payload itself.
     return res.status(401).json({
@@ -31,8 +31,8 @@ export const deleteUser = async (req, res) => {
 
   try {
     // Delete the user record using the ID from the token
-    const query = "DELETE FROM users WHERE userid = $1 RETURNING *";
-    const result = await connectedClient.query(query, [targetUserId]);
+    const query = "DELETE FROM users WHERE user_id = $1 RETURNING *";
+    const result = await connectedClient.query(query, [targetuser_id]);
 
     if (result.rowCount === 0) {
       return res.status(404).json({

@@ -12,14 +12,14 @@ erDiagram
     jobs ||--o{ user_favorites : "referenced_by"
 
     users {
-        uuid userid PK "Primary Key (UUID)"
+        uuid user_id PK "Primary Key (UUID)"
         string email UK "Unique, not null"
         string password "Hashed password"
-        string firstname
-        string lastname
+        string first_name
+        string last_name
         string avatar "Avatar URL/path"
         string street "Address field"
-        string housenumber "Address field"
+        string house_number "Address field"
         string city "Address field"
         string country "Address field"
         text skills "Comma-separated list"
@@ -44,7 +44,7 @@ erDiagram
     }
 
     user_favorites {
-        uuid user_id PK,FK "Foreign Key to users.userid"
+        uuid user_id PK,FK "Foreign Key to users.user_id"
         string job_id PK,FK "Foreign Key to jobs.id"
         integer travel_time "User-specific travel time"
         integer least_transfers "User-specific transfer count"
@@ -59,7 +59,7 @@ The main user table storing all user account information and profile data.
 
 **Key Fields:**
 
-- `userid`: UUID primary key, generated using uuidv4()
+- `user_id`: UUID primary key, generated using uuidv4()
 - `email`: Unique email address used for authentication
 - `password`: Bcrypt-hashed password (12 rounds)
 - `reset_token` & `reset_token_expires`: Used for password reset functionality (10-minute expiration)
@@ -90,7 +90,7 @@ Bridge table implementing a many-to-many relationship between users and their fa
 
 **Key Fields:**
 
-- `user_id`: Foreign key to `users.userid`
+- `user_id`: Foreign key to `users.user_id`
 - `job_id`: Foreign key to `jobs.id`
 - `travel_time`: Commute time in minutes (calculated per user)
 - `least_transfers`: Minimum number of transfers required (calculated per user)
@@ -120,7 +120,7 @@ Bridge table implementing a many-to-many relationship between users and their fa
 ### Key Constraints
 
 - `users.email` is unique (enforced at application level)
-- `users.userid` is the primary key (UUID)
+- `users.user_id` is the primary key (UUID)
 - `jobs.id` is the primary key (Job ID)
 - `user_favorites` has a composite primary key on (`user_id`, `job_id`)
 - Foreign key constraints ensure referential integrity between `user_favorites` and both `users` and `jobs`
@@ -131,7 +131,7 @@ Bridge table implementing a many-to-many relationship between users and their fa
 
 The application uses a unified query (`USER_FULL_INFO_QUERY`) that LEFT JOINs:
 
-1. `users` → `user_favorites` (on `userid = user_id`)
+1. `users` → `user_favorites` (on `user_id = user_id`)
 2. `user_favorites` → `jobs` (on `job_id = id`)
 
 This allows fetching a user's complete profile along with all their favorited jobs and per-user commute metadata in a single query.

@@ -14,14 +14,14 @@ Stores user account information and profile data.
 
 **Columns:**
 
-- `userid` (UUID, Primary Key) - Unique identifier for each user
+- `user_id` (UUID, Primary Key) - Unique identifier for each user
 - `email` (VARCHAR, Unique) - User's email address for authentication
 - `password` (VARCHAR) - Hashed password using bcrypt
-- `firstname` (VARCHAR) - User's first name
-- `lastname` (VARCHAR) - User's last name
+- `first_name` (VARCHAR) - User's first name
+- `last_name` (VARCHAR) - User's last name
 - `avatar` (VARCHAR, Nullable) - URL to user's profile picture
 - `street` (VARCHAR, Nullable) - Street address
-- `housenumber` (VARCHAR, Nullable) - House number
+- `house_number` (VARCHAR, Nullable) - House number
 - `city` (VARCHAR, Nullable) - City name
 - `country` (VARCHAR, Nullable) - Country name
 - `skills` (TEXT, Nullable) - Comma-separated list of user skills
@@ -54,7 +54,7 @@ Many-to-many relationship between users and favorites with additional metadata.
 
 **Columns:**
 
-- `user_id` (UUID, Foreign Key → users.userid) - Reference to user
+- `user_id` (UUID, Foreign Key → users.user_id) - Reference to user
 - `job_id` (VARCHAR, Foreign Key → jobs.id) - Reference to job
 - `travel_time` (INTEGER, Nullable) - Travel time in minutes from user's location to job
 - `least_transfers` (INTEGER, Nullable) - Minimum number of transfers required for commute
@@ -84,14 +84,14 @@ The `user_favorites` table stores per-user metadata:
 ```mermaid
 erDiagram
     users {
-        uuid userid PK
+        uuid user_id PK
         varchar email UK
         varchar password
-        varchar firstname
-        varchar lastname
+        varchar first_name
+        varchar last_name
         varchar avatar
         varchar street
-        varchar housenumber
+        varchar house_number
         varchar city
         varchar country
         varchar skills
@@ -130,7 +130,7 @@ erDiagram
 
 ### 1. UUID for Primary Keys
 
-- `users.userid` uses UUID for security and scalability
+- `users.user_id` uses UUID for security and scalability
 - Prevents enumeration attacks and ensures global uniqueness
 
 ### 2. Junction Table with Metadata

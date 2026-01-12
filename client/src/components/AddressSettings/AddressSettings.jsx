@@ -42,7 +42,7 @@ export default function AddressSettings({
             id="houseInput"
             ref={houseInputRef}
             type="text"
-            defaultValue={user?.housenumber ?? ""}
+            defaultValue={user?.house_number ?? ""}
             className="address-input"
             onKeyDown={pressEnterKey}
             onChange={clearAlert}

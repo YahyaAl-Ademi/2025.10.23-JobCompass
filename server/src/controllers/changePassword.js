@@ -5,9 +5,9 @@ import { logError } from "../util/logging.js";
 
 export async function changePassword(req, res) {
   const { currentPassword, newPassword } = req.body;
-  const userId = req.user?.id;
+  const user_id = req.user?.id;
 
-  if (!userId || !currentPassword || !newPassword) {
+  if (!user_id || !currentPassword || !newPassword) {
     return res.status(400).json({ success: false, msg: "Missing fields" });
   }
 
@@ -17,8 +17,8 @@ export async function changePassword(req, res) {
 
   try {
     const result = await connectedClient.query(
-      "SELECT * FROM users WHERE userid = $1",
-      [userId],
+      "SELECT * FROM users WHERE user_id = $1",
+      [user_id],
     );
     const user = result.rows[0];
 
@@ -33,8 +33,8 @@ export async function changePassword(req, res) {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await connectedClient.query(
-      "UPDATE users SET password = $1 WHERE userid = $2",
-      [hashedPassword, userId],
+      "UPDATE users SET password = $1 WHERE user_id = $2",
+      [hashedPassword, user_id],
     );
 
     res.json({ success: true, msg: "Password updated successfully" });

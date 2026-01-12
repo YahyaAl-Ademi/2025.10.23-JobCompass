@@ -5,7 +5,7 @@ export default function ProtectedRoute({ children }) {
   const { user } = UseUser();
 
   // This check ONLY runs AFTER userLoading is false.
-  if (!user || !user.userid) {
+  if (!user || !user.user_id) {
     return <Navigate to="/login" replace />;
   }
 
