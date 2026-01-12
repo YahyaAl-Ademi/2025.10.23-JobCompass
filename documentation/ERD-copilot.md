@@ -9,7 +9,7 @@ This document describes the entity-relationship model for the JobCompass applica
 ```mermaid
 erDiagram
     USERS ||--o{ USER_FAVORITES : has
-    FAVORITES ||--o{ USER_FAVORITES : referenced_by
+    JOBS ||--o{ USER_FAVORITES : referenced_by
 
     USERS {
         uuid userid PK "Primary Key (UUID)"
@@ -27,7 +27,7 @@ erDiagram
         timestamp reset_token_expires "Token expiration"
     }
 
-    FAVORITES {
+    JOBS {
         varchar id PK "Primary Key (Job ID)"
         varchar title
         varchar organization
@@ -45,7 +45,7 @@ erDiagram
 
     USER_FAVORITES {
         uuid user_id FK "Foreign Key to users.userid"
-        varchar favorite_id FK "Foreign Key to favorites.id"
+        varchar job_id FK "Foreign Key to jobs.id"
         integer travel_time "User-specific travel time"
         integer least_transfers "User-specific transfer count"
     }
@@ -72,9 +72,9 @@ The `users` table stores registered user accounts with authentication and profil
 - Email must be unique
 - Password is hashed before storage
 
-### FAVORITES
+### JOBS
 
-The `favorites` table stores job posting details that have been favorited by at least one user.
+The `jobs` table stores job posting details that have been favorited by at least one user.
 
 **Key Fields:**
 
@@ -98,23 +98,23 @@ The `user_favorites` table is a junction/bridge table that creates a many-to-man
 **Key Fields:**
 
 - **user_id**: Foreign key to users.userid
-- **favorite_id**: Foreign key to favorites.id
+- **job_id**: Foreign key to jobs.id
 - **travel_time**: User-specific travel time to job location
 - **least_transfers**: User-specific minimum number of transfers for travel
 
 **Primary Key:**
 
-- Composite key: (user_id, favorite_id)
+- Composite key: (user_id, job_id)
 
 **Design Notes:**
 
 - This junction table also stores per-user metadata (travel_time, least_transfers)
 - When a user toggles off a favorite, only the record in this table is deleted
-- The favorite job record remains in the `favorites` table for other users
+- The favorite job record remains in the `jobs` table for other users
 
 ## Relationships
 
-### USERS ↔ FAVORITES (Many-to-Many)
+### USERS ↔ JOBS (Many-to-Many)
 
 - **Relationship Type**: Many-to-Many
 - **Junction Table**: USER_FAVORITES
@@ -125,7 +125,7 @@ The `user_favorites` table is a junction/bridge table that creates a many-to-man
 ### CASCADE Behavior
 
 - **User Deletion**: When a user is deleted, associated records in `user_favorites` are likely cascaded (should be verified in actual schema)
-- **Favorite Deletion**: When a favorite is removed from `user_favorites`, the job record remains in `favorites` table
+- **Job Deletion**: When a job is removed from `user_favorites`, the job record remains in `jobs` table
 
 ## Authentication & Security
 
@@ -169,10 +169,10 @@ SELECT
     u.userid, u.email, u.password, u.firstname, u.lastname, u.avatar,
     u.street, u.housenumber, u.city, u.country, u.skills,
     uf.travel_time, uf.least_transfers,
-    f.*
+    j.*
 FROM users u
 LEFT JOIN user_favorites uf ON u.userid = uf.user_id
-LEFT JOIN favorites f ON uf.favorite_id = f.id
+LEFT JOIN jobs j ON uf.job_id = j.id
 ```
 
 This query:
@@ -194,7 +194,7 @@ This query:
 ### Favorite Operations
 
 - **Toggle Favorite**:
-  1. Check if job exists in favorites table, insert if not
+  1. Check if job exists in jobs table, insert if not
   2. Check if user_favorites record exists
   3. If exists: DELETE from user_favorites (remove favorite)
   4. If not exists: INSERT into user_favorites (add favorite)

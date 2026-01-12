@@ -25,8 +25,10 @@ Stores user account information and profile data.
 - `city` (VARCHAR, Nullable) - City name
 - `country` (VARCHAR, Nullable) - Country name
 - `skills` (TEXT, Nullable) - Comma-separated list of user skills
+- `reset_token` (VARCHAR, Nullable) - Password reset token
+- `reset_token_expires` (TIMESTAMP, Nullable) - Token expiration time
 
-#### 2. `favorites`
+#### 2. `jobs`
 
 Stores job posting information that users can favorite.
 
@@ -41,7 +43,6 @@ Stores job posting information that users can favorite.
 - `organization_logo` (VARCHAR, Nullable) - URL to organization's logo
 - `display_location` (VARCHAR, Nullable) - Job location display text
 - `work_mode` (VARCHAR, Nullable) - Work mode (remote, hybrid, on-site)
-- `linkedin_org_url` (VARCHAR, Nullable) - LinkedIn organization URL
 - `seniority` (VARCHAR, Nullable) - Job seniority level
 - `description_text` (TEXT, Nullable) - Job description
 - `date_posted` (DATE, Nullable) - Date when job was posted
@@ -54,22 +55,22 @@ Many-to-many relationship between users and favorites with additional metadata.
 **Columns:**
 
 - `user_id` (UUID, Foreign Key → users.userid) - Reference to user
-- `favorite_id` (VARCHAR, Foreign Key → favorites.id) - Reference to favorite job
+- `job_id` (VARCHAR, Foreign Key → jobs.id) - Reference to job
 - `travel_time` (INTEGER, Nullable) - Travel time in minutes from user's location to job
 - `least_transfers` (INTEGER, Nullable) - Minimum number of transfers required for commute
 
-**Composite Primary Key:** (`user_id`, `favorite_id`)
+**Composite Primary Key:** (`user_id`, `job_id`)
 
 ## Relationships
 
-### 1. User ↔ Favorites (Many-to-Many)
+### 1. User ↔ Jobs (Many-to-Many)
 
-- **Relationship:** A user can have many favorites, and a favorite job can be favorited by many users
+- **Relationship:** A user can have many favorite jobs, and a job can be favorited by many users
 - **Implementation:** Through the `user_favorites` junction table
 - **Cardinality:**
-  - `users` 1 ←→ N `user_favorites` ←→ 1 `favorites`
-  - User can have 0 or more favorites
-  - Favorite job can be favorited by 0 or more users
+  - `users` 1 ←→ N `user_favorites` ←→ 1 `jobs`
+  - User can have 0 or more favorite jobs
+  - Job can be favorited by 0 or more users
 
 ### 2. Additional Metadata in Junction Table
 
@@ -93,10 +94,12 @@ erDiagram
         varchar housenumber
         varchar city
         varchar country
-        text skills
+        varchar skills
+        varchar reset_token
+        timestamp reset_token_expires
     }
 
-    favorites {
+    jobs {
         varchar id PK
         varchar title
         varchar organization
@@ -106,7 +109,6 @@ erDiagram
         varchar organization_logo
         varchar display_location
         varchar work_mode
-        varchar linkedin_org_url
         varchar seniority
         text description_text
         date date_posted
@@ -115,13 +117,13 @@ erDiagram
 
     user_favorites {
         uuid user_id PK,FK
-        varchar favorite_id PK,FK
+        varchar job_id PK,FK
         integer travel_time
         integer least_transfers
     }
 
     users ||--o{ user_favorites : "has"
-    favorites ||--o{ user_favorites : "favorited by"
+    jobs ||--o{ user_favorites : "referenced by"
 ```
 
 ## Key Design Patterns
@@ -138,7 +140,7 @@ erDiagram
 
 ### 3. Denormalized Job Data
 
-- Job data is stored in the `favorites` table rather than normalized further
+- Job data is stored in the `jobs` table rather than normalized further
 - This optimizes for read performance as job data is frequently accessed together
 
 ### 4. Flexible Skills Storage
@@ -151,7 +153,7 @@ erDiagram
 1. **User Registration:** Creates entry in `users` table
 2. **Job Search:** External API calls fetch job data (not stored in DB)
 3. **Favorite Job:**
-   - Job data inserted into `favorites` table (if not exists)
+   - Job data inserted into `jobs` table (if not exists)
    - Relationship created in `user_favorites` with travel metadata
 4. **User Profile Update:** Direct updates to `users` table
 5. **Login Query:** Complex JOIN retrieves user data with all favorites and travel metadata
@@ -162,9 +164,9 @@ Based on query patterns observed in the code:
 
 1. **users.email** - Already unique, critical for authentication
 2. **user_favorites.user_id** - For retrieving user's favorites
-3. **user_favorites.favorite_id** - For checking which users favorited a job
-4. **favorites.id** - Primary key, frequently accessed
-5. **Composite index on (user_id, favorite_id)** - Primary key of junction table
+3. **user_favorites.job_id** - For checking which users favorited a job
+4. **jobs.id** - Primary key, frequently accessed
+5. **Composite index on (user_id, job_id)** - Primary key of junction table
 
 ## Security Considerations
 

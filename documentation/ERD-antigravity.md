@@ -5,44 +5,44 @@ This diagram illustrates the current database architecture for the JobCompass ap
 ```mermaid
 erDiagram
     users ||--o{ user_favorites : "saves"
-    favorites ||--o{ user_favorites : "is saved by"
+    jobs ||--o{ user_favorites : "is saved by"
 
     users {
         uuid userid PK
-        string email
-        string password
-        string firstname
-        string lastname
-        string avatar
-        string street
-        string housenumber
-        string city
-        string country
-        string skills
-        string reset_token
-        timestamp reset_token_expires
+        varchar email UK "Unique, not null"
+        varchar password "Hashed password"
+        varchar firstname
+        varchar lastname
+        varchar avatar "Avatar URL/path"
+        varchar street "Address field"
+        varchar housenumber "Address field"
+        varchar city "Address field"
+        varchar country "Address field"
+        text skills "Comma-separated list"
+        varchar reset_token "Password reset token"
+        timestamp reset_token_expires "Token expiration"
     }
 
-    favorites {
-        string id PK
-        string title
-        string organization
-        string organization_url
-        string employment_type
-        string url
-        string organization_logo
-        string display_location
-        string work_mode
-        string seniority
-        string description_text
-        string date_posted
-        string normalized_description
+    jobs {
+        varchar id PK
+        varchar title
+        varchar organization
+        varchar organization_url
+        varchar employment_type
+        varchar url "Job posting URL"
+        varchar organization_logo
+        varchar display_location
+        varchar work_mode
+        varchar seniority
+        text description_text
+        date date_posted
+        text normalized_description
     }
 
     user_favorites {
         uuid user_id FK
-        string favorite_id FK
-        string travel_time
-        string least_transfers
+        varchar job_id FK
+        integer travel_time "User-specific travel time"
+        integer least_transfers "User-specific transfer count"
     }
 ```
