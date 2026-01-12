@@ -1,12 +1,13 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 
 const USER_FULL_INFO_QUERY = `
-    SELECT
-        u.userid, u.email, u.password, u.firstname, u.lastname, u.avatar,
-        u.street, u.housenumber, u.city, u.country, u.skills,
-        f.* FROM users u
-    LEFT JOIN user_favorites uf ON u.userid = uf.user_id
-    LEFT JOIN favorites f ON uf.favorite_id = f.id
+  SELECT
+    u.userid, u.email, u.password, u.firstname, u.lastname, u.avatar,
+    u.street, u.housenumber, u.city, u.country, u.skills,
+    uf.travel_time, uf.least_transfers,
+    j.* FROM users u
+  LEFT JOIN user_favorites uf ON u.userid = uf.user_id
+  LEFT JOIN jobs j ON uf.job_id = j.id
 `;
 
 export const updateUserProfile = async (userId, fieldsToUpdate) => {
@@ -85,7 +86,6 @@ export const updateUserProfile = async (userId, fieldsToUpdate) => {
           organization_logo: row.organization_logo,
           display_location: row.display_location,
           work_mode: row.work_mode,
-          linkedin_org_url: row.linkedin_org_url,
           seniority: row.seniority,
           description_text: row.description_text,
           travel_time: row.travel_time,
