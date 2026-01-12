@@ -9,7 +9,7 @@ erDiagram
 
     users {
         uuid user_id PK
-        varchar email UK "Unique, not null"
+        varchar email "Not null"
         varchar password "Hashed password"
         varchar first_name
         varchar last_name
@@ -19,30 +19,30 @@ erDiagram
         varchar city "Address field"
         varchar country "Address field"
         text skills "Comma-separated list"
-        varchar reset_token "Password reset token"
+        uuid reset_token "Password reset token"
         timestamp reset_token_expires "Token expiration"
     }
 
     jobs {
-        varchar id PK
+        text id PK
+        timestamp date_posted
         varchar title
         varchar organization
-        varchar organization_url
+        text organization_url
         varchar employment_type
-        varchar url "Job posting URL"
-        varchar organization_logo
+        text url "Job posting URL"
+        text organization_logo
         varchar display_location
         varchar work_mode
         varchar seniority
         text description_text
-        date date_posted
         text normalized_description
     }
 
     user_favorites {
         uuid user_id FK
-        varchar job_id FK
-        integer travel_time "User-specific travel time"
-        integer least_transfers "User-specific transfer count"
+        text job_id FK
+        smallint travel_time "User-specific travel time"
+        smallint least_transfers "User-specific transfer count"
     }
 ```
