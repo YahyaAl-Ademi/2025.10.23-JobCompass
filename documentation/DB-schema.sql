@@ -38,6 +38,6 @@ CREATE TABLE user_favorites (
     travel_time smallint,
     least_transfers smallint,
     CONSTRAINT pk_user_favorites PRIMARY KEY (user_id, job_id),
-    CONSTRAINT fk_favorite_id FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE,
+    CONSTRAINT fk_job_id FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE,
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
