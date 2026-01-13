@@ -1,6 +1,6 @@
 # Entity Relationship Diagram (ERD)
 
-This diagram illustrates the current database architecture for the JobCompass application.
+This diagram illustrates the current database architecture for the JobCompass application. See [`create_tables.sql`](../database/create_tables.sql) for the SQL implementation of this schema.
 
 ```mermaid
 erDiagram
