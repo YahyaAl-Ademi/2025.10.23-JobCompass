@@ -9,10 +9,12 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(currentPage);
 
-  // Sync internal state when prop changes
+  // Sync internal state when prop changes, but avoid overwriting while editing
   useEffect(() => {
-    setInputValue(currentPage);
-  }, [currentPage]);
+    if (!isEditing) {
+      setInputValue(currentPage);
+    }
+  }, [currentPage, isEditing]);
 
   if (safeTotal === 0) return null;
 
