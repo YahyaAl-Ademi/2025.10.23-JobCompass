@@ -8,41 +8,41 @@ erDiagram
     jobs ||--o{ user_favorites : "is saved by"
 
     users {
-        uuid user_id PK
-        varchar email "Not null"
-        varchar password "Hashed password"
-        varchar first_name
-        varchar last_name
-        varchar avatar "Avatar URL/path"
-        varchar street "Address field"
-        varchar house_number "Address field"
-        varchar city "Address field"
-        varchar country "Address field"
-        text skills "Comma-separated list"
-        uuid reset_token "Password reset token"
-        timestamp reset_token_expires "Token expiration"
+        uuid user_id PK "NOT NULL, CONSTRAINT users_pkey"
+        character_varying_255 email "NOT NULL"
+        character_varying_255 password "NOT NULL"
+        character_varying_100 first_name
+        character_varying_100 last_name
+        character_varying_255 avatar
+        character_varying_255 street
+        character_varying_50 house_number
+        character_varying_100 city
+        character_varying_100 country
+        text skills
+        uuid reset_token
+        timestamp reset_token_expires
     }
 
     jobs {
-        text id PK
+        text id PK "NOT NULL, CONSTRAINT jobs_pkey"
         timestamp date_posted
-        varchar title
-        varchar organization
+        character_varying_500 title
+        character_varying_255 organization
         text organization_url
-        varchar employment_type
-        text url "Job posting URL"
+        character_varying_255 employment_type
+        text url
         text organization_logo
-        varchar display_location
-        varchar work_mode
-        varchar seniority
+        character_varying_500 display_location
+        character_varying_255 work_mode
+        character_varying_255 seniority
         text description_text
         text normalized_description
     }
 
     user_favorites {
-        uuid user_id FK
-        text job_id FK
-        smallint travel_time "User-specific travel time"
-        smallint least_transfers "User-specific transfer count"
+        uuid user_id PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_user_id_fkey, ON DELETE CASCADE"
+        text job_id PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_job_id_fkey, ON DELETE CASCADE"
+        smallint travel_time
+        smallint least_transfers
     }
 ```
