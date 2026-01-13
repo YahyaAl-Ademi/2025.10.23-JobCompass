@@ -1,4 +1,4 @@
-CREATE TABLE jobs (
+CREATE TABLE IF NOT EXISTS jobs (
     id text NOT NULL,
     date_posted timestamp without time zone,
     title character varying(500),
@@ -15,7 +15,7 @@ CREATE TABLE jobs (
     CONSTRAINT jobs_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id uuid NOT NULL,
     email character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE users (
     CONSTRAINT users_pkey PRIMARY KEY (user_id)
 );
 
-CREATE TABLE user_favorites (
+CREATE TABLE IF NOT EXISTS user_favorites (
     user_id uuid NOT NULL,
     job_id text NOT NULL,
     travel_time smallint,
