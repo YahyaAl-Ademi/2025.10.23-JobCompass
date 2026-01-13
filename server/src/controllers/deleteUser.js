@@ -31,7 +31,7 @@ export const deleteUser = async (req, res) => {
 
   try {
     // Delete the user record using the ID from the token
-    const query = "DELETE FROM users WHERE userid = $1 RETURNING *";
+    const query = "DELETE FROM users WHERE user_id = $1 RETURNING *";
     const result = await connectedClient.query(query, [targetUserId]);
 
     if (result.rowCount === 0) {

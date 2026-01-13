@@ -2,10 +2,10 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { logError } from "../util/logging.js";
 
 export async function changeSkills(req, res) {
-  const userId = req.user?.id;
+  const user_id = req.user?.id;
   const { skills } = req.body;
 
-  if (!userId)
+  if (!user_id)
     return res
       .status(401)
       .json({ success: false, msg: "User not authenticated" });
@@ -30,9 +30,9 @@ export async function changeSkills(req, res) {
     const result = await connectedClient.query(
       `UPDATE users
       SET skills = $1
-      WHERE userid = $2
+      WHERE user_id = $2
       RETURNING *`,
-      [skills.join(","), userId],
+      [skills.join(","), user_id],
     );
 
     if (result.rowCount === 0) {

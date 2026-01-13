@@ -1,12 +1,12 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import { logError } from "../util/logging.js";
 export const toggleFavoriteJob = async (req, res) => {
-  const userId = req.user?.id;
+  const user_id = req.user?.id;
   const { job } = req.body;
   const jobId = job?.id;
 
   //  Check if user is authenticated
-  if (!userId)
+  if (!user_id)
     return res
       .status(401)
       .json({ success: false, msg: "User not authenticated" });
@@ -31,16 +31,16 @@ export const toggleFavoriteJob = async (req, res) => {
       .json({ success: false, msg: "Database connection error" });
 
   try {
-    const existingFavorite = await connectedClient.query(
-      "SELECT id FROM favorites WHERE id = $1",
+    const existingJob = await connectedClient.query(
+      "SELECT id FROM jobs WHERE id = $1",
       [jobId],
     );
-    // 2️ If it does not exist → insert it into the favorites table
+    // 2️ If it does not exist → insert it into the jobs table
     //  Best practice: Consider using transactions when inserting multiple tables
-    if (existingFavorite.rows.length === 0) {
-      // Insert core favorite data (without per-user travel fields)
+    if (existingJob.rows.length === 0) {
+      // Insert core job data (without per-user travel fields)
       await connectedClient.query(
-        `INSERT INTO favorites 
+        `INSERT INTO jobs 
           (id, title, organization, organization_url, employment_type, url, 
            organization_logo, display_location, work_mode, seniority, description_text,
            date_posted, normalized_description)
@@ -66,24 +66,24 @@ export const toggleFavoriteJob = async (req, res) => {
 
     // 3️ Check if this favorite exists for this user
     const exists = await connectedClient.query(
-      "SELECT 1 FROM user_favorites WHERE user_id = $1 AND favorite_id = $2",
-      [userId, jobId],
+      "SELECT 1 FROM user_favorites WHERE user_id = $1 AND job_id = $2",
+      [user_id, jobId],
     );
 
     if (exists.rows.length > 0) {
       //  Remove favorite
       //  Best practice: Consider wrapping delete and insert operations in a transaction
       await connectedClient.query(
-        "DELETE FROM user_favorites WHERE user_id = $1 AND favorite_id = $2",
-        [userId, jobId],
+        "DELETE FROM user_favorites WHERE user_id = $1 AND job_id = $2",
+        [user_id, jobId],
       );
       return res.status(200).json({ success: true, action: "removed", job });
     }
 
     //  Add favorite and store per-user travel metadata on the relation
     await connectedClient.query(
-      "INSERT INTO user_favorites (user_id, favorite_id, travel_time, least_transfers) VALUES ($1, $2, $3, $4)",
-      [userId, jobId, job.travel_time, job.least_transfers],
+      "INSERT INTO user_favorites (user_id, job_id, travel_time, least_transfers) VALUES ($1, $2, $3, $4)",
+      [user_id, jobId, job.travel_time, job.least_transfers],
     );
 
     return res.status(200).json({ success: true, action: "added", job });

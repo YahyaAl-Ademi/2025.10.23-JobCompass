@@ -13,13 +13,13 @@ export default function validateCreactUser(user) {
 
   // Check allowed fields only
   const disallowed = validateAllowedFields(user, [
-    "firstname",
-    "lastname",
+    "first_name",
+    "last_name",
     "email",
     "password",
     "avatar",
     "street",
-    "housenumber",
+    "house_number",
     "city",
     "country",
     "skills",
@@ -29,10 +29,10 @@ export default function validateCreactUser(user) {
   if (disallowed) errors.push(disallowed);
 
   // Required fields
-  if (!user.firstname || String(user.firstname).trim() === "") {
+  if (!user.first_name || String(user.first_name).trim() === "") {
     errors.push("First name is required");
   }
-  if (!user.lastname || String(user.lastname).trim() === "") {
+  if (!user.last_name || String(user.last_name).trim() === "") {
     errors.push("Last name is required");
   }
   if (!user.email || String(user.email).trim() === "") {

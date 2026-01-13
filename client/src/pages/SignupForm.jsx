@@ -23,8 +23,8 @@ import { defaultUser } from "../data/defaultUser";
 
 const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
   const [signupData, setSignupData] = useState({
-    firstname: "",
-    lastname: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -105,8 +105,8 @@ const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
         user: {
           ...defaultUser,
           skills: defaultUser.skills.map((s) => s.skill),
-          firstname: signupData.firstname,
-          lastname: signupData.lastname,
+          first_name: signupData.first_name,
+          last_name: signupData.last_name,
           email: signupData.email,
           password: signupData.password,
         },
@@ -142,9 +142,9 @@ const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
             <div className="input-wrapper">
               <input
                 type="text"
-                name="firstname" // added name for handleChange
+                name="first_name" // added name for handleChange
                 placeholder="First name"
-                value={signupData.firstname}
+                value={signupData.first_name}
                 onChange={handleChange}
                 required
                 style={{ paddingRight: "35px" }}
@@ -160,9 +160,9 @@ const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
             <div className="input-wrapper">
               <input
                 type="text"
-                name="lastname" //added name
+                name="last_name" //added name
                 placeholder="Last name"
-                value={signupData.lastname}
+                value={signupData.last_name}
                 onChange={handleChange}
                 required
                 style={{ paddingRight: "35px" }}

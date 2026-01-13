@@ -4,7 +4,7 @@ import { regexEndNormalizeSkill } from "../util/regexEndNormalizeSkill";
 export const formatAddress = (user) => {
   const parts = [];
   if (user?.street) parts.push(user.street);
-  if (user?.housenumber) parts.push(user.housenumber);
+  if (user?.house_number) parts.push(user.house_number);
   if (user?.city) parts.push(user.city);
   if (user?.country) parts.push(user.country);
   return parts.join(", ");
@@ -39,13 +39,13 @@ const defaultSkillNames = [
 ];
 
 export const defaultUser = {
-  firstname: "Guest",
-  lastname: "User",
+  first_name: "Guest",
+  last_name: "User",
   avatar: images.defaultAvatar,
   email: "guest@example.com",
 
   street: "Keizersgracht",
-  housenumber: 123,
+  house_number: 123,
   city: "Amsterdam",
   country: "Netherlands",
   skills: defaultSkillNames
