@@ -34,11 +34,11 @@ export const updateUserProfile = async (user_id, fieldsToUpdate) => {
   if (setParts.length === 0) throw new Error("No fields provided to update");
 
   values.push(user_id);
-  const updateuser_idIndex = i;
+  const updateUserIdIndex = i;
   const updateQuery = `
     UPDATE users
     SET ${setParts.join(", ")}
-    WHERE user_id = $${updateuser_idIndex}
+    WHERE user_id = $${updateUserIdIndex}
   `;
 
   const { connectedClient, endConnection, error } = await connectNeonDB();

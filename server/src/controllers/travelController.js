@@ -4,7 +4,7 @@ import { getTransitRouteSummary } from "../services/googleMapsApi.js";
 function formatAddress(address) {
   const streetParts = [];
   if (address?.homeStreet) streetParts.push(address.homeStreet);
-  if (address?.homehouse_number) streetParts.push(address.homehouse_number);
+  if (address?.homeHouseNumber) streetParts.push(address.homeHouseNumber);
   if (address?.homeCity) streetParts.push(address.homeCity);
 
   const addressParts = [streetParts.join(" ")];

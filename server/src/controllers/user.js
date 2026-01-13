@@ -56,7 +56,7 @@ export const createUser = async (req, res) => {
       });
     }
 
-    const newuser_id = uuidv4();
+    const newUserId = uuidv4();
     const hashedPassword = await bcrypt.hash(user.password, 12);
     const skillsValue = Array.isArray(user.skills)
       ? user.skills.join(",")
@@ -70,7 +70,7 @@ export const createUser = async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING user_id, email, first_name, last_name, avatar, street, house_number, city, country, skills`,
       [
-        newuser_id,
+        newUserId,
         user.first_name,
         user.last_name,
         user.email,

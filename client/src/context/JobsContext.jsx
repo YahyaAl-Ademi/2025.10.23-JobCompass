@@ -80,7 +80,7 @@ const JobsProvider = ({ children }) => {
 
     const homeAddress = {
       homeStreet: user?.street,
-      homehouse_number: user?.house_number,
+      homeHouseNumber: user?.house_number,
       homeCity: user?.city,
       homeCountry: user?.country,
     };
