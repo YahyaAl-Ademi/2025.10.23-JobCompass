@@ -1,5 +1,5 @@
 import "./Pagination.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
   const safeTotal = Number.isFinite(totalPages)
@@ -9,17 +9,24 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(currentPage);
 
-  // Sync internal state when prop changes, but avoid overwriting while editing
-  useEffect(() => {
+  // Track the previous prop to detect changes during render
+  const [prevPage, setPrevPage] = useState(currentPage);
+
+  /**
+   * FIX: Synchronizing state during render.
+   * This replaces useEffect and avoids "cascading renders."
+   * React allows calling a setter during render if it's wrapped in a condition.
+   */
+  if (currentPage !== prevPage) {
+    setPrevPage(currentPage);
     if (!isEditing) {
       setInputValue(currentPage);
     }
-  }, [currentPage, isEditing]);
-
+  }
   if (safeTotal === 0) return null;
 
   const submitPage = () => {
-    let page = parseInt(inputValue, 10);
+    const page = parseInt(inputValue, 10);
 
     if (isNaN(page)) {
       setInputValue(currentPage);
@@ -34,11 +41,16 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   };
 
   return (
-    <div className="pagination">
+    <div
+      className="pagination"
+      role="navigation"
+      aria-label="Pagination Navigation"
+    >
       <button
         onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
         disabled={currentPage === 1}
         className="pagination-btn"
+        aria-label="Go to previous page"
       >
         Prev
       </button>
@@ -46,26 +58,32 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
       <div className="page-numbers">
         {isEditing ? (
           <input
-            className="page-number-btn active"
+            aria-label="Page number input"
+            className="page-number-input"
             type="number"
+            min="1"
+            max={safeTotal}
             autoFocus
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            // Use onKeyDown to trigger submit
             onKeyDown={(e) => {
-              if (e.key === "Enter") submitPage();
+              if (e.key === "Enter") {
+                submitPage();
+              }
               if (e.key === "Escape") {
                 setInputValue(currentPage);
                 setIsEditing(false);
               }
             }}
-            // If they click away, save the page or cancel
-            onBlur={submitPage}
+            onBlur={() => {
+              if (isEditing) submitPage();
+            }}
           />
         ) : (
           <button
-            className="page-number-btn active"
+            className="page-display-trigger"
             onClick={() => setIsEditing(true)}
+            title="Click to edit page number"
           >
             {currentPage}
           </button>
@@ -76,11 +94,12 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
         onClick={() => onPageChange(Math.min(currentPage + 1, safeTotal))}
         disabled={currentPage === safeTotal}
         className="pagination-btn"
+        aria-label="Go to next page"
       >
         Next
       </button>
 
-      <span className="ellipsis">out of {safeTotal}</span>
+      <span className="page-total">out of {safeTotal}</span>
     </div>
   );
 }
