@@ -41,3 +41,17 @@ CREATE TABLE IF NOT EXISTS user_favorites (
     CONSTRAINT user_favorites_job_id_fkey FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE,
     CONSTRAINT user_favorites_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS search_words (
+    search_word text NOT NULL,
+    search_date timestamp without time zone NOT NULL,
+    CONSTRAINT search_words_pkey PRIMARY KEY (search_word)
+);
+
+CREATE TABLE IF NOT EXISTS search_words_jobs (
+    search_word text NOT NULL,
+    job_id text NOT NULL,
+    CONSTRAINT search_words_jobs_pkey PRIMARY KEY (search_word, job_id),
+    CONSTRAINT search_words_jobs_search_word_fkey FOREIGN KEY (search_word) REFERENCES search_words (search_word) ON DELETE CASCADE,
+    CONSTRAINT search_words_jobs_job_id_fkey FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE
+);
