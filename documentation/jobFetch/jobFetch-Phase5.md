@@ -1,6 +1,7 @@
 ```mermaid
 %%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor':'#1a1a1a', 'primaryBorderColor':'#4a9eff', 'lineColor':'#4a9eff', 'tertiaryColor':'#2a2a2a', 'tertiaryBorderColor':'#4a9eff', 'tertiaryTextColor':'#ffffff'}, 'sequence': {'actorMargin': 50}}}%%
 sequenceDiagram
+    autonumber
     actor User
     participant JobCard as Job Card<br/>`JobCard.jsx`
     participant OpenPositions as OpenPositions Page<br/>`OpenPositions.jsx`

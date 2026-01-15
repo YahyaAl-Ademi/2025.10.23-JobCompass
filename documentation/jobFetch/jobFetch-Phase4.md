@@ -1,6 +1,7 @@
 ```mermaid
 %%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor':'#1a1a1a', 'primaryBorderColor':'#4a9eff', 'lineColor':'#4a9eff', 'tertiaryColor':'#2a2a2a', 'tertiaryBorderColor':'#4a9eff', 'tertiaryTextColor':'#ffffff'}, 'sequence': {'actorMargin': 50}}}%%
 sequenceDiagram
+    autonumber
     participant JobsContext as JobsContext Provider<br/>`JobsContext.jsx`
     participant useFetch_1 as useFetch Hook<br/>(jobs search)<br/>`useFetch.js`
     participant FrontendNetwork as HTTP Network Layer
