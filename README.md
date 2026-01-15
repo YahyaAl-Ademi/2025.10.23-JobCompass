@@ -141,21 +141,41 @@ c53-final-project-group-A/
 
 ## 🚢 Deployment
 
-The project is configured for Heroku deployment. The `Procfile` specifies the production start command.
+The project is configured for a professional CI/CD pipeline using **GitHub Actions**, **Heroku**, and repository scripts.
 
-### Heroku Deployment Steps
+### 🔄 CI/CD Pipeline
 
-1. Create a Heroku app
-2. Set environment variables in Heroku dashboard
-3. Push to Heroku:
-   ```bash
-   git push heroku main
-   ```
+1.  **Continuous Integration (GitHub Actions)**: Every Pull Request triggers automated workflows:
+    -   `client-code-style-check`: Runs Prettier and Lint for the frontend.
+    -   `server-code-style-check`: Runs Prettier and Lint for the backend.
+    -   (Optional) Performance and unit tests are executed to ensure stability.
+2.  **Automated Deployment (Heroku)**:
+    -   **Review Apps**: Every PR automatically creates a temporary, isolated environment on Heroku. A link is provided in the PR for manual testing and QA.
+    -   **Production**: Merging to `main` (or `develop`) triggers an automatic deployment to the main Heroku application.
 
-The `heroku-postbuild` script will automatically:
+### 🛠️ Build Scripts
 
-- Install dependencies
-- Build the client application
+The deployment relies on the following scripts in the root `package.json`:
+
+-   `heroku-postbuild`: Automatically runs during Heroku's build phase. It sets up dependencies and builds the client production bundle.
+    ```bash
+    npm run heroku-postbuild
+    ```
+-   `start`: The production start command, as defined in the `Procfile`.
+    ```bash
+    npm start
+    ```
+
+### 🚀 Manual Deployment (Alternative)
+
+If you need to deploy manually from your terminal:
+
+1.  Logged into Heroku CLI: `heroku login`
+2.  Add the Heroku remote (if not done): `heroku git:remote -a <your-app-name>`
+3.  Push to Heroku:
+    ```bash
+    git push heroku main
+    ```
 
 ## 👥 Contributors
 
