@@ -9,6 +9,8 @@ sequenceDiagram
     participant JobRouter as Job Routes<br/>`job.js`
     participant JobController as Job Search Controller<br/>`jobData.js`<br/>`searchJobs()`
     participant FakeJobSearch as Fake Job Search Provider<br/>`fakeJobSearch.js`
+    participant RealJobSearch as Real Job Search Provider<br/>`realJobSearch.js`
+    participant RapidAPI as RapidAPI<br/>(LinkedIn Job Search)
     participant ProcessJobPost as Job Normalizer<br/>`processJobPost.js`
 
     rect rgb(60, 120, 130)
@@ -42,12 +44,26 @@ sequenceDiagram
         JobController->>JobController: Split search terms into words:<br/>`searchWords = search_terms.split(/[\\s\\-.'/]+/)`
 
         loop For each search word
-            JobController->>FakeJobSearch: call `fakeJobSearch(jobWord)`<br/>(or `realJobSearch` if enabled)
-            activate FakeJobSearch
-            FakeJobSearch->>FakeJobSearch: Load `JobsDataset.json`
-            FakeJobSearch->>FakeJobSearch: Filter jobs where<br/>`job.title.toLowerCase()`<br/>includes `jobWord.toLowerCase()`
-            FakeJobSearch-->>JobController: Return filtered job array
-            deactivate FakeJobSearch
+            alt isSearchReal == false
+                JobController->>FakeJobSearch: call `fakeJobSearch(jobWord)`
+                activate FakeJobSearch
+                FakeJobSearch->>FakeJobSearch: Load `JobsDataset.json`
+                FakeJobSearch->>FakeJobSearch: Filter jobs where<br/>`job.title` includes `jobWord`
+                FakeJobSearch-->>JobController: Return filtered job array
+                deactivate FakeJobSearch
+            else isSearchReal == true
+                JobController->>RealJobSearch: call `realJobSearch(jobWord)`
+                activate RealJobSearch
+                loop For each offset (0 to maxIterations * limit)
+                    RealJobSearch->>RapidAPI: GET /active-jb-7d<br/>(limit, offset, title_filter)
+                    activate RapidAPI
+                    RapidAPI-->>RealJobSearch: Return job results JSON
+                    deactivate RapidAPI
+                end
+                RealJobSearch->>RealJobSearch: Aggregate results from all offsets
+                RealJobSearch-->>JobController: Return aggregated job array
+                deactivate RealJobSearch
+            end
         end
 
         JobController->>JobController: Aggregate results from all words<br/>Remove duplicates using Set of job IDs<br/>Maintain insertion order
@@ -55,7 +71,7 @@ sequenceDiagram
         loop For each aggregated job
             JobController->>ProcessJobPost: call `processJobPost(job)`
             activate ProcessJobPost
-            ProcessJobPost->>ProcessJobPost: Normalize job fields:<br/>- Parse & clean description<br/>- Extract & format location<br/>- Standardize salary info<br/>- Format dates & URLs<br/>- Add computed fields
+            ProcessJobPost->>ProcessJobPost: Normalize job fields:<br/>- Parse & clean description<br/>- Extract & format location<br/>- Add computed fields
             ProcessJobPost-->>JobController: Return normalized job object
             deactivate ProcessJobPost
         end
