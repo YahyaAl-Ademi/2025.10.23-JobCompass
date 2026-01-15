@@ -16,6 +16,7 @@ sequenceDiagram
 
     rect rgb(130, 80, 130)
     Note over User,GoogleMapsAPI: Phase 5: Travel Details Fetch
+    activate JobsContext
     JobsContext->>JobsContext: In `handleJobFetchResults()`:
     JobsContext->>JobsContext: Call `setAllJobs(data.result)`<br/>(update all jobs)
     JobsContext->>JobsContext: Extract unique work cities:<br/>`getCitiesToFetch(jobsArray)`
@@ -23,15 +24,18 @@ sequenceDiagram
     alt No cities to fetch
         Note over JobsContext: If citiesToFetch.length === 0,<br/>return early without API call
     else Cities exist
-        JobsContext->>JobsContext: Build `homeAddress` object from<br/>logged-in user profile
-
+            JobsContext->>JobsContext: Build `homeAddress` object from<br/>logged-in user profile
         JobsContext->>useFetch_2: Call `performTravelFetch()` with<br/>method: POST<br/>body: { homeAddress, workCities }
-
+    
+        activate useFetch_2
         useFetch_2->>useFetch_2: Set `isLoading = true` for travel<br/>(stored in JobsContext as `isTravelLoading`)
         useFetch_2->>useFetch_2: Set `error = null`
         
-        JobsContext->>JobCard: `isTravelLoading` is true
+            JobsContext->>JobCard: `isTravelLoading` is true
+    
+        activate JobCard
         JobCard->>User: Display small spinner in commute info
+        deactivate JobCard
         
         useFetch_2->>FrontendNetwork: POST /api/travel/batch
 
@@ -39,6 +43,7 @@ sequenceDiagram
         ExpressApp->>TravelRouter: Route `/travel/batch`
 
         TravelRouter->>TravelController: Invoke `calculateBatchTravelTime(req, res)`
+        activate TravelController
 
         TravelController->>TravelController: Extract & format home address
         TravelController->>TravelController: For each work city:
@@ -47,6 +52,7 @@ sequenceDiagram
             TravelController->>TravelController: Return zero travel time<br/>& zero transfers
         else City is different
             TravelController->>GoogleMapsAPI: Call `getTransitRouteSummary()`<br/>with formatted addresses
+            activate GoogleMapsAPI
             
             alt Google Maps API succeeds
                 GoogleMapsAPI->>GoogleMapsAPI: Query Google Maps Transit API<br/>Get optimal transit route
@@ -55,34 +61,48 @@ sequenceDiagram
                 GoogleMapsAPI-->>TravelController: Return error object<br/>{ workCity, error: error.message }
                 Note over TravelController: Individual city errors are caught<br/>and returned in results array
             end
+            deactivate GoogleMapsAPI
         end
 
         TravelController->>TravelController: Aggregate all travel results<br/>into array of city → travel data<br/>(includes both successful & failed cities)
         TravelController->>ExpressApp: Return response with<br/>travel details for all cities
+        deactivate TravelController
 
         ExpressApp->>FrontendNetwork: HTTP 200<br/>{ success: true,<br/>  result: { travelDetails: [...] } }
 
         FrontendNetwork->>useFetch_2: Response received
         useFetch_2->>useFetch_2: Parse JSON response
         useFetch_2->>useFetch_2: Set `isLoading = false`
-        useFetch_2->>JobsContext: Call `handleTravelFetchResults(data)`<br/>(callback function)
+            useFetch_2->>JobsContext: Call `handleTravelFetchResults(data)`<br/>(callback function)
+            deactivate useFetch_2
 
-        JobsContext->>JobsContext: In `handleTravelFetchResults()`:
+            JobsContext->>JobsContext: In `handleTravelFetchResults()`:
         JobsContext->>JobsContext: Merge travel details into<br/>`travelDetails` map<br/>`{ cityName: { travel_time, least_transfers } }`
         JobsContext->>JobsContext: Update state: `setTravelDetails(detailsMap)`
         
         JobsContext->>JobCard: `isTravelLoading` is false
+    
+        activate JobCard
         JobCard->>User: Display travel time and transfers
+        deactivate JobCard
     end
 
     alt Server error or network failure
         FrontendNetwork-->>useFetch_2: Network error or 500 response
+        activate useFetch_2
         useFetch_2->>useFetch_2: Set `error = error.message`<br/>Set `isLoading = false`
-        useFetch_2->>JobsContext: Store error in `travelFetchError`
+            useFetch_2->>JobsContext: Store error in `travelFetchError`
+            deactivate useFetch_2
         
-        JobsContext->>OpenPositions: `travelFetchError` exists
+            JobsContext->>OpenPositions: `travelFetchError` exists
+        deactivate JobsContext
+
+        activate OpenPositions
         OpenPositions->>ErrorDisplay: Render error message
+        activate ErrorDisplay
         ErrorDisplay->>User: Display error: "Error loading... commute info"
+        deactivate ErrorDisplay
+        deactivate OpenPositions
     end
 
     end

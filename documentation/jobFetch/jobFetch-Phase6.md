@@ -11,23 +11,38 @@ sequenceDiagram
 
     rect rgb(120, 120, 70)
     Note over User,ErrorDisplay: Phase 6: Display Results
+    activate JobsContext
     JobsContext->>JobsContext: `getJobsWithTravel()` merges<br/>job data with travel info<br/>for each job:
     JobsContext->>JobsContext: Append travel_time & least_transfers<br/>from `travelDetails[city]`
+    deactivate JobsContext
 
     Router->>OpenPositions: Route change complete,<br/>component renders
 
+    activate OpenPositions
     OpenPositions->>JobsContext: Read from context:
+    activate JobsContext
     OpenPositions->>JobsContext: - `allJobs` (with travel data)<br/>- `searchTerm`<br/>- `isJobsLoading`<br/>- `jobFetchError`<br/>- `travelFetchError`
+    deactivate JobsContext
+    deactivate OpenPositions
 
     alt isJobsLoading is true
+        activate OpenPositions
         OpenPositions->>LoaderOverlay: Render loading overlay<br/>with boat GIF animation
+        activate LoaderOverlay
         LoaderOverlay->>User: Display loading animation
+        deactivate LoaderOverlay
+        deactivate OpenPositions
         Note over OpenPositions,User: All other content is overlaid<br/>by loading screen
     else jobFetchError or travelFetchError exists
+        activate OpenPositions
         OpenPositions->>ErrorDisplay: Render error message div<br/>with error text
+        activate ErrorDisplay
         ErrorDisplay->>User: Display error message:<br/>"Error loading jobs or commute info: [error]"
+        deactivate ErrorDisplay
+        deactivate OpenPositions
         Note over OpenPositions,User: User sees error instead of results
     else Loading complete & no errors
+        activate OpenPositions
         OpenPositions->>OpenPositions: Enrich jobs with skills:<br/>For each job & user skill,<br/>call `getSkillsInDescription()`<br/>to find matching skills
 
         OpenPositions->>OpenPositions: Apply filters from user selection<br/>using `filterJobs()`<br/>(seniority, employment type, work mode)
@@ -45,6 +60,7 @@ sequenceDiagram
 
             User->>OpenPositions: View, filter, sort, and<br/>interact with job results
         end
+        deactivate OpenPositions
     end
 
     end

@@ -7,7 +7,9 @@ sequenceDiagram
 
     rect rgb(150, 120, 60)
     Note over SearchInput,Router: Phase 3: Navigation
+    activate SearchInput
     SearchInput->>Router: `navigate("/jobs")`<br/>(redirect to OpenPositions)
     SearchInput->>SearchInput: Clear input field value
+    deactivate SearchInput
     end
 ```

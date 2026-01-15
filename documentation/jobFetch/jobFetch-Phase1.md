@@ -9,17 +9,25 @@ sequenceDiagram
     rect rgb(60, 100, 150)
     Note over User,AlertMessage: Phase 1: Initial Setup & Input Validation
     User->>SearchInput: Clicks "Search" button<br/>(or presses Enter)
+    activate SearchInput
     SearchInput->>SearchInput: `handleSearch()` triggered
     SearchInput->>SearchInput: Validate input with<br/>`validateJobInput()`<br/>(from `searchValidation.js`)
+    deactivate SearchInput
     
     alt Validation fails
+        activate SearchInput
         SearchInput->>SearchInput: Set alert state with<br/>validation error<br/>(type: "error", message: error text)
         SearchInput->>AlertMessage: Render error alert
+        activate AlertMessage
         AlertMessage->>User: Display validation error<br/>(e.g., "Text is too short")
+        deactivate AlertMessage
         Note over SearchInput,User: Search process stops here
+        deactivate SearchInput
     else Validation succeeds
+        activate SearchInput
         SearchInput->>SearchInput: Clean input text with<br/>`cleanUpText()`
         Note over SearchInput: Proceed to Phase 2
+        deactivate SearchInput
     end
     end
 ```
