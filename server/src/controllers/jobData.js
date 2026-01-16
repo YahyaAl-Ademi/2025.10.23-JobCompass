@@ -1,10 +1,7 @@
 import { logError } from "../util/logging.js";
 import { realJobSearch } from "./realJobSearch.js";
-import { fakeJobSearch } from "./fakeJobSearch.js";
 import processJobPost from "../util/processJobPost.js";
 import connectNeonDB from "../db/connectNeonDB.js";
-
-const isSearchReal = true; // Set to true to enable real job search
 
 export const searchJobs = async (req, res) => {
   try {
@@ -24,7 +21,7 @@ export const searchJobs = async (req, res) => {
     // Fetch results for all search words concurrently
     const { connectedClient, endConnection } = await connectNeonDB();
     const fetchPromises = searchWords.map(async (jobWord, i) => {
-      if (isSearchReal && connectedClient) {
+      if (connectedClient) {
         try {
           const checkWordResult = await connectedClient.query(
             "SELECT 1 FROM search_words WHERE search_word = $1",
@@ -47,14 +44,12 @@ export const searchJobs = async (req, res) => {
         }
       }
 
-      // If not cached or isSearchReal is false, or DB error
-      return isSearchReal
-        ? searchWords.length > 2 && i >= 2
-          ? new Promise((resolve) =>
-              setTimeout(() => resolve(realJobSearch(jobWord)), (i - 1) * 700),
-            )
-          : realJobSearch(jobWord)
-        : Promise.resolve(fakeJobSearch(jobWord));
+      // If not cached or DB error, use real search
+      return searchWords.length > 2 && i >= 2
+        ? new Promise((resolve) =>
+            setTimeout(() => resolve(realJobSearch(jobWord)), (i - 1) * 700),
+          )
+        : realJobSearch(jobWord);
     });
 
     const fetchedJobsArrays = await Promise.all(fetchPromises);
