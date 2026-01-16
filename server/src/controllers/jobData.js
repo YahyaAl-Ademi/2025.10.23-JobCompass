@@ -1,5 +1,5 @@
 import { logError } from "../util/logging.js";
-import { realJobSearch } from "./realJobSearch.js";
+import { rapidAPIfetch } from "./rapidAPIfetch.js";
 import processJobPost from "../util/processJobPost.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 
@@ -47,9 +47,9 @@ export const searchJobs = async (req, res) => {
       // If not cached or DB error, use real search
       return searchWords.length > 2 && i >= 2
         ? new Promise((resolve) =>
-            setTimeout(() => resolve(realJobSearch(jobWord)), (i - 1) * 700),
+            setTimeout(() => resolve(rapidAPIfetch(jobWord)), (i - 1) * 700),
           )
-        : realJobSearch(jobWord);
+        : rapidAPIfetch(jobWord);
     });
 
     const fetchedJobsArrays = await Promise.all(fetchPromises);

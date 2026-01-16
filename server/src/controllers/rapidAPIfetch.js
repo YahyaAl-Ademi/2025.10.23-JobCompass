@@ -2,13 +2,13 @@ import { logError } from "../util/logging.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import processJobPost from "../util/processJobPost.js";
 
-export const realJobSearch = async (
+export async function rapidAPIfetch(
   jobWord,
   location = "Netherlands",
   limit = 5,
   maxIterations = 2,
   initialOffset = 0,
-) => {
+) {
   const aggregated = [];
 
   const offsets = [];
@@ -126,4 +126,4 @@ export const realJobSearch = async (
   })();
 
   return aggregated;
-};
+}
