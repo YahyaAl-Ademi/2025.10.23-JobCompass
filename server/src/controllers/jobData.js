@@ -2,8 +2,9 @@ import { logError } from "../util/logging.js";
 import { realJobSearch } from "./realJobSearch.js";
 import { fakeJobSearch } from "./fakeJobSearch.js";
 import processJobPost from "../util/processJobPost.js";
+import connectNeonDB from "../db/connectNeonDB.js";
 
-const isSearchReal = false; // Set to true to enable real job search
+const isSearchReal = true; // Set to true to enable real job search
 
 export const searchJobs = async (req, res) => {
   try {
@@ -21,17 +22,43 @@ export const searchJobs = async (req, res) => {
       .split(new RegExp("[\\s\\-.'/]+"))
       .filter(Boolean);
     // Fetch results for all search words concurrently
-    const fetchPromises = searchWords.map((jobWord, i) =>
-      isSearchReal
+    const { connectedClient, endConnection } = await connectNeonDB();
+    const fetchPromises = searchWords.map(async (jobWord, i) => {
+      if (isSearchReal && connectedClient) {
+        try {
+          const checkWordResult = await connectedClient.query(
+            "SELECT 1 FROM search_words WHERE search_word = $1",
+            [jobWord],
+          );
+
+          if (checkWordResult.rows.length > 0) {
+            // Retrieve cached jobs
+            const cachedJobsResult = await connectedClient.query(
+              `SELECT j.* FROM jobs j
+               JOIN search_words_jobs swj ON j.id = swj.job_id
+               WHERE swj.search_word = $1`,
+              [jobWord],
+            );
+            return cachedJobsResult.rows;
+          }
+        } catch (dbError) {
+          logError("Error checking cached jobs:", dbError);
+          // Fall back to real search if DB fails
+        }
+      }
+
+      // If not cached or isSearchReal is false, or DB error
+      return isSearchReal
         ? searchWords.length > 2 && i >= 2
           ? new Promise((resolve) =>
               setTimeout(() => resolve(realJobSearch(jobWord)), (i - 1) * 700),
             )
           : realJobSearch(jobWord)
-        : Promise.resolve(fakeJobSearch(jobWord)),
-    );
+        : Promise.resolve(fakeJobSearch(jobWord));
+    });
 
     const fetchedJobsArrays = await Promise.all(fetchPromises);
+    if (endConnection) await endConnection();
 
     for (const fetchedJobs of fetchedJobsArrays) {
       for (const job of fetchedJobs) {
