@@ -8,10 +8,11 @@ flowchart TD
     subgraph JobSearch["<a href='./4.Job%20Search%20Fetch.md'>4.Job Search Fetch</a>"]
     F -->|No| H[Display Search Error]
     end
-    F -->|Yes| G["<a href='./5.Travel%20Details%20Fetch.md'>5.Travel Details Fetch</a>"]
-    G --> I{Travel Success?}
-    I -->|Yes| J["<a href='./6.Display%20Results.md'>6.Display Results</a>"]
+    F -->|Yes| I{Travel Success?}
+    subgraph TravelDetails["<a href='./5.Travel%20Details%20Fetch.md'>5.Travel Details Fetch</a>"]
     I -->|No| K[Display Travel Error]
+    end
+    I -->|Yes| J["<a href='./6.Display%20Results.md'>6.Display Results</a>"]
     J --> L[User Interaction]
     H --> L
     K --> L
@@ -22,7 +23,6 @@ flowchart TD
     style C fill:#647850,stroke:#4a9eff,color:#fff
     style D fill:#96783c,stroke:#4a9eff,color:#fff
     style F fill:#ff6b6b,stroke:#4a9eff,color:#fff
-    style G fill:#825082,stroke:#4a9eff,color:#fff
     style I fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style J fill:#787846,stroke:#4a9eff,color:#fff
     style L fill:#4a9eff,stroke:#fff,color:#fff
