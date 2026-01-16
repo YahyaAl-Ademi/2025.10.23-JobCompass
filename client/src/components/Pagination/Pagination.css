@@ -77,7 +77,7 @@
   content: "← ";
 }
 
-.ellipsis {
+.page-total {
   display: inline-block;
   padding: 0 4px;
   font-size: 20px;
@@ -86,7 +86,19 @@
   user-select: none;
 }
 
-.ellipsis:hover {
+.page-total:hover {
   background-color: transparent;
   cursor: default;
+}
+/* Page Input Styling */
+.page-number-input {
+  width: 50px;
+  height: 38px;
+  text-align: center;
+  border: 2px solid #4a87e1;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  outline: none;
+  background-color: #fff;
 }
