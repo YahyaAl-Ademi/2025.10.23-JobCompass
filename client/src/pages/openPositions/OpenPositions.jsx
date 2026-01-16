@@ -87,7 +87,7 @@ export default function OpenPositions() {
   }, [sortedJobs, activeFilters]);
 
   //pagination
-  const totalPages = Math.ceil(sortedJobs.length / jobsPerPage);
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
   const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
