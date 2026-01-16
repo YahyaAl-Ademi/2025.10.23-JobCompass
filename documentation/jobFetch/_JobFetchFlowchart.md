@@ -1,7 +1,7 @@
 ```mermaid
 flowchart TD
-    A[User Input] --> B{Phase 1: Input Validation}
-    B -->|Valid| C[Phase 2: Context Updates]
+    A[User Input] --> B{Phase 1: Initial Setup & Input Validation}
+    B -->|Valid| C[Phase 2: Context State Updates]
     B -->|Invalid| Z[Display Error]
     C --> D[Phase 3: Navigation]
     D --> E[Phase 4: Job Search Fetch]
