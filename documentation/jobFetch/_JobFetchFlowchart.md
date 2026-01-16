@@ -1,31 +1,31 @@
 ```mermaid
 flowchart TD
-    A[User Input] --> V{Validation Success?}
+    A[User Input] --> B{Validation Success?}
     subgraph Validation["<a href='./1.Initial%20Setup%20&%20Input%20Validation.md'>1.Initial Setup & Input Validation</a>"]
-    V -->|No| Z[Display Error]
+    B -->|No| J[Display Error]
     end
-    V -->|Yes| C["<a href='./2.Context%20State%20Updates.md'>2.Context State Updates</a>"]
+    B -->|Yes| C["<a href='./2.Context%20State%20Updates.md'>2.Context State Updates</a>"]
     C --> D["<a href='./3.Navigation.md'>3.Navigation</a>"]
-    D --> F{Search Success?}
+    D --> E{Search Success?}
     subgraph JobSearch["<a href='./4.Job%20Search%20Fetch.md'>4.Job Search Fetch</a>"]
-    F -->|No| H[Display Search Error]
+    E -->|No| F[Display Search Error]
     end
-    F -->|Yes| I{Travel Success?}
+    E -->|Yes| G{Travel Success?}
     subgraph TravelDetails["<a href='./5.Travel%20Details%20Fetch.md'>5.Travel Details Fetch</a>"]
-    I -->|No| K[Display Travel Error]
+    G -->|No| H[Display Travel Error]
     end
-    I -->|Yes| J["<a href='./6.Display%20Results.md'>6.Display Results</a>"]
-    J --> L[User Interaction]
-    H --> L
-    K --> L
-    Z --> L
+    G -->|Yes| I["<a href='./6.Display%20Results.md'>6.Display Results</a>"]
+    I --> K[User Interaction]
+    F --> K
+    H --> K
+    J --> K
 
     style A fill:#4a9eff,stroke:#fff,color:#fff
-    style V fill:#ff6b6b,stroke:#4a9eff,color:#fff
+    style B fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style C fill:#647850,stroke:#4a9eff,color:#fff
     style D fill:#96783c,stroke:#4a9eff,color:#fff
-    style F fill:#ff6b6b,stroke:#4a9eff,color:#fff
-    style I fill:#ff6b6b,stroke:#4a9eff,color:#fff
-    style J fill:#787846,stroke:#4a9eff,color:#fff
-    style L fill:#4a9eff,stroke:#fff,color:#fff
+    style E fill:#ff6b6b,stroke:#4a9eff,color:#fff
+    style G fill:#ff6b6b,stroke:#4a9eff,color:#fff
+    style I fill:#787846,stroke:#4a9eff,color:#fff
+    style K fill:#4a9eff,stroke:#fff,color:#fff
 ```
