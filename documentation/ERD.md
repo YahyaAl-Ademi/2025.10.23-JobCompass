@@ -54,7 +54,7 @@ erDiagram
     }
 
     search_words_jobs {
-        text search_word PK,FK "NOT NULL, PK: search_words_jobs_pkey, FK: search_words_search_word_fkey, ON DELETE CASCADE"
-        text job_id PK,FK "NOT NULL, PK: search_words_jobs_pkey, FK: user_favorites_job_id_fkey, ON DELETE CASCADE"
+        text search_word PK,FK "NOT NULL, PK: search_words_jobs_pkey, FK: search_words_jobs_search_word_fkey, ON DELETE CASCADE"
+        text job_id PK,FK "NOT NULL, PK: search_words_jobs_pkey, FK: search_words_jobs_job_id_fkey, ON DELETE CASCADE"
     }
 ```
