@@ -77,7 +77,7 @@ export default async function calculateBatchTravelTime(req, res) {
       },
     });
   } catch (error) {
-    logError("Batch travel calculation error:", error);
+    logError(`Batch travel calculation error: ${error}`);
     return res.status(500).json({
       success: false,
       msg: "Error calculating travel times",

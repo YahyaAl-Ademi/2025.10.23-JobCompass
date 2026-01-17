@@ -6,7 +6,7 @@ export async function rapidAPIfetch(
   jobWord,
   location = "Netherlands",
   limit = 5,
-  maxIterations = 2,
+  maxIterations = 1,
   initialOffset = 0,
 ) {
   const aggregated = [];
@@ -60,7 +60,7 @@ export async function rapidAPIfetch(
       error: dbError,
     } = await connectNeonDB();
     if (dbError) {
-      logError("Background persistence DB connection error:", dbError);
+      logError(`Background persistence DB connection error: ${dbError}`);
       return;
     }
 
@@ -115,11 +115,11 @@ export async function rapidAPIfetch(
             [jobWord, job.id],
           );
         } catch (jobErr) {
-          logError(`Error persisting job ${job.id}:`, jobErr);
+          logError(`Error persisting job ${job.id}: ${jobErr}`);
         }
       }
     } catch (err) {
-      logError("Background persistence overall error:", err);
+      logError(`Background persistence overall error: ${err}`);
     } finally {
       if (endConnection) await endConnection();
     }

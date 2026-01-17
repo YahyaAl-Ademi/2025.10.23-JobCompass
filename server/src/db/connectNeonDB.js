@@ -22,8 +22,9 @@ const connectNeonDB = async () => {
     return {
       error,
       connectedClient,
-      endConnection: () =>
-        logError("Cannot close connection: Client never connected"),
+      endConnection: () => {
+        logError("Cannot close connection: Client never connected");
+      },
     };
   }
 
@@ -36,7 +37,7 @@ const connectNeonDB = async () => {
       try {
         await connectedClient.end();
       } catch (err) {
-        logError("Error closing database connection:", err.message);
+        logError(`Error closing database connection: ${err.message}`);
       }
     }
   };
@@ -46,11 +47,11 @@ const connectNeonDB = async () => {
     connectedClient = client;
   } catch (err) {
     error = err;
-    logError("Database connection error:", err.message);
+    logError(`Database connection error: ${err.message}`);
     await client
       .end()
       .catch((e) =>
-        logError("Error during failed connection cleanup:", e.message),
+        logError(`Error during failed connection cleanup: ${e.message}`),
       );
   }
 

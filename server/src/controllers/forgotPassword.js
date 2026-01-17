@@ -63,7 +63,7 @@ export async function forgotPassword(req, res) {
 
     res.json({ success: true, msg: "Reset link sent to email" });
   } catch (err) {
-    logError.error("Forgot Password Error:", err);
+    logError(`Forgot Password Error: ${err}`);
     res.status(500).json({ success: false, msg: "Server error" });
   } finally {
     await endConnection();

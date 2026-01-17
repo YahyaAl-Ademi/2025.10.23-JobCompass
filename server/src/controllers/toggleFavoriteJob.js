@@ -88,7 +88,7 @@ export const toggleFavoriteJob = async (req, res) => {
 
     return res.status(200).json({ success: true, action: "added", job });
   } catch (err) {
-    logError("Toggle favorite error: " + err);
+    logError(`Toggle favorite error: ${err}`);
     return res.status(500).json({
       success: false,
       msg: "Failed to toggle favorite",

@@ -39,7 +39,7 @@ export const searchJobs = async (req, res) => {
             return cachedJobsResult.rows;
           }
         } catch (dbError) {
-          logError("Error checking cached jobs:", dbError);
+          logError(`Error checking cached jobs: ${dbError}`);
           // Fall back to real search if DB fails
         }
       }
@@ -66,7 +66,7 @@ export const searchJobs = async (req, res) => {
 
     res.status(200).json({ success: true, result: aggregatedJobs });
   } catch (error) {
-    logError("searchJobs error:", error);
+    logError(`searchJobs error: ${error}`);
     res.status(500).json({
       success: false,
       msg: "Unable to search for jobs, please try again later.",

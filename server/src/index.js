@@ -16,10 +16,9 @@ if (port == null) {
 async function cleanupDatabase() {
   const { error, connectedClient, endConnection } = await connectNeonDB();
   if (error) {
-    logError("DB connection error: " + error.message);
+    logError(`DB connection error: ${error.message}`);
     return;
   }
-
   try {
     await connectedClient.query("DELETE FROM jobs");
     await connectedClient.query("DELETE FROM search_words");
