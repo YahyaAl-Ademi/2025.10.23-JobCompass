@@ -20,8 +20,12 @@ async function cleanupDatabase() {
     return;
   }
   try {
-    await connectedClient.query("DELETE FROM jobs");
-    await connectedClient.query("DELETE FROM search_words");
+    await connectedClient.query(
+      "DELETE FROM jobs WHERE date_posted < NOW() - INTERVAL '1 month'",
+    );
+    await connectedClient.query(
+      "DELETE FROM search_words WHERE search_date < NOW() - INTERVAL '1 week'",
+    );
   } catch (error) {
     logError(`Unexpected error during database cleanup: ${error.message}`);
   } finally {
@@ -34,11 +38,11 @@ async function cleanupDatabase() {
 // 20 = 20th hour (8 PM in 24-hour format)
 // * = every day of month
 // * = every month
-// 6 = Saturday (0=Sunday... 6=Saturday)
+// 6 = Saturday (0=Sunday... 6=Saturday, * = every day of week)
 cron.schedule(
-  "0 0 * * 1",
+  "0 0 * * *",
   () => {
-    logInfo("Starting weekly database cleanup...");
+    logInfo("Starting daily database cleanup...");
     cleanupDatabase();
   },
   {
