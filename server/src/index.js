@@ -2,14 +2,51 @@
 // process.env at module-evaluation time receive the values.
 import "dotenv/config";
 import express from "express";
+import cron from "node-cron";
 
 import app from "./app.js";
 import { logInfo, logError } from "./util/logging.js";
+import connectNeonDB from "./db/connectNeonDB.js";
 
 const port = process.env.PORT;
 if (port == null) {
   logError(new Error("Cannot find a PORT number, did you create a .env file?"));
 }
+
+async function cleanupDatabase() {
+  const { error, connectedClient, endConnection } = await connectNeonDB();
+  if (error) {
+    logError("DB connection error: " + error.message);
+    return;
+  }
+
+  try {
+    await connectedClient.query("DELETE FROM jobs");
+    await connectedClient.query("DELETE FROM search_words");
+  } catch (error) {
+    logError(`Unexpected error during database cleanup: ${error.message}`);
+  } finally {
+    await endConnection();
+  }
+}
+
+// Schedule cleanup in format "33 20 * * 6", where:
+// 30 = 30th minute
+// 20 = 20th hour (8 PM in 24-hour format)
+// * = every day of month
+// * = every month
+// 6 = Saturday (0=Sunday... 6=Saturday)
+cron.schedule(
+  "0 0 * * 1",
+  () => {
+    logInfo("Starting weekly database cleanup...");
+    cleanupDatabase();
+  },
+  {
+    scheduled: true,
+    timezone: "UTC",
+  },
+);
 
 const startServer = async () => {
   try {
