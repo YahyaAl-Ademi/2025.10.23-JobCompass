@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS user_favorites (
 
 CREATE TABLE IF NOT EXISTS search_words (
     search_word text NOT NULL,
+    search_date timestamp without time zone,
     CONSTRAINT search_words_pkey PRIMARY KEY (search_word)
 );
 
