@@ -50,7 +50,6 @@ erDiagram
 
     search_words {
         text search_word PK "NOT NULL, CONSTRAINT search_words_pkey"
-        timestamp search_date "NOT NULL"
     }
 
     search_words_jobs {
