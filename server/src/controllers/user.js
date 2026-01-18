@@ -16,11 +16,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const USER_FULL_INFO_QUERY = `
   SELECT
-    u.user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
+    u.id, u.email, u.password, u.first_name, u.last_name, u.avatar,
     u.street, u.house_number, u.city, u.country, u.skills,
     uf.travel_time, uf.least_transfers,
     j.* FROM users u
-  LEFT JOIN user_favorites uf ON u.user_id = uf.user_id
+  LEFT JOIN user_favorites uf ON u.id = uf.user_id
   LEFT JOIN jobs j ON uf.job_id = j.id
 `;
 
@@ -46,7 +46,7 @@ export const createUser = async (req, res) => {
     }
 
     const checkEmail = await connectedClient.query(
-      "SELECT user_id FROM users WHERE email = $1",
+      "SELECT id FROM users WHERE email = $1",
       [user.email],
     );
     if (checkEmail.rows.length > 0) {
@@ -64,11 +64,11 @@ export const createUser = async (req, res) => {
 
     const result = await connectedClient.query(
       `INSERT INTO users (
-        user_id, first_name, last_name, email, password,
+        id, first_name, last_name, email, password,
         avatar, street, house_number, city, country, skills
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING user_id, email, first_name, last_name, avatar, street, house_number, city, country, skills`,
+      RETURNING id, email, first_name, last_name, avatar, street, house_number, city, country, skills`,
       [
         newUserId,
         user.first_name,
@@ -88,7 +88,7 @@ export const createUser = async (req, res) => {
     newUser.favorites = [];
     // Generate JWT (Access Token)
     const token = jwt.sign(
-      { user_id: newUser.user_id, email: newUser.email },
+      { id: newUser.id, email: newUser.email },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN },
     );
@@ -163,7 +163,7 @@ export const loginUser = async (req, res) => {
     const userDataRow = rows[0];
 
     const user = {
-      user_id: userDataRow.user_id,
+      id: userDataRow.id,
       email: userDataRow.email,
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
@@ -202,13 +202,9 @@ export const loginUser = async (req, res) => {
       }
     });
 
-    const token = jwt.sign(
-      { user_id: user.user_id, email: user.email },
-      JWT_SECRET,
-      {
-        expiresIn: JWT_EXPIRES_IN,
-      },
-    ); // Remove the hash before sending the user object in the response
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    }); // Remove the hash before sending the user object in the response
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -268,7 +264,7 @@ export const getMe = async (req, res) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const result = await connectedClient.query(
-      `${USER_FULL_INFO_QUERY} WHERE u.user_id = $1`,
+      `${USER_FULL_INFO_QUERY} WHERE u.id = $1`,
       [decoded.id],
     );
     if (result.rows.length === 0) return res.json({ success: false });
@@ -276,7 +272,7 @@ export const getMe = async (req, res) => {
     const userDataRow = rows[0];
 
     const user = {
-      user_id: userDataRow.user_id,
+      id: userDataRow.id,
       email: userDataRow.email,
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
@@ -322,7 +318,7 @@ export const getMe = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-  const user_id = req.user.user_id;
+  const user_id = req.user.id;
   const fields = req.body;
 
   try {
@@ -341,11 +337,11 @@ export const updateUserAvatar = async (req, res) => {
   try {
     const file = req.file;
     const imageUrl = await uploadImage(file);
-    const user_id = req.user.user_id;
+    const user_id = req.user.id;
     await connectedClient.query(
       `UPDATE users
       SET avatar = $1
-      WHERE user_id = $2 `,
+      WHERE id = $2 `,
       [imageUrl, user_id],
     );
 

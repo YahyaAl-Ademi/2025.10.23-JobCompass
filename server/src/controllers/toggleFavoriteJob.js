@@ -1,7 +1,7 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import { logError } from "../util/logging.js";
 export const toggleFavoriteJob = async (req, res) => {
-  const user_id = req.user?.user_id;
+  const user_id = req.user?.id;
   const { job } = req.body;
   const jobId = job?.id;
 

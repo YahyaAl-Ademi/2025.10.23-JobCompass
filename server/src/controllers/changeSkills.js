@@ -2,7 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { logError } from "../util/logging.js";
 
 export async function changeSkills(req, res) {
-  const user_id = req.user?.user_id;
+  const user_id = req.user?.id;
   const { skills } = req.body;
 
   if (!user_id)
@@ -30,7 +30,7 @@ export async function changeSkills(req, res) {
     const result = await connectedClient.query(
       `UPDATE users
       SET skills = $1
-      WHERE user_id = $2
+      WHERE id = $2
       RETURNING *`,
       [skills.join(","), user_id],
     );

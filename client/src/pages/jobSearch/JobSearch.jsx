@@ -26,7 +26,7 @@ export default function JobSearch() {
         </p>
       </div>
       <SearchInput />
-      {(!user || !user.user_id) && (
+      {(!user || !user.id) && (
         <div className="guest-notice">
           <img src={icons.info} alt="info" className="info-icon" />
           <span>

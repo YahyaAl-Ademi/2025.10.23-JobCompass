@@ -8,7 +8,7 @@ export default function DeleteProfilePopup({ setShowDeletePopup }) {
   const { user, dispatch, setMessage } = UseUser();
 
   const { isLoading, error, performFetch } = useFetch(
-    `/users/delete/${user.user_id}`,
+    `/users/delete/${user.id}`,
     (data) => {
       setMessage(data.msg || "Account deleted successfully!");
       setTimeout(() => {

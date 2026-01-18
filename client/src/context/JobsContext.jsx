@@ -14,7 +14,7 @@ const JobsProvider = ({ children }) => {
   useEffect(() => {
     setAllJobs([]);
     setTravelDetails({});
-  }, [user.user_id]);
+  }, [user.id]);
 
   function handleJobFetchResults(data) {
     setAllJobs(data.result);

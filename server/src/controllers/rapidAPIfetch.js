@@ -5,6 +5,7 @@ export async function rapidAPIfetch(
   connectedClient,
   searchWord,
   search_string,
+  is_auth = false,
   location = "Netherlands",
   limit = 5,
   maxIterations = 1,
@@ -58,5 +59,6 @@ export async function rapidAPIfetch(
     aggregated,
     searchWord,
     search_string,
+    is_auth,
   );
 }

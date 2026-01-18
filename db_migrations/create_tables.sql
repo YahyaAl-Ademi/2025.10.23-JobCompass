@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    user_id uuid NOT NULL,
+    id uuid NOT NULL,
     email character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
     first_name character varying(100),
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
     skills text,
     reset_token uuid,
     reset_token_expires timestamp without time zone,
-    CONSTRAINT users_pkey PRIMARY KEY (user_id)
+    CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS user_favorites (
@@ -39,12 +39,13 @@ CREATE TABLE IF NOT EXISTS user_favorites (
     least_transfers smallint,
     CONSTRAINT user_favorites_pkey PRIMARY KEY (user_id, job_id),
     CONSTRAINT user_favorites_job_id_fkey FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE,
-    CONSTRAINT user_favorites_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+    CONSTRAINT user_favorites_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS search_strings (
     search_string text NOT NULL,
     search_date timestamp without time zone,
+    is_auth boolean DEFAULT false,
     CONSTRAINT search_strings_pkey PRIMARY KEY (search_string)
 );
 

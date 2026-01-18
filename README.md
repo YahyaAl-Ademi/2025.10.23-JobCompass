@@ -83,7 +83,7 @@ c53-final-project-group-A/
 - `GET /api/users/me` – current user; `PUT /api/users/profile` – update profile fields.
 - `POST /api/users/update-avatar` – upload avatar (Multer memory storage → Firebase Storage).
 - `POST /api/users/change-password` / `/change-skills` – profile mutations.
-- `POST /api/users/favorites/toggle` – save/unsave a job; `DELETE /api/users/delete/:user_id` – delete account.
+- `POST /api/users/favorites/toggle` – save/unsave a job; `DELETE /api/users/delete/:id` – delete account.
 - `POST /api/users/forgot-password` / `/reset-password` – email reset flow.
 - `POST /api/jobs/search` – search jobs (RapidAPI LinkedIn + local processing).
 - `POST /api/travel/batch` – batch transit time + transfer counts for job locations.
@@ -128,7 +128,6 @@ c53-final-project-group-A/
    ```
 
    This will start both the client (Vite dev server) and server (Express with nodemon) concurrently.
-
    - Frontend: http://localhost:5173 (or the port Vite assigns)
    - Backend: http://localhost:3000 (or your configured PORT)
 
@@ -146,25 +145,25 @@ The project is configured for a professional CI/CD pipeline using **GitHub Actio
 ### 🔄 CI/CD Pipeline
 
 1.  **Continuous Integration (GitHub Actions)**: Every Pull Request triggers automated workflows:
-    -   `client-code-style-check`: Runs Prettier and Lint for the frontend.
-    -   `server-code-style-check`: Runs Prettier and Lint for the backend.
-    -   (Optional) Performance and unit tests are executed to ensure stability.
+    - `client-code-style-check`: Runs Prettier and Lint for the frontend.
+    - `server-code-style-check`: Runs Prettier and Lint for the backend.
+    - (Optional) Performance and unit tests are executed to ensure stability.
 2.  **Automated Deployment (Heroku)**:
-    -   **Review Apps**: Every PR automatically creates a temporary, isolated environment on Heroku. A link is provided in the PR for manual testing and QA.
-    -   **Production**: Merging to `main` (or `develop`) triggers an automatic deployment to the main Heroku application.
+    - **Review Apps**: Every PR automatically creates a temporary, isolated environment on Heroku. A link is provided in the PR for manual testing and QA.
+    - **Production**: Merging to `main` (or `develop`) triggers an automatic deployment to the main Heroku application.
 
 ### 🛠️ Build Scripts
 
 The deployment relies on the following scripts in the root `package.json`:
 
--   `heroku-postbuild`: Automatically runs during Heroku's build phase. It sets up dependencies and builds the client production bundle.
-    ```bash
-    npm run heroku-postbuild
-    ```
--   `start`: The production start command, as defined in the `Procfile`.
-    ```bash
-    npm start
-    ```
+- `heroku-postbuild`: Automatically runs during Heroku's build phase. It sets up dependencies and builds the client production bundle.
+  ```bash
+  npm run heroku-postbuild
+  ```
+- `start`: The production start command, as defined in the `Procfile`.
+  ```bash
+  npm start
+  ```
 
 ### 🚀 Manual Deployment (Alternative)
 

@@ -4,6 +4,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 
 export async function searchJobs(req, res) {
+  const is_auth = req?.user?.id;
   const {
     connectedClient,
     error: connectionError,
@@ -15,11 +16,6 @@ export async function searchJobs(req, res) {
       throw new Error(`DB Connection Error: ${connectionError}`);
     }
 
-    // Extract user.user_id from authenticated request
-    const user_id = req.user?.user_id;
-    if (!user_id) {
-      logError("searchJobs: Missing user_id in authenticated request");
-    }
     const { search_string } = req.body;
     const aggregatedJobsIdsSet = new Set();
     let aggregatedJobs = [];
@@ -57,12 +53,17 @@ export async function searchJobs(req, res) {
               setTimeout(
                 () =>
                   resolve(
-                    rapidAPIfetch(connectedClient, searchWord, search_string),
+                    rapidAPIfetch(
+                      connectedClient,
+                      searchWord,
+                      search_string,
+                      is_auth,
+                    ),
                   ),
                 (i - 1) * 700,
               ),
             )
-          : rapidAPIfetch(connectedClient, searchWord, search_string);
+          : rapidAPIfetch(connectedClient, searchWord, search_string, is_auth);
       });
 
       const fetchedJobsArrays = await Promise.all(fetchPromises);

@@ -49,7 +49,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
-    if (user.user_id) {
+    if (user.id) {
       performFetch({
         method: "POST",
         body: JSON.stringify({ job }),
@@ -62,7 +62,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
 
   const handleApplyClick = (e) => {
     e.stopPropagation();
-    if (user.user_id) {
+    if (user.id) {
       if (onApplyClick) {
         window.open(job.applyLink || job.url, "_blank");
       }

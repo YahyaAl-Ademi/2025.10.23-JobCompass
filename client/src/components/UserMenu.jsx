@@ -72,7 +72,7 @@ export default function UserMenu() {
           >
             About
           </NavLink>
-          {user.user_id ? (
+          {user.id ? (
             <NavLink
               to="/"
               className="user-item"

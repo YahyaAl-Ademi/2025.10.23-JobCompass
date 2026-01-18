@@ -43,7 +43,7 @@ userRouter.post("/logout", verifyToken, logoutUser); // LOGOUT
 userRouter.get("/me", verifyToken, getMe);
 userRouter.put("/profile", verifyToken, updateProfile);
 userRouter.post("/favorites/toggle", verifyToken, toggleFavoriteJob);
-userRouter.delete("/delete/:user_id", verifyToken, deleteUser);
+userRouter.delete("/delete/:id", verifyToken, deleteUser);
 userRouter.post("/change-password", verifyToken, changePassword);
 userRouter.post("/change-skills", verifyToken, changeSkills);
 userRouter.post("/forgot-password", forgotPassword);

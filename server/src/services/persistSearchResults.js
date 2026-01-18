@@ -6,19 +6,23 @@ export async function persistSearchResults(
   aggregated,
   searchWord,
   search_string,
+  is_auth = false,
 ) {
+  if (!is_auth) {
+    is_auth = true;
+  }
   const normalizedJobs = [];
 
   try {
     await connectedClient.query(
-      "INSERT INTO search_strings (search_string, search_date) VALUES ($1, NOW()) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW()",
-      [searchWord],
+      "INSERT INTO search_strings (search_string, search_date, is_auth) VALUES ($1, NOW(), $2) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW()",
+      [searchWord, is_auth],
     );
 
     if (search_string && search_string !== searchWord) {
       await connectedClient.query(
-        "INSERT INTO search_strings (search_string, search_date) VALUES ($1, NOW()) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW()",
-        [search_string],
+        "INSERT INTO search_strings (search_string, search_date, is_auth) VALUES ($1, NOW(), $2) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW()",
+        [search_string, is_auth],
       );
     }
 

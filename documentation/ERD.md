@@ -10,7 +10,7 @@ erDiagram
     jobs ||--o{ search_strings_jobs : ""
 
     users {
-        uuid user_id PK "NOT NULL, CONSTRAINT users_pkey"
+        uuid id PK "NOT NULL, CONSTRAINT users_pkey"
         character_varying_255 email "NOT NULL"
         character_varying_255 password "NOT NULL"
         character_varying_100 first_name
