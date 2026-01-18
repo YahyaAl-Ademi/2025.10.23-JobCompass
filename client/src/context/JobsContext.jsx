@@ -8,7 +8,7 @@ const JobsProvider = ({ children }) => {
   const { user } = UseUser();
   const [allJobs, setAllJobs] = useState([]);
   const [travelDetails, setTravelDetails] = useState({});
-  const [searchTerm, setSearchTerm] = useState(""); //  global search term
+  const [searchString, setSearchString] = useState(""); //  global search term
 
   // Clear jobs when user logs in/out
   useEffect(() => {
@@ -105,8 +105,8 @@ const JobsProvider = ({ children }) => {
         jobFetchError,
         isTravelLoading,
         travelFetchError,
-        searchTerm,
-        setSearchTerm,
+        searchString,
+        setSearchString,
         performJobFetch,
         fetchBatchTravelDetails,
       }}

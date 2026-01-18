@@ -7,7 +7,7 @@ import "./SearchInput.css";
 import { cleanUpText } from "../../util/cleanUpText";
 
 export default function SearchInput() {
-  const { setSearchTerm, setAllJobs, performJobFetch } = UseJobs();
+  const { setSearchString, setAllJobs, performJobFetch } = UseJobs();
 
   const [alert, setAlert] = useState({ type: "", message: "" });
   const inputRef = useRef(null);
@@ -23,13 +23,13 @@ export default function SearchInput() {
 
     setAllJobs([]);
     setAlert({ type: "info", message: `Searching for "${inputValue}"...` });
-    setSearchTerm(inputValue);
+    setSearchString(inputValue);
     performJobFetch({
       method: "POST",
       body: JSON.stringify({ search_string: inputValue }),
     });
     navigate("/jobs");
-    // clear the visible input field while keeping `searchTerm` in context
+    // clear the visible input field while keeping `searchString` in context
     if (inputRef.current) inputRef.current.value = "";
   };
 
