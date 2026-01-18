@@ -18,12 +18,12 @@ export async function searchJobs(req, res) {
 
     // Check if search_string is cached
     const { connectedClient, endConnection } = await connectNeonDB();
-    const cachedJobsForSearchTerms = await getCachedJobsBySearchWords(
+    const cachedJobsPerSearchString = await getCachedJobsBySearchWords(
       connectedClient,
       search_string,
     );
-    if (cachedJobsForSearchTerms.length > 0) {
-      aggregatedJobs = cachedJobsForSearchTerms;
+    if (cachedJobsPerSearchString.length > 0) {
+      aggregatedJobs = cachedJobsPerSearchString;
     } else {
       const searchWords = search_string
         .split(new RegExp("[\\s\\-.'/]+"))
