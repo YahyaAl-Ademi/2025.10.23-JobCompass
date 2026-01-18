@@ -4,7 +4,7 @@ import processJobPost from "../util/processJobPost.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchWords } from "../services/getCachedJobsBySearchWords.js";
 
-export const searchJobs = async (req, res) => {
+export async function searchJobs(req, res) {
   try {
     const { search_terms } = req.body;
     const aggregatedJobsIdsSet = new Set();
@@ -16,11 +16,23 @@ export const searchJobs = async (req, res) => {
       });
     }
 
+    // Check if search_terms is cached
+    const { connectedClient, endConnection } = await connectNeonDB();
+    const cachedJobsForSearchTerms = await getCachedJobsBySearchWords(
+      connectedClient,
+      search_terms,
+    );
+    if (cachedJobsForSearchTerms.length > 0) {
+      return res
+        .status(200)
+        .json({ success: true, result: cachedJobsForSearchTerms });
+    }
+
+    // If search_terms is not cached, procee with splitting search terms into words
     const searchWords = search_terms
       .split(new RegExp("[\\s\\-.'/]+"))
       .filter(Boolean);
     // Fetch results for all search words concurrently
-    const { connectedClient, endConnection } = await connectNeonDB();
     const fetchPromises = searchWords.map(async (searchWord, i) => {
       // Try to get cached jobs first
       const cachedJobs = await getCachedJobsBySearchWords(
@@ -30,13 +42,15 @@ export const searchJobs = async (req, res) => {
       if (cachedJobs.length > 0) {
         return cachedJobs;
       }
-
       // If not cached or DB error, use real search
       return searchWords.length > 2 && i >= 2
         ? new Promise((resolve) =>
-            setTimeout(() => resolve(rapidAPIfetch(searchWord)), (i - 1) * 700),
+            setTimeout(
+              () => resolve(rapidAPIfetch(searchWord, search_terms)),
+              (i - 1) * 700,
+            ),
           )
-        : rapidAPIfetch(searchWord);
+        : rapidAPIfetch(searchWord, search_terms);
     });
 
     const fetchedJobsArrays = await Promise.all(fetchPromises);
@@ -59,4 +73,4 @@ export const searchJobs = async (req, res) => {
       msg: "Unable to search for jobs, please try again later.",
     });
   }
-};
+}

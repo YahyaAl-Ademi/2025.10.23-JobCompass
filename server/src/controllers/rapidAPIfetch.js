@@ -4,6 +4,7 @@ import processJobPost from "../util/processJobPost.js";
 
 export async function rapidAPIfetch(
   searchWord,
+  search_terms = null,
   location = "Netherlands",
   limit = 5,
   maxIterations = 1,
@@ -71,7 +72,15 @@ export async function rapidAPIfetch(
         [searchWord],
       );
 
-      // 2. Persist jobs and relationships
+      // 2. If search_terms is different from search_word, persist search_terms as well
+      if (search_terms && search_terms !== searchWord) {
+        await connectedClient.query(
+          "INSERT INTO search_words (search_word, search_date) VALUES ($1, NOW()) ON CONFLICT (search_word) DO UPDATE SET search_date = NOW()",
+          [search_terms],
+        );
+      }
+
+      // 3. Persist jobs and relationships
       for (const job of aggregated) {
         if (!job.id) continue;
 
@@ -109,11 +118,19 @@ export async function rapidAPIfetch(
             );
           }
 
-          // Persist relationship
+          // Persist relationship with search_word
           await connectedClient.query(
             "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
             [searchWord, job.id],
           );
+
+          // Persist relationship with search_terms if different
+          if (search_terms && search_terms !== searchWord) {
+            await connectedClient.query(
+              "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+              [search_terms, job.id],
+            );
+          }
         } catch (jobErr) {
           logError(`Error persisting job ${job.id}: ${jobErr}`);
         }
