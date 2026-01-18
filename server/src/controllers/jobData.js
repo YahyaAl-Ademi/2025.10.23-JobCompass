@@ -23,48 +23,46 @@ export async function searchJobs(req, res) {
       search_terms,
     );
     if (cachedJobsForSearchTerms.length > 0) {
-      return res
-        .status(200)
-        .json({ success: true, result: cachedJobsForSearchTerms });
-    }
+      aggregatedJobs = cachedJobsForSearchTerms;
+    } else {
+      const searchWords = search_terms
+        .split(new RegExp("[\\s\\-.'/]+"))
+        .filter(Boolean);
+      // Fetch results for all search words concurrently
+      const fetchPromises = searchWords.map(async (searchWord, i) => {
+        // Try to get cached jobs first
+        const cachedJobs = await getCachedJobsBySearchWords(
+          connectedClient,
+          searchWord,
+        );
+        if (cachedJobs.length > 0) {
+          return cachedJobs;
+        }
+        // If not cached or DB error, use real search
+        return searchWords.length > 2 && i >= 2
+          ? new Promise((resolve) =>
+              setTimeout(
+                () =>
+                  resolve(
+                    rapidAPIfetch(connectedClient, searchWord, search_terms),
+                  ),
+                (i - 1) * 700,
+              ),
+            )
+          : rapidAPIfetch(connectedClient, searchWord, search_terms);
+      });
 
-    // If search_terms is not cached, procee with splitting search terms into words
-    const searchWords = search_terms
-      .split(new RegExp("[\\s\\-.'/]+"))
-      .filter(Boolean);
-    // Fetch results for all search words concurrently
-    const fetchPromises = searchWords.map(async (searchWord, i) => {
-      // Try to get cached jobs first
-      const cachedJobs = await getCachedJobsBySearchWords(
-        connectedClient,
-        searchWord,
-      );
-      if (cachedJobs.length > 0) {
-        return cachedJobs;
-      }
-      // If not cached or DB error, use real search
-      return searchWords.length > 2 && i >= 2
-        ? new Promise((resolve) =>
-            setTimeout(
-              () => resolve(rapidAPIfetch(searchWord, search_terms)),
-              (i - 1) * 700,
-            ),
-          )
-        : rapidAPIfetch(searchWord, search_terms);
-    });
-
-    const fetchedJobsArrays = await Promise.all(fetchPromises);
-    if (endConnection) await endConnection();
-
-    for (const fetchedJobs of fetchedJobsArrays) {
-      for (const job of fetchedJobs) {
-        if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
-          aggregatedJobs.push(processJobPost(job));
-          aggregatedJobsIdsSet.add(job.id);
+      const fetchedJobsArrays = await Promise.all(fetchPromises);
+      for (const fetchedJobs of fetchedJobsArrays) {
+        for (const job of fetchedJobs) {
+          if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
+            aggregatedJobs.push(processJobPost(job));
+            aggregatedJobsIdsSet.add(job.id);
+          }
         }
       }
     }
-
+    if (endConnection) await endConnection();
     res.status(200).json({ success: true, result: aggregatedJobs });
   } catch (error) {
     logError(`searchJobs error: ${error}`);

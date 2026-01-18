@@ -1,8 +1,8 @@
 import { logError } from "../util/logging.js";
-import connectNeonDB from "../db/connectNeonDB.js";
 import processJobPost from "../util/processJobPost.js";
 
 export async function rapidAPIfetch(
+  connectedClient,
   searchWord,
   search_terms = null,
   location = "Netherlands",
@@ -53,94 +53,79 @@ export async function rapidAPIfetch(
     }
   });
 
-  // Background persistence
-  (async () => {
-    const {
-      connectedClient,
-      endConnection,
-      error: dbError,
-    } = await connectNeonDB();
-    if (dbError) {
-      logError(`Background persistence DB connection error: ${dbError}`);
-      return;
-    }
-
-    try {
-      // 1. Persist the search word
-      await connectedClient.query(
-        "INSERT INTO search_words (search_word, search_date) VALUES ($1, NOW()) ON CONFLICT (search_word) DO UPDATE SET search_date = NOW()",
-        [searchWord],
-      );
-
-      // 2. If search_terms is different from search_word, persist search_terms as well
-      if (search_terms && search_terms !== searchWord) {
+  // Background persistence uses provided DB connection
+  if (connectedClient) {
+    (async () => {
+      try {
         await connectedClient.query(
           "INSERT INTO search_words (search_word, search_date) VALUES ($1, NOW()) ON CONFLICT (search_word) DO UPDATE SET search_date = NOW()",
-          [search_terms],
+          [searchWord],
         );
-      }
 
-      // 3. Persist jobs and relationships
-      for (const job of aggregated) {
-        if (!job.id) continue;
-
-        try {
-          // Check if job exists
-          const checkJob = await connectedClient.query(
-            "SELECT 1 FROM jobs WHERE id = $1",
-            [job.id],
-          );
-
-          if (checkJob.rows.length === 0) {
-            // Save new job
-            const processedJob = processJobPost(job);
-            await connectedClient.query(
-              `INSERT INTO jobs (
-                id, date_posted, title, organization, organization_url,
-                employment_type, url, organization_logo, display_location,
-                work_mode, seniority, description_text, normalized_description
-              ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
-              [
-                processedJob.id,
-                processedJob.date_posted,
-                processedJob.title,
-                processedJob.organization,
-                processedJob.organization_url,
-                processedJob.employment_type,
-                processedJob.url,
-                processedJob.organization_logo,
-                processedJob.display_location,
-                processedJob.work_mode,
-                processedJob.seniority,
-                processedJob.description_text,
-                processedJob.normalized_description,
-              ],
-            );
-          }
-
-          // Persist relationship with search_word
+        if (search_terms && search_terms !== searchWord) {
           await connectedClient.query(
-            "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-            [searchWord, job.id],
+            "INSERT INTO search_words (search_word, search_date) VALUES ($1, NOW()) ON CONFLICT (search_word) DO UPDATE SET search_date = NOW()",
+            [search_terms],
           );
+        }
 
-          // Persist relationship with search_terms if different
-          if (search_terms && search_terms !== searchWord) {
+        for (const job of aggregated) {
+          if (!job.id) continue;
+
+          try {
+            const checkJob = await connectedClient.query(
+              "SELECT 1 FROM jobs WHERE id = $1",
+              [job.id],
+            );
+
+            if (checkJob.rows.length === 0) {
+              const processedJob = processJobPost(job);
+              await connectedClient.query(
+                `INSERT INTO jobs (
+                  id, date_posted, title, organization, organization_url,
+                  employment_type, url, organization_logo, display_location,
+                  work_mode, seniority, description_text, normalized_description
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+                [
+                  processedJob.id,
+                  processedJob.date_posted,
+                  processedJob.title,
+                  processedJob.organization,
+                  processedJob.organization_url,
+                  processedJob.employment_type,
+                  processedJob.url,
+                  processedJob.organization_logo,
+                  processedJob.display_location,
+                  processedJob.work_mode,
+                  processedJob.seniority,
+                  processedJob.description_text,
+                  processedJob.normalized_description,
+                ],
+              );
+            }
+
             await connectedClient.query(
               "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-              [search_terms, job.id],
+              [searchWord, job.id],
             );
+
+            if (search_terms && search_terms !== searchWord) {
+              await connectedClient.query(
+                "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+                [search_terms, job.id],
+              );
+            }
+          } catch (jobErr) {
+            logError(`Error persisting job ${job.id}: ${jobErr}`);
           }
-        } catch (jobErr) {
-          logError(`Error persisting job ${job.id}: ${jobErr}`);
         }
+      } catch (err) {
+        logError(`Background persistence overall error: ${err}`);
       }
-    } catch (err) {
-      logError(`Background persistence overall error: ${err}`);
-    } finally {
-      if (endConnection) await endConnection();
-    }
-  })();
+    })();
+  } else {
+    logError("Background persistence skipped: no connectedClient provided.");
+  }
 
   return aggregated;
 }
