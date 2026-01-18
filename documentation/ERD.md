@@ -6,8 +6,8 @@ This diagram illustrates the current database architecture for the JobCompass ap
 erDiagram
     users ||--o{ user_favorites : "saves"
     jobs ||--o{ user_favorites : "is saved by"
-    search_words ||--o{ search_words_jobs : ""
-    jobs ||--o{ search_words_jobs : ""
+    search_strings ||--o{ search_strings_jobs : ""
+    jobs ||--o{ search_strings_jobs : ""
 
     users {
         uuid user_id PK "NOT NULL, CONSTRAINT users_pkey"
@@ -48,13 +48,13 @@ erDiagram
         smallint least_transfers
     }
 
-    search_words {
-        text search_word PK "NOT NULL, CONSTRAINT search_words_pkey"
+    search_strings {
+        text search_string PK "NOT NULL, CONSTRAINT search_strings_pkey"
         timestamp search_date
     }
 
-    search_words_jobs {
-        text search_word PK,FK "NOT NULL, PK: search_words_jobs_pkey, FK: search_words_jobs_search_word_fkey, ON DELETE CASCADE"
-        text job_id PK,FK "NOT NULL, PK: search_words_jobs_pkey, FK: search_words_jobs_job_id_fkey, ON DELETE CASCADE"
+    search_strings_jobs {
+        text search_string PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_search_string_fkey, ON DELETE CASCADE"
+        text job_id PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_job_id_fkey, ON DELETE CASCADE"
     }
 ```

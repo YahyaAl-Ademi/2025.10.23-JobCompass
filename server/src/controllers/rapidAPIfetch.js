@@ -58,13 +58,13 @@ export async function rapidAPIfetch(
     (async () => {
       try {
         await connectedClient.query(
-          "INSERT INTO search_words (search_word, search_date) VALUES ($1, NOW()) ON CONFLICT (search_word) DO UPDATE SET search_date = NOW()",
+          "INSERT INTO search_strings (search_string, search_date) VALUES ($1, NOW()) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW()",
           [searchWord],
         );
 
         if (search_string && search_string !== searchWord) {
           await connectedClient.query(
-            "INSERT INTO search_words (search_word, search_date) VALUES ($1, NOW()) ON CONFLICT (search_word) DO UPDATE SET search_date = NOW()",
+            "INSERT INTO search_strings (search_string, search_date) VALUES ($1, NOW()) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW()",
             [search_string],
           );
         }
@@ -105,13 +105,13 @@ export async function rapidAPIfetch(
             }
 
             await connectedClient.query(
-              "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+              "INSERT INTO search_strings_jobs (search_string, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
               [searchWord, job.id],
             );
 
             if (search_string && search_string !== searchWord) {
               await connectedClient.query(
-                "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+                "INSERT INTO search_strings_jobs (search_string, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
                 [search_string, job.id],
               );
             }

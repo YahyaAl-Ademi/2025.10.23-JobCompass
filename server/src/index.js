@@ -24,7 +24,7 @@ async function cleanupDatabase() {
       "DELETE FROM jobs WHERE date_posted < NOW() - INTERVAL '1 month'",
     );
     await connectedClient.query(
-      "DELETE FROM search_words WHERE search_date < NOW() - INTERVAL '1 week'",
+      "DELETE FROM search_strings WHERE search_date < NOW() - INTERVAL '1 week'",
     );
   } catch (error) {
     logError(`Unexpected error during database cleanup: ${error.message}`);

@@ -17,7 +17,7 @@ export const getCachedJobsBySearchString = async (
     }
 
     const checkWordResult = await connectedClient.query(
-      "SELECT 1 FROM search_words WHERE search_word = $1",
+      "SELECT 1 FROM search_strings WHERE search_string = $1",
       [searchWord],
     );
 
@@ -25,8 +25,8 @@ export const getCachedJobsBySearchString = async (
       // Retrieve cached jobs
       const cachedJobsResult = await connectedClient.query(
         `SELECT j.* FROM jobs j
-         JOIN search_words_jobs swj ON j.id = swj.job_id
-         WHERE swj.search_word = $1`,
+         JOIN search_strings_jobs swj ON j.id = swj.job_id
+         WHERE swj.search_string = $1`,
         [searchWord],
       );
       return cachedJobsResult.rows;
