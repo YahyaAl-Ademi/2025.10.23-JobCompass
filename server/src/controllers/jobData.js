@@ -5,7 +5,16 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 
 export async function searchJobs(req, res) {
+  const {
+    connectedClient,
+    error: connectionError,
+    endConnection,
+  } = await connectNeonDB();
+
   try {
+    if (connectionError) {
+      throw new Error(`DB Connection Error: ${connectionError}`);
+    }
     const { search_string } = req.body;
     const aggregatedJobsIdsSet = new Set();
     let aggregatedJobs = [];
@@ -17,7 +26,6 @@ export async function searchJobs(req, res) {
     }
 
     // Check if search_string is cached
-    const { connectedClient, endConnection } = await connectNeonDB();
     const cachedJobsPerSearchString = await getCachedJobsBySearchString(
       connectedClient,
       search_string,
@@ -62,7 +70,6 @@ export async function searchJobs(req, res) {
         }
       }
     }
-    if (endConnection) await endConnection();
     res.status(200).json({ success: true, result: aggregatedJobs });
   } catch (error) {
     logError(`searchJobs error: ${error}`);
@@ -70,5 +77,7 @@ export async function searchJobs(req, res) {
       success: false,
       msg: "Unable to search for jobs, please try again later.",
     });
+  } finally {
+    if (endConnection) await endConnection();
   }
 }
