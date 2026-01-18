@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 // Assets & data
 import { icons, gif } from "../../assets";
-import { defaultUser } from "../../data/defaultUser";
 // Context, Components, styles
 import { UseUser } from "../../context/UserContext";
 import { UseJobs } from "../../context/JobsContext";
@@ -50,7 +49,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
-    if (user.email !== defaultUser.email) {
+    if (user.user_id) {
       performFetch({
         method: "POST",
         body: JSON.stringify({ job }),
@@ -63,7 +62,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
 
   const handleApplyClick = (e) => {
     e.stopPropagation();
-    if (user.email !== defaultUser.email) {
+    if (user.user_id) {
       if (onApplyClick) {
         window.open(job.applyLink || job.url, "_blank");
       }
