@@ -88,7 +88,7 @@ export const createUser = async (req, res) => {
     newUser.favorites = [];
     // Generate JWT (Access Token)
     const token = jwt.sign(
-      { id: newUser.user_id, email: newUser.email },
+      { user_id: newUser.user_id, email: newUser.email },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN },
     );
@@ -203,7 +203,7 @@ export const loginUser = async (req, res) => {
     });
 
     const token = jwt.sign(
-      { id: user.user_id, email: user.email },
+      { user_id: user.user_id, email: user.email },
       JWT_SECRET,
       {
         expiresIn: JWT_EXPIRES_IN,

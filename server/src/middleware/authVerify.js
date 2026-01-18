@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-
 const JWT_SECRET = process.env.JWT_SECRET;
 export const blacklistedTokens = [];
 
@@ -7,27 +6,33 @@ export const blacklistedTokens = [];
 // VERIFY TOKEN - Middleware
 // ========================
 export const verifyToken = (req, res, next) => {
+  let msg;
   try {
     const token = req.cookies?.token;
 
     if (!token) {
-      return res.status(401).json({ success: false, msg: "No token provided" });
-    }
+      msg = "No token provided";
+    } else {
+      // Verify the token's signature and expiration time
+      const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Verify the token's signature and expiration time
-    const decoded = jwt.verify(token, JWT_SECRET);
-
-    // Check if the token has been revoked/blacklisted
-    if (blacklistedTokens.includes(token)) {
-      return res
-        .status(401)
-        .json({ success: false, msg: "Token expired or logged out" });
+      if (blacklistedTokens.includes(token)) {
+        msg = "Token expired or logged out";
+      } else {
+        // Token is valid, continue to the next middleware/handler
+        req.user = decoded;
+        console.log("Token verified for user:", decoded.id);
+        return next();
+      }
     }
-    req.user = decoded;
-    next(); // Token is valid, continue to the next middleware/handler
   } catch (err) {
-    return res
-      .status(401)
-      .json({ success: false, msg: "Invalid or expired token" });
+    msg = "Invalid or expired token";
+  }
+
+  const route = req.originalUrl;
+  if (route.startsWith("/api/jobs/search")) {
+    return next();
+  } else {
+    return res.status(401).json({ success: false, msg });
   }
 };

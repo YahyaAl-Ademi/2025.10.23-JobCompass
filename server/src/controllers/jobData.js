@@ -16,7 +16,10 @@ export async function searchJobs(req, res) {
     }
 
     // Extract user.user_id from authenticated request
-    // const user_id = req.user?.user_id;
+    const user_id = req.user?.user_id;
+    if (!user_id) {
+      logError("searchJobs: Missing user_id in authenticated request");
+    }
     const { search_string } = req.body;
     const aggregatedJobsIdsSet = new Set();
     let aggregatedJobs = [];
