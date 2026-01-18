@@ -27,13 +27,6 @@ const JobsProvider = ({ children }) => {
     performFetch: performJobFetch,
   } = useFetch("/jobs/search", handleJobFetchResults);
 
-  async function fetchJobWordsBySearchWords(searchWords) {
-    performJobFetch({
-      method: "POST",
-      body: JSON.stringify({ search_terms: searchWords }),
-    });
-  }
-
   function getCitiesToFetch(jobsArray) {
     const uniqueCities = [
       ...new Set(
@@ -114,7 +107,7 @@ const JobsProvider = ({ children }) => {
         travelFetchError,
         searchTerm,
         setSearchTerm,
-        fetchJobWordsBySearchWords,
+        performJobFetch,
         fetchBatchTravelDetails,
       }}
     >

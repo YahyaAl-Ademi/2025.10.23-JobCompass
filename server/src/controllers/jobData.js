@@ -2,6 +2,7 @@ import { logError } from "../util/logging.js";
 import { rapidAPIfetch } from "./rapidAPIfetch.js";
 import processJobPost from "../util/processJobPost.js";
 import connectNeonDB from "../db/connectNeonDB.js";
+import { getCachedJobsBySearchWord } from "../services/databaseRetrieval.js";
 
 export const searchJobs = async (req, res) => {
   try {
@@ -21,27 +22,13 @@ export const searchJobs = async (req, res) => {
     // Fetch results for all search words concurrently
     const { connectedClient, endConnection } = await connectNeonDB();
     const fetchPromises = searchWords.map(async (jobWord, i) => {
-      if (connectedClient) {
-        try {
-          const checkWordResult = await connectedClient.query(
-            "SELECT 1 FROM search_words WHERE search_word = $1",
-            [jobWord],
-          );
-
-          if (checkWordResult.rows.length > 0) {
-            // Retrieve cached jobs
-            const cachedJobsResult = await connectedClient.query(
-              `SELECT j.* FROM jobs j
-               JOIN search_words_jobs swj ON j.id = swj.job_id
-               WHERE swj.search_word = $1`,
-              [jobWord],
-            );
-            return cachedJobsResult.rows;
-          }
-        } catch (dbError) {
-          logError(`Error checking cached jobs: ${dbError}`);
-          // Fall back to real search if DB fails
-        }
+      // Try to get cached jobs first
+      const cachedJobs = await getCachedJobsBySearchWord(
+        connectedClient,
+        jobWord,
+      );
+      if (cachedJobs.length > 0) {
+        return cachedJobs;
       }
 
       // If not cached or DB error, use real search
