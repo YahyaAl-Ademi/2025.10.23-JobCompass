@@ -14,6 +14,9 @@ export async function searchJobs(req, res) {
     if (connectionError) {
       throw new Error(`DB Connection Error: ${connectionError}`);
     }
+
+    // Extract user.user_id from authenticated request
+    // const user_id = req.user?.user_id;
     const { search_string } = req.body;
     const aggregatedJobsIdsSet = new Set();
     let aggregatedJobs = [];

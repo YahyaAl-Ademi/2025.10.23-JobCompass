@@ -322,7 +322,7 @@ export const getMe = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-  const user_id = req.user.id;
+  const user_id = req.user.user_id;
   const fields = req.body;
 
   try {
@@ -341,7 +341,7 @@ export const updateUserAvatar = async (req, res) => {
   try {
     const file = req.file;
     const imageUrl = await uploadImage(file);
-    const user_id = req.user.id;
+    const user_id = req.user.user_id;
     await connectedClient.query(
       `UPDATE users
       SET avatar = $1

@@ -5,7 +5,7 @@ import { logError } from "../util/logging.js";
 
 export async function changePassword(req, res) {
   const { currentPassword, newPassword } = req.body;
-  const user_id = req.user?.id;
+  const user_id = req.user?.user_id;
 
   if (!user_id || !currentPassword || !newPassword) {
     return res.status(400).json({ success: false, msg: "Missing fields" });

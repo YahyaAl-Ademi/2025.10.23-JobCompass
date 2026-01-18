@@ -2,7 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { logError } from "../util/logging.js";
 
 export async function changeSkills(req, res) {
-  const user_id = req.user?.id;
+  const user_id = req.user?.user_id;
   const { skills } = req.body;
 
   if (!user_id)

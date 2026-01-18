@@ -6,8 +6,8 @@ export const deleteUser = async (req, res) => {
   // ensuring the request is authenticated.
 
   // We strictly enforce "Self-Deletion" by using the user ID extracted
-  // from the token payload (req.user.id) as the target ID.
-  const targetUserId = req.user.id;
+  // from the token payload (req.user.user_id) as the target ID.
+  const targetUserId = req.user.user_id;
 
   // --- ID Validation Check ---
   if (!targetUserId) {
