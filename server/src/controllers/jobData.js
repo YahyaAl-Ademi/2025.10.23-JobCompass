@@ -2,7 +2,7 @@ import { logError } from "../util/logging.js";
 import { rapidAPIfetch } from "./rapidAPIfetch.js";
 import processJobPost from "../util/processJobPost.js";
 import connectNeonDB from "../db/connectNeonDB.js";
-import { getCachedJobsBySearchWords } from "../services/getCachedJobsBySearchWords.js";
+import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 
 export async function searchJobs(req, res) {
   try {
@@ -18,7 +18,7 @@ export async function searchJobs(req, res) {
 
     // Check if search_string is cached
     const { connectedClient, endConnection } = await connectNeonDB();
-    const cachedJobsPerSearchString = await getCachedJobsBySearchWords(
+    const cachedJobsPerSearchString = await getCachedJobsBySearchString(
       connectedClient,
       search_string,
     );
@@ -31,7 +31,7 @@ export async function searchJobs(req, res) {
       // Fetch results for all search words concurrently
       const fetchPromises = searchWords.map(async (searchWord, i) => {
         // Try to get cached jobs first
-        const cachedJobs = await getCachedJobsBySearchWords(
+        const cachedJobs = await getCachedJobsBySearchString(
           connectedClient,
           searchWord,
         );

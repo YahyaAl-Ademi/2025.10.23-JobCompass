@@ -6,7 +6,7 @@ import { logError } from "../util/logging.js";
  * @param {string} searchWord - The search word to look up
  * @returns {Promise<Array>} Array of job objects or empty array if not found
  */
-export const getCachedJobsBySearchWords = async (
+export const getCachedJobsBySearchString = async (
   connectedClient,
   searchWord,
 ) => {
