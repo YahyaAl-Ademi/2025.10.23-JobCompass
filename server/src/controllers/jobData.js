@@ -2,7 +2,7 @@ import { logError } from "../util/logging.js";
 import { rapidAPIfetch } from "./rapidAPIfetch.js";
 import processJobPost from "../util/processJobPost.js";
 import connectNeonDB from "../db/connectNeonDB.js";
-import { getCachedJobsBySearchWord } from "../services/databaseRetrieval.js";
+import { getCachedJobsBySearchWords } from "../services/getCachedJobsBySearchWords.js";
 
 export const searchJobs = async (req, res) => {
   try {
@@ -21,11 +21,11 @@ export const searchJobs = async (req, res) => {
       .filter(Boolean);
     // Fetch results for all search words concurrently
     const { connectedClient, endConnection } = await connectNeonDB();
-    const fetchPromises = searchWords.map(async (jobWord, i) => {
+    const fetchPromises = searchWords.map(async (searchWord, i) => {
       // Try to get cached jobs first
-      const cachedJobs = await getCachedJobsBySearchWord(
+      const cachedJobs = await getCachedJobsBySearchWords(
         connectedClient,
-        jobWord,
+        searchWord,
       );
       if (cachedJobs.length > 0) {
         return cachedJobs;
@@ -34,9 +34,9 @@ export const searchJobs = async (req, res) => {
       // If not cached or DB error, use real search
       return searchWords.length > 2 && i >= 2
         ? new Promise((resolve) =>
-            setTimeout(() => resolve(rapidAPIfetch(jobWord)), (i - 1) * 700),
+            setTimeout(() => resolve(rapidAPIfetch(searchWord)), (i - 1) * 700),
           )
-        : rapidAPIfetch(jobWord);
+        : rapidAPIfetch(searchWord);
     });
 
     const fetchedJobsArrays = await Promise.all(fetchPromises);

@@ -3,7 +3,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import processJobPost from "../util/processJobPost.js";
 
 export async function rapidAPIfetch(
-  jobWord,
+  searchWord,
   location = "Netherlands",
   limit = 5,
   maxIterations = 1,
@@ -25,7 +25,7 @@ export async function rapidAPIfetch(
 
   const fetchPromises = offsets.map((offset) => {
     const url = `https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d?limit=${limit}&offset=${offset}&title_filter=${encodeURIComponent(
-      jobWord,
+      searchWord,
     )}&location_filter=${encodeURIComponent(location)}&description_type=text`;
 
     return fetch(url, options).then(async (apiResponse) => {
@@ -68,7 +68,7 @@ export async function rapidAPIfetch(
       // 1. Persist the search word
       await connectedClient.query(
         "INSERT INTO search_words (search_word, search_date) VALUES ($1, NOW()) ON CONFLICT (search_word) DO UPDATE SET search_date = NOW()",
-        [jobWord],
+        [searchWord],
       );
 
       // 2. Persist jobs and relationships
@@ -112,7 +112,7 @@ export async function rapidAPIfetch(
           // Persist relationship
           await connectedClient.query(
             "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-            [jobWord, job.id],
+            [searchWord, job.id],
           );
         } catch (jobErr) {
           logError(`Error persisting job ${job.id}: ${jobErr}`);
