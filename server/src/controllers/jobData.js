@@ -6,26 +6,26 @@ import { getCachedJobsBySearchWords } from "../services/getCachedJobsBySearchWor
 
 export async function searchJobs(req, res) {
   try {
-    const { search_terms } = req.body;
+    const { search_string } = req.body;
     const aggregatedJobsIdsSet = new Set();
     let aggregatedJobs = [];
-    if (typeof search_terms !== "string" || !search_terms.trim()) {
+    if (typeof search_string !== "string" || !search_string.trim()) {
       return res.status(400).json({
         success: false,
-        msg: "You need to provide 'search_terms' (non-empty string) in the request body.",
+        msg: "You need to provide 'search_string' (non-empty string) in the request body.",
       });
     }
 
-    // Check if search_terms is cached
+    // Check if search_string is cached
     const { connectedClient, endConnection } = await connectNeonDB();
     const cachedJobsForSearchTerms = await getCachedJobsBySearchWords(
       connectedClient,
-      search_terms,
+      search_string,
     );
     if (cachedJobsForSearchTerms.length > 0) {
       aggregatedJobs = cachedJobsForSearchTerms;
     } else {
-      const searchWords = search_terms
+      const searchWords = search_string
         .split(new RegExp("[\\s\\-.'/]+"))
         .filter(Boolean);
       // Fetch results for all search words concurrently
@@ -44,12 +44,12 @@ export async function searchJobs(req, res) {
               setTimeout(
                 () =>
                   resolve(
-                    rapidAPIfetch(connectedClient, searchWord, search_terms),
+                    rapidAPIfetch(connectedClient, searchWord, search_string),
                   ),
                 (i - 1) * 700,
               ),
             )
-          : rapidAPIfetch(connectedClient, searchWord, search_terms);
+          : rapidAPIfetch(connectedClient, searchWord, search_string);
       });
 
       const fetchedJobsArrays = await Promise.all(fetchPromises);

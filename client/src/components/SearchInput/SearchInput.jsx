@@ -26,7 +26,7 @@ export default function SearchInput() {
     setSearchTerm(inputValue);
     performJobFetch({
       method: "POST",
-      body: JSON.stringify({ search_terms: inputValue }),
+      body: JSON.stringify({ search_string: inputValue }),
     });
     navigate("/jobs");
     // clear the visible input field while keeping `searchTerm` in context

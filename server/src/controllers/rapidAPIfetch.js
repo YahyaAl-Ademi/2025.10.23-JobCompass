@@ -4,7 +4,7 @@ import processJobPost from "../util/processJobPost.js";
 export async function rapidAPIfetch(
   connectedClient,
   searchWord,
-  search_terms = null,
+  search_string = null,
   location = "Netherlands",
   limit = 5,
   maxIterations = 1,
@@ -62,10 +62,10 @@ export async function rapidAPIfetch(
           [searchWord],
         );
 
-        if (search_terms && search_terms !== searchWord) {
+        if (search_string && search_string !== searchWord) {
           await connectedClient.query(
             "INSERT INTO search_words (search_word, search_date) VALUES ($1, NOW()) ON CONFLICT (search_word) DO UPDATE SET search_date = NOW()",
-            [search_terms],
+            [search_string],
           );
         }
 
@@ -109,10 +109,10 @@ export async function rapidAPIfetch(
               [searchWord, job.id],
             );
 
-            if (search_terms && search_terms !== searchWord) {
+            if (search_string && search_string !== searchWord) {
               await connectedClient.query(
                 "INSERT INTO search_words_jobs (search_word, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-                [search_terms, job.id],
+                [search_string, job.id],
               );
             }
           } catch (jobErr) {
