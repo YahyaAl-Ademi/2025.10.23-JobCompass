@@ -53,12 +53,10 @@ export async function rapidAPIfetch(
     }
   });
 
-  const normalizedJobs = await persistSearchResults(
+  return await persistSearchResults(
     connectedClient,
     aggregated,
     searchWord,
     search_string,
   );
-
-  return normalizedJobs;
 }
