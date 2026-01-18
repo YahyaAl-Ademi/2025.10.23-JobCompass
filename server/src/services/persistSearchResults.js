@@ -7,6 +7,8 @@ export async function persistSearchResults(
   searchWord,
   search_string,
 ) {
+  const normalizedJobs = [];
+
   try {
     await connectedClient.query(
       "INSERT INTO search_strings (search_string, search_date) VALUES ($1, NOW()) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW()",
@@ -24,13 +26,15 @@ export async function persistSearchResults(
       if (!job.id) continue;
 
       try {
+        const processedJob = processJobPost(job);
+        normalizedJobs.push(processedJob);
+
         const checkJob = await connectedClient.query(
           "SELECT 1 FROM jobs WHERE id = $1",
           [job.id],
         );
 
         if (checkJob.rows.length === 0) {
-          const processedJob = processJobPost(job);
           await connectedClient.query(
             `INSERT INTO jobs (
                   id, date_posted, title, organization, organization_url,
@@ -73,4 +77,6 @@ export async function persistSearchResults(
   } catch (err) {
     logError(`Background persistence overall error: ${err}`);
   }
+
+  return normalizedJobs;
 }

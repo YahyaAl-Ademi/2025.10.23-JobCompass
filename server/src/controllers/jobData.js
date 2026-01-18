@@ -1,6 +1,5 @@
 import { logError } from "../util/logging.js";
 import { rapidAPIfetch } from "./rapidAPIfetch.js";
-import processJobPost from "../util/processJobPost.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 
@@ -64,7 +63,7 @@ export async function searchJobs(req, res) {
       for (const fetchedJobs of fetchedJobsArrays) {
         for (const job of fetchedJobs) {
           if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
-            aggregatedJobs.push(processJobPost(job));
+            aggregatedJobs.push(job);
             aggregatedJobsIdsSet.add(job.id);
           }
         }
