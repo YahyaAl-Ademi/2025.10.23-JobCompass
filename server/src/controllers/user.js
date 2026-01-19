@@ -16,10 +16,13 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const USER_FULL_INFO_QUERY = `
   SELECT
-    u.id, u.email, u.password, u.first_name, u.last_name, u.avatar,
+    u.id AS user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
     u.street, u.house_number, u.city, u.country, u.skills,
     uf.travel_time, uf.least_transfers,
-    j.* FROM users u
+    j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
+    j.employment_type, j.url, j.organization_logo, j.display_location,
+    j.work_mode, j.seniority, j.description_text, j.normalized_description
+  FROM users u
   LEFT JOIN user_favorites uf ON u.id = uf.user_id
   LEFT JOIN jobs j ON uf.job_id = j.id
 `;
@@ -163,7 +166,7 @@ export const loginUser = async (req, res) => {
     const userDataRow = rows[0];
 
     const user = {
-      id: userDataRow.id,
+      id: userDataRow.user_id,
       email: userDataRow.email,
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
@@ -180,9 +183,9 @@ export const loginUser = async (req, res) => {
     };
 
     rows.forEach((row) => {
-      if (row.id) {
+      if (row.job_id) {
         const jobFavorite = {
-          id: row.id,
+          id: row.job_id,
           date_posted: row.date_posted,
           title: row.title,
           organization: row.organization,
@@ -274,7 +277,7 @@ export const getMe = async (req, res) => {
     const userDataRow = rows[0];
 
     const user = {
-      id: userDataRow.id,
+      id: userDataRow.user_id,
       email: userDataRow.email,
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
@@ -289,9 +292,9 @@ export const getMe = async (req, res) => {
       favorites: [],
     };
     rows.forEach((row) => {
-      if (row.id) {
+      if (row.job_id) {
         const jobFavorite = {
-          id: row.id,
+          id: row.job_id,
           date_posted: row.date_posted,
           title: row.title,
           organization: row.organization,
