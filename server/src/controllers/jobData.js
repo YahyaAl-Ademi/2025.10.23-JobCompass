@@ -21,6 +21,7 @@ export async function searchJobs(req, res) {
     const aggregatedJobsIdsSet = new Set();
     let aggregatedJobs = [];
     if (typeof search_string !== "string" || !search_string.trim()) {
+      if (endConnection) await endConnection();
       return res.status(400).json({
         success: false,
         msg: "You need to provide 'search_string' (non-empty string) in the request body.",
