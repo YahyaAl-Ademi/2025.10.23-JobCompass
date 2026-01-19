@@ -39,12 +39,15 @@ export async function persistSearchResults(
 
         // Collect search_strings_jobs relationships
         searchStringJobsToInsert.push({
+          searchString: searchWord,
           jobId: job.id,
         });
-        searchStringJobsToInsert.push({
-          searchString: search_string,
-          jobId: job.id,
-        });
+        if (search_string && search_string !== searchWord) {
+          searchStringJobsToInsert.push({
+            searchString: search_string,
+            jobId: job.id,
+          });
+        }
       } catch (jobErr) {
         logError(`Error processing job ${job.id}: ${jobErr}`);
       }
