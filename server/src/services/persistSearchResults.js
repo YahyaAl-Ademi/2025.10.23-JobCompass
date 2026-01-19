@@ -9,7 +9,6 @@ export async function persistSearchResults(
   is_auth = null,
 ) {
   const jobsToInsert = [];
-  const jobsToInsert = [];
   const searchStringJobsToInsert = [];
 
   await connectedClient.query("BEGIN");
