@@ -47,11 +47,14 @@ Connect talented professionals with opportunities that match their skills, prefe
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 - **Concurrently** - Run multiple commands
+- **express-rate-limit** - API rate limiting
+- **Jest** - Testing framework
+- **Multer** - File upload handling
 
 ## 📁 Project Structure
 
 ```
-c53-final-project-group-A/
+2025.10.23-JobCompass/
 ├── client/                 # React frontend application
 │   ├── src/
 │   │   ├── components/    # Reusable React components
@@ -79,13 +82,16 @@ c53-final-project-group-A/
 
 ## Backend Routes Overview
 
-- `POST /api/users` – sign up; `POST /api/users/login` / `/logout` – auth via HTTP-only cookie.
-- `GET /api/users/me` – current user; `PUT /api/users/profile` – update profile fields.
-- `POST /api/users/update-avatar` – upload avatar (Multer memory storage → Firebase Storage).
+- `POST /api/users` – sign up;
+- `POST /api/users/login` / `/logout` – auth via HTTP-only cookie.
+- `GET /api/users/me` – current user;
+- `PUT /api/users/profile` – update profile fields.
+- `POST /api/users/update-avatar` – upload avatar (Multer memory storage → Firebase Storage, 6MB limit, JPEG/PNG/GIF/WebP only).
 - `POST /api/users/change-password` / `/change-skills` – profile mutations.
-- `POST /api/users/favorites/toggle` – save/unsave a job; `DELETE /api/users/delete/:id` – delete account.
+- `POST /api/users/favorites/toggle` – save/unsave a job;
+- `DELETE /api/users/delete` – delete account.
 - `POST /api/users/forgot-password` / `/reset-password` – email reset flow.
-- `POST /api/jobs/search` – search jobs (RapidAPI LinkedIn + local processing).
+- `POST /api/jobs/search` – search jobs (RapidAPI LinkedIn + local processing, requires authentication).
 - `POST /api/travel/batch` – batch transit time + transfer counts for job locations.
 
 ## 🚀 Getting Started
@@ -105,8 +111,8 @@ c53-final-project-group-A/
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/HackYourFuture/c53-final-project-group-A.git
-   cd c53-final-project-group-A
+   git clone https://github.com/YaroslavKazeev/2025.10.23-JobCompass.git
+   cd 2025.10.23-JobCompass
    ```
 
 2. **Install dependencies**
@@ -130,6 +136,19 @@ c53-final-project-group-A/
    This will start both the client (Vite dev server) and server (Express with nodemon) concurrently.
    - Frontend: http://localhost:5173 (or the port Vite assigns)
    - Backend: http://localhost:3000 (or your configured PORT)
+
+## 📝 Development Environment
+
+### Recommended VS Code Extensions
+
+For the best experience with this project's documentation and codebase, we recommend installing these VS Code extensions:
+
+- **Markdown All in One** - Enhanced Markdown editing, preview, and syntax highlighting
+- **Markdown Preview Mermaid Support** - Render Mermaid diagrams in Markdown preview
+- **Mermaid Markdown Syntax Highlighting** - Syntax highlighting for Mermaid diagram code blocks
+- **Mermaid Lens** - Interactive Mermaid diagram preview and editing
+
+These extensions will provide full access to the documentation features, including the Entity Relationship Diagram and other visual elements.
 
 ## 📜 Available Root Level Scripts
 
