@@ -51,6 +51,7 @@ erDiagram
     search_strings {
         text search_string PK "NOT NULL, CONSTRAINT search_strings_pkey"
         timestamp search_date
+        uuid is_auth
     }
 
     search_strings_jobs {

@@ -4,6 +4,7 @@ import { logError } from "../util/logging.js";
  * Retrieves cached jobs from the database for a given search word
  * @param {Object} connectedClient - Database client connection
  * @param {string} searchWord - The search word to look up
+ * @param {string|null} is_auth - Optional user identifier (uuid used as a boolean-ish flag for authenticated requests now, retained for future search analytics); leave null/undefined for anonymous lookups
  * @returns {Promise<Array>} Array of job objects or empty array if not found
  */
 export const getCachedJobsBySearchString = async (
