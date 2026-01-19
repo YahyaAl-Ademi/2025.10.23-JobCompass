@@ -7,13 +7,18 @@ export async function rapidAPIfetch(
   search_string,
   is_auth = false,
   location = "Netherlands",
-  limit = 5,
-  maxIterations = 1,
-  initialOffset = 0,
 ) {
   const aggregated = [];
-
   const offsets = [];
+  let initialOffset = 0;
+
+  let limit = 5;
+  let maxIterations = 1;
+  if (is_auth) {
+    limit = 25;
+    maxIterations = 4;
+  }
+
   for (let i = 0; i < maxIterations; i++) {
     offsets.push(initialOffset + i * limit);
   }
