@@ -21,7 +21,6 @@ export const verifyToken = (req, res, next) => {
       } else {
         // Token is valid, continue to the next middleware/handler
         req.user = decoded;
-        console.log("Token verified for user:", decoded.id);
         return next();
       }
     }
@@ -31,6 +30,10 @@ export const verifyToken = (req, res, next) => {
 
   const route = req.originalUrl;
   if (route.startsWith("/api/jobs/search")) {
+    // Job search is accessible to both authenticated and unauthenticated users.
+    // Set req.user to null for unauthenticated requests so downstream code
+    // can explicitly handle guest access.
+    req.user = null;
     return next();
   } else {
     return res.status(401).json({ success: false, msg });
