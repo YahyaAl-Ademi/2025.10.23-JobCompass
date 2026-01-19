@@ -4,7 +4,8 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 
 export async function searchJobs(req, res) {
-  const is_auth = req?.user?.id;
+  let is_auth = req?.user?.id || null;
+
   const {
     connectedClient,
     error: connectionError,

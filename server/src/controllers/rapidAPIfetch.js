@@ -5,7 +5,7 @@ export async function rapidAPIfetch(
   connectedClient,
   searchWord,
   search_string,
-  is_auth = false,
+  is_auth,
   location = "Netherlands",
 ) {
   const aggregated = [];

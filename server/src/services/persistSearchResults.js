@@ -6,11 +6,8 @@ export async function persistSearchResults(
   aggregated,
   searchWord,
   search_string,
-  is_auth = false,
+  is_auth = null,
 ) {
-  if (!is_auth) {
-    is_auth = true;
-  }
   const normalizedJobs = [];
 
   try {
