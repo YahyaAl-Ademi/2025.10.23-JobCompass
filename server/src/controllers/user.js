@@ -251,7 +251,7 @@ export const logoutUser = async (req, res) => {
 
 export const getMe = async (req, res) => {
   const token = req.cookies?.token;
-  if (!token) return res.json({ success: false });
+  if (!token) return res.json({ success: false, msg: "No token provided" });
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
@@ -267,7 +267,9 @@ export const getMe = async (req, res) => {
       `${USER_FULL_INFO_QUERY} WHERE u.id = $1`,
       [decoded.id],
     );
-    if (result.rows.length === 0) return res.json({ success: false });
+    if (result.rows.length === 0) {
+      return res.json({ success: false, msg: "User not found" });
+    }
     const rows = result.rows;
     const userDataRow = rows[0];
 
@@ -311,7 +313,13 @@ export const getMe = async (req, res) => {
 
     res.json({ success: true, user: user });
   } catch (err) {
-    res.json({ success: false });
+    // JWT verification errors (expired, invalid token, etc.)
+    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
+      return res.json({ success: false, msg: "Invalid or expired token" });
+    }
+    // Other errors
+    logError(err, "Error in getMe");
+    return res.json({ success: false, msg: "Failed to fetch user data" });
   } finally {
     if (endConnection) await endConnection();
   }

@@ -75,7 +75,7 @@ export default function SkillsSettings() {
 
   // -------------------- ADD SKILL --------------------
   async function addSkill() {
-    if (!user?.user_id) {
+    if (!user?.id) {
       setShowSavePopup(true);
       return;
     }
@@ -112,7 +112,7 @@ export default function SkillsSettings() {
 
   // -------------------- REMOVE SKILL --------------------
   async function removeSkill(skill) {
-    if (!user?.user_id) {
+    if (!user?.id) {
       setShowSavePopup(true);
       return;
     }
@@ -128,7 +128,7 @@ export default function SkillsSettings() {
   }
   // -------------------- REMOVE ALL SKILLS --------------------
   async function removeAllSkills() {
-    if (!user?.user_id) {
+    if (!user?.id) {
       setShowSavePopup(true);
       return;
     }
