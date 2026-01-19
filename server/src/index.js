@@ -33,12 +33,12 @@ async function cleanupDatabase() {
   }
 }
 
-// Schedule cleanup in format "33 20 * * 6", where:
-// 30 = 30th minute
-// 20 = 20th hour (8 PM in 24-hour format)
+// Schedule cleanup in format "12 23 * * 4", where:
+// 12 = 12th minute
+// 23 = 23rd hour (11 PM in 24-hour format)
 // * = every day of month
 // * = every month
-// 6 = Saturday (0=Sunday... 6=Saturday, * = every day of week)
+// 4 = Thursday (0=Sunday... 6=Saturday, * = every day of week)
 cron.schedule(
   "0 0 * * *",
   () => {
