@@ -10,7 +10,9 @@ export async function persistSearchResults(
 ) {
   const normalizedJobs = [];
 
+  await connectedClient.query("BEGIN");
   try {
+    // Insert search strings
     await connectedClient.query(
       "INSERT INTO search_strings (search_string, search_date, is_auth) VALUES ($1, NOW(), $2) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW(), is_auth = $2",
       [searchWord, is_auth],
@@ -23,60 +25,92 @@ export async function persistSearchResults(
       );
     }
 
+    // Process all jobs and collect data for batch operations
+    const jobsToInsert = [];
+    const searchStringJobsToInsert = [];
+
     for (const job of aggregated) {
       if (!job.id) continue;
 
       try {
         const processedJob = processJobPost(job);
         normalizedJobs.push(processedJob);
+        jobsToInsert.push(processedJob);
 
-        const checkJob = await connectedClient.query(
-          "SELECT 1 FROM jobs WHERE id = $1",
-          [job.id],
-        );
-
-        if (checkJob.rows.length === 0) {
-          await connectedClient.query(
-            `INSERT INTO jobs (
-                  id, date_posted, title, organization, organization_url,
-                  employment_type, url, organization_logo, display_location,
-                  work_mode, seniority, description_text, normalized_description
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
-            [
-              processedJob.id,
-              processedJob.date_posted,
-              processedJob.title,
-              processedJob.organization,
-              processedJob.organization_url,
-              processedJob.employment_type,
-              processedJob.url,
-              processedJob.organization_logo,
-              processedJob.display_location,
-              processedJob.work_mode,
-              processedJob.seniority,
-              processedJob.description_text,
-              processedJob.normalized_description,
-            ],
-          );
-        }
-
-        await connectedClient.query(
-          "INSERT INTO search_strings_jobs (search_string, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-          [searchWord, job.id],
-        );
-
-        if (search_string && search_string !== searchWord) {
-          await connectedClient.query(
-            "INSERT INTO search_strings_jobs (search_string, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-            [search_string, job.id],
-          );
-        }
+        // Collect search_strings_jobs relationships
+        searchStringJobsToInsert.push({
+          jobId: job.id,
+        });
+        searchStringJobsToInsert.push({
+          searchString: search_string,
+          jobId: job.id,
+        });
       } catch (jobErr) {
-        logError(`Error persisting job ${job.id}: ${jobErr}`);
+        logError(`Error processing job ${job.id}: ${jobErr}`);
       }
     }
-  } catch (err) {
-    logError(`Background persistence overall error: ${err}`);
+
+    // Batch insert all jobs with ON CONFLICT handling
+    if (jobsToInsert.length > 0) {
+      const placeholders = jobsToInsert
+        .map((_, i) => {
+          const offset = i * 13;
+          return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${offset + 8}, $${offset + 9}, $${offset + 10}, $${offset + 11}, $${offset + 12}, $${offset + 13})`;
+        })
+        .join(", ");
+
+      const values = jobsToInsert.flatMap((job) => [
+        job.id,
+        job.date_posted,
+        job.title,
+        job.organization,
+        job.organization_url,
+        job.employment_type,
+        job.url,
+        job.organization_logo,
+        job.display_location,
+        job.work_mode,
+        job.seniority,
+        job.description_text,
+        job.normalized_description,
+      ]);
+
+      const insertJobsQuery = `
+        INSERT INTO jobs (
+          id, date_posted, title, organization, organization_url,
+          employment_type, url, organization_logo, display_location,
+          work_mode, seniority, description_text, normalized_description
+        ) VALUES ${placeholders}
+        ON CONFLICT (id) DO NOTHING
+      `;
+
+      await connectedClient.query(insertJobsQuery, values);
+    }
+
+    // Batch insert all search_strings_jobs relationships
+
+    if (searchStringJobsToInsert.length > 0) {
+      const placeholders = searchStringJobsToInsert
+        .map((_, i) => `($${i * 2 + 1}, $${i * 2 + 2})`)
+        .join(", ");
+
+      const values = searchStringJobsToInsert.flatMap((rel) => [
+        rel.searchString,
+        rel.jobId,
+      ]);
+
+      const insertRelationsQuery = `
+        INSERT INTO search_strings_jobs (search_string, job_id) VALUES ${placeholders}
+        ON CONFLICT DO NOTHING
+      `;
+
+      await connectedClient.query(insertRelationsQuery, values);
+    }
+
+    await connectedClient.query("COMMIT");
+  } catch (error) {
+    await connectedClient.query("ROLLBACK");
+    logError(`Transaction error: ${error}`);
   }
 
   return normalizedJobs;
