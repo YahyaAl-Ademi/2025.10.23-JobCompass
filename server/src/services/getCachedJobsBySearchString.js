@@ -9,6 +9,7 @@ import { logError } from "../util/logging.js";
 export const getCachedJobsBySearchString = async (
   connectedClient,
   searchWord,
+  is_auth,
 ) => {
   try {
     if (!connectedClient) {
@@ -17,17 +18,20 @@ export const getCachedJobsBySearchString = async (
     }
 
     const checkWordResult = await connectedClient.query(
-      "SELECT 1 FROM search_strings WHERE search_string = $1",
-      [searchWord],
+      "SELECT 1 FROM search_strings WHERE search_string = $1 AND ($2 IS NULL OR is_auth IS NOT NULL)",
+      [searchWord, is_auth],
     );
-
+    console.log(
+      `Found ${checkWordResult.rows.length} cached jobs for "${searchWord}" with is_auth=${is_auth}`,
+    );
     if (checkWordResult.rows.length > 0) {
       // Retrieve cached jobs
       const cachedJobsResult = await connectedClient.query(
         `SELECT j.* FROM jobs j
          JOIN search_strings_jobs swj ON j.id = swj.job_id
-         WHERE swj.search_string = $1`,
-        [searchWord],
+         JOIN search_strings ss ON swj.search_string = ss.search_string
+         WHERE swj.search_string = $1 AND ($2 IS NULL OR ss.is_auth IS NOT NULL)`,
+        [searchWord, is_auth],
       );
       return cachedJobsResult.rows;
     }

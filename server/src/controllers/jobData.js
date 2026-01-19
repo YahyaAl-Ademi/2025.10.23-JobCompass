@@ -30,6 +30,7 @@ export async function searchJobs(req, res) {
     const cachedJobsPerSearchString = await getCachedJobsBySearchString(
       connectedClient,
       search_string,
+      is_auth,
     );
     if (cachedJobsPerSearchString.length > 0) {
       aggregatedJobs = cachedJobsPerSearchString;
@@ -43,6 +44,7 @@ export async function searchJobs(req, res) {
         const cachedJobs = await getCachedJobsBySearchString(
           connectedClient,
           searchWord,
+          is_auth,
         );
         if (cachedJobs.length > 0) {
           return cachedJobs;
