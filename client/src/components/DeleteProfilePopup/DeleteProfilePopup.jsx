@@ -5,10 +5,10 @@ import useFetch from "../../hooks/useFetch";
 import { gif } from "../../assets";
 
 export default function DeleteProfilePopup({ setShowDeletePopup }) {
-  const { user, dispatch, setMessage } = UseUser();
+  const { dispatch, setMessage } = UseUser();
 
   const { isLoading, error, performFetch } = useFetch(
-    `/users/delete/${user.id}`,
+    `/users/delete/`,
     (data) => {
       setMessage(data.msg || "Account deleted successfully!");
       setTimeout(() => {
