@@ -8,7 +8,9 @@ export async function persistSearchResults(
   search_string,
   is_auth = null,
 ) {
-  const normalizedJobs = [];
+  const jobsToInsert = [];
+  const jobsToInsert = [];
+  const searchStringJobsToInsert = [];
 
   await connectedClient.query("BEGIN");
   try {
@@ -26,16 +28,11 @@ export async function persistSearchResults(
     }
 
     // Process all jobs and collect data for batch operations
-    const jobsToInsert = [];
-    const searchStringJobsToInsert = [];
-
     for (const job of aggregated) {
       if (!job.id) continue;
 
       try {
-        const processedJob = processJobPost(job);
-        normalizedJobs.push(processedJob);
-        jobsToInsert.push(processedJob);
+        jobsToInsert.push(processJobPost(job));
 
         // Collect search_strings_jobs relationships
         searchStringJobsToInsert.push({
@@ -116,5 +113,5 @@ export async function persistSearchResults(
     logError(`Transaction error: ${error}`);
   }
 
-  return normalizedJobs;
+  return jobsToInsert;
 }
