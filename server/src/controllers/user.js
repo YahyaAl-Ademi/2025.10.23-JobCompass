@@ -318,7 +318,7 @@ export const getMe = async (req, res) => {
       return res.json({ success: false, msg: "Invalid or expired token" });
     }
     // Other errors
-    logError(err, "Error in getMe");
+    logError(`Error in getMe: ${err}`);
     return res.json({ success: false, msg: "Failed to fetch user data" });
   } finally {
     if (endConnection) await endConnection();
