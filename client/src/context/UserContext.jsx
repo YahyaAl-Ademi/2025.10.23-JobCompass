@@ -23,22 +23,22 @@ function UserContextProvider({ children }) {
       const normalizedSkills = fixUserSkills(data.user.skills);
       const favoriteJobs = Array.isArray(data.user.favorites)
         ? data.user.favorites.map((job) => ({
-          id: job.id,
-          title: job.title,
-          organization: job.organization,
-          organization_url: job.organization_url,
-          employment_type: job.employment_type,
-          url: job.url,
-          organization_logo: job.organization_logo,
-          display_location: job.display_location,
-          work_mode: job.work_mode,
-          seniority: job.seniority,
-          description_text: job.description_text,
-          date_posted: job.date_posted,
-          travel_time: job.travel_time,
-          least_transfers: job.least_transfers,
-          normalized_description: job.normalized_description,
-        }))
+            id: job.id,
+            title: job.title,
+            organization: job.organization,
+            organization_url: job.organization_url,
+            employment_type: job.employment_type,
+            url: job.url,
+            organization_logo: job.organization_logo,
+            display_location: job.display_location,
+            work_mode: job.work_mode,
+            seniority: job.seniority,
+            description_text: job.description_text,
+            date_posted: job.date_posted,
+            travel_time: job.travel_time,
+            least_transfers: job.least_transfers,
+            normalized_description: job.normalized_description,
+          }))
         : [];
       dispatch({
         type: "LOGIN",
