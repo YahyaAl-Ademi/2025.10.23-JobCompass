@@ -1,85 +1,72 @@
 const apifyBase = "https://api.apify.com/v2";
-const DEFAULT_POLL_INTERVAL_MS = 3000;
-const pollIntervalMs = DEFAULT_POLL_INTERVAL_MS;
-const waitTimeoutMs = 7 * 60 * 1000;
+const pollIntervalMs = 3 * 1000;
+const waitTimeoutMs = 10 * 60 * 1000;
 const limit = 1000;
-import { logInfo } from "../util/logging.js";
+import { logInfo, logError } from "../util/logging.js";
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchJson(url, headers, fetchOptions = {}) {
-  const res = await fetch(url, { headers, ...fetchOptions });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    const err = new Error(
-      `Request failed ${res.status} ${res.statusText}: ${text}`,
-    );
-    err.status = res.status;
-    throw err;
-  }
-  return res.json();
-}
-
 export default async function linkedInScraperFetch(token, startUrl) {
   let items = [];
-  try {
-    const headers = {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    };
+  const headers = {
+    Accept: "application/json",
+    Authorization: `Bearer ${token}`,
+  };
 
+  try {
+    // Start scraper run
     const startRunsUrl = `${apifyBase}/acts/curious_coder~linkedin-jobs-scraper/runs`;
-    const body = JSON.stringify({
+    const requestBody = {
       urls: [startUrl],
       scrapeCompany: true,
       count: 100,
-    });
-
-    // Ensure Content-Type header is set and avoid accidentally overwriting headers
-    const postHeaders = Object.assign({}, headers, {
-      "Content-Type": "application/json",
-    });
-    const startResp = await fetchJson(startRunsUrl, headers, {
+    };
+    const startResponse = await fetch(startRunsUrl, {
       method: "POST",
-      body,
-      headers: postHeaders,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(requestBody),
     });
-    const runId = startResp.id || startResp.runId || startResp.data?.id;
+    if (!startResponse.ok) throw new Error("Failed to start LinkedIn scraper");
+    const startResp = await startResponse.json();
+
+    const runId = startResp?.data?.id;
     if (!runId) {
       throw new Error("Unable to determine run id from start response");
     }
-
     const runUrl = `${apifyBase}/acts/curious_coder~linkedin-jobs-scraper/runs/${encodeURIComponent(
       runId,
     )}`;
 
-    // Request poll for completion
+    // Polling requests for completion
     const endStates = new Set(["SUCCEEDED", "FAILED", "ABORTED"]);
     const startTime = Date.now();
-    let run = null;
+    let run;
     let polling = true;
     while (polling) {
-      const current = await fetchJson(runUrl, headers);
-      const status = current?.data?.status;
+      const response = await fetch(runUrl, { headers });
+      if (!response.ok) throw new Error("Failed to fetch run status");
+      run = await response.json();
+      const status = run?.data?.status;
       logInfo(`Run ${runId} status: ${status}`);
       if (endStates.has(status)) {
-        run = current;
         polling = false;
-      } else if (waitTimeoutMs && Date.now() - startTime > waitTimeoutMs) {
-        throw new Error(`Timeout waiting for run ${runId} to finish`);
+      } else if (Date.now() - startTime > waitTimeoutMs) {
+        throw new Error(
+          `Timeout waiting for run ${runId} to finish is expired`,
+        );
       } else {
         await sleep(pollIntervalMs);
       }
     }
 
     if (run.data.status !== "SUCCEEDED") {
-      const err = new Error(
-        `Apify run finished with status ${run.data.status}`,
-      );
-      err.run = run;
-      throw err;
+      throw new Error(`Apify run finished with status ${run.data.status}`);
     }
 
     let offset = 0;
@@ -88,7 +75,9 @@ export default async function linkedInScraperFetch(token, startUrl) {
       const dsUrl = `${apifyBase}/actor-runs/${encodeURIComponent(
         runId,
       )}/dataset/items?format=json&offset=${offset}&limit=${limit}`;
-      const batch = await fetchJson(dsUrl, headers);
+      const response = await fetch(dsUrl, { headers });
+      if (!response.ok) throw new Error("Failed to fetch dataset items");
+      const batch = await response.json();
       if (!Array.isArray(batch) || batch.length === 0) {
         fetching = false;
       } else {
@@ -101,7 +90,7 @@ export default async function linkedInScraperFetch(token, startUrl) {
       }
     }
   } catch (error) {
-    return { data: undefined, error };
+    logError(`linkedInScraperFetch error: ${error}`);
   }
-  return { data: items, error: undefined };
+  return items;
 }

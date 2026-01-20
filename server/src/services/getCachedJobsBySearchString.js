@@ -19,7 +19,7 @@ export const getCachedJobsBySearchString = async (
     }
 
     const checkWordResult = await connectedClient.query(
-      "SELECT 1 FROM search_strings WHERE search_string = $1 AND ($2 IS NULL OR is_auth IS NOT NULL)",
+      "SELECT 1 FROM search_strings WHERE search_string = $1 AND ($2::uuid IS NULL OR is_auth IS NOT NULL)",
       [searchWord, is_auth],
     );
     if (checkWordResult.rows.length > 0) {
@@ -28,7 +28,7 @@ export const getCachedJobsBySearchString = async (
         `SELECT j.* FROM jobs j
          JOIN search_strings_jobs swj ON j.id = swj.job_id
          JOIN search_strings ss ON swj.search_string = ss.search_string
-         WHERE swj.search_string = $1 AND ($2 IS NULL OR ss.is_auth IS NOT NULL)`,
+         WHERE swj.search_string = $1 AND ($2::uuid IS NULL OR ss.is_auth IS NOT NULL)`,
         [searchWord, is_auth],
       );
       return cachedJobsResult.rows;
