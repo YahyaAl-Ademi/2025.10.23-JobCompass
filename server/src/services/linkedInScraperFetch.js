@@ -3,7 +3,7 @@ const DEFAULT_POLL_INTERVAL_MS = 3000;
 const pollIntervalMs = DEFAULT_POLL_INTERVAL_MS;
 const waitTimeoutMs = 7 * 60 * 1000;
 const limit = 1000;
-import LogInfo from "../utils/logInfo.js";
+import { logInfo } from "../util/logging.js";
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -63,7 +63,7 @@ export default async function linkedInScraperFetch(token, startUrl) {
     while (polling) {
       const current = await fetchJson(runUrl, headers);
       const status = current?.data?.status;
-      LogInfo(`Run ${runId} status: ${status}`);
+      logInfo(`Run ${runId} status: ${status}`);
       if (endStates.has(status)) {
         run = current;
         polling = false;
