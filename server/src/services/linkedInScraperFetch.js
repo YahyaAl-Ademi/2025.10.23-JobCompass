@@ -6,13 +6,12 @@ if (!process.env.LINKEDIN_SCRAPER_KEY) {
   throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
 }
 
-export default async function linkedInScraperFetch(
-  connectedClient,
-  searchWords,
-  search_string,
-  is_auth,
-  location = "Netherlands",
-) {
+export default async function linkedInScraperFetch() {
+  // connectedClient,
+  // searchWords,
+  // search_string,
+  // is_auth,
+  // location = "Netherlands",
   const token = process.env.LINKEDIN_SCRAPER_KEY;
   const startUrl =
     "https://www.linkedin.com/jobs/search?keywords=web%20developer&location=Drenthe&geoId=100735123&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0";

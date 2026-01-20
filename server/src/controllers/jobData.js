@@ -3,6 +3,7 @@ import { rapidAPIfetch } from "../services/rapidAPIfetch.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
+import { persistJobSearch } from "../services/persistJobSearch.js";
 
 export async function searchJobs(req, res) {
   let is_auth = req?.user?.id || null;
@@ -41,6 +42,7 @@ export async function searchJobs(req, res) {
       if (cachedJobsPerSearchString.length > 0) {
         aggregatedJobs = cachedJobsPerSearchString;
       } else {
+        const jobsToPersist = [];
         const searchWords = search_string
           .split(new RegExp("[\\s\\-.'/]+"))
           .filter(Boolean);
@@ -53,13 +55,13 @@ export async function searchJobs(req, res) {
             is_auth,
           );
 
-          let result;
+          let fetchedJobs;
           if (cachedJobs.length > 0) {
-            result = cachedJobs;
+            fetchedJobs = cachedJobs;
           } else {
             // If not cached or DB error, use real search
             if (searchWords.length > 2 && i >= 2) {
-              result = new Promise((resolve) =>
+              fetchedJobs = new Promise((resolve) =>
                 setTimeout(
                   () =>
                     resolve(
@@ -73,21 +75,23 @@ export async function searchJobs(req, res) {
                   (i - 1) * 700,
                 ),
               );
+              jobsToPersist.push({ searchWord, search_string, fetchedJobs });
             } else {
-              result = rapidAPIfetch(
+              fetchedJobs = rapidAPIfetch(
                 connectedClient,
                 searchWord,
                 search_string,
                 is_auth,
               );
+              jobsToPersist.push({ searchWord, search_string, fetchedJobs });
             }
           }
-          return { searchWord, result };
+          return fetchedJobs;
         });
 
+        // Deduplicate jobs
         const fetchedJobsArrays = await Promise.all(fetchPromises);
-        for (const fetchedJobData of fetchedJobsArrays) {
-          const { result: fetchedJobs } = fetchedJobData;
+        for (const fetchedJobs of fetchedJobsArrays) {
           for (const job of fetchedJobs) {
             if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
               aggregatedJobs.push(job);
@@ -96,8 +100,28 @@ export async function searchJobs(req, res) {
           }
         }
 
-        (() => {
+        // Persist jobs and start LinkedIn scraper
+        (async () => {
           responseData.msg = "Some more jobs will be available in ten minutes.";
+          if (jobsToPersist.length > 0) {
+            await persistJobSearch(
+              connectedClient,
+              [...jobsToPersist],
+              jobsToPersist[0].search_string,
+              is_auth,
+            );
+            if (jobsToPersist.length > 1) {
+              for (const jobsData of jobsToPersist) {
+                const { searchWord, fetchedJobs } = jobsData;
+                await persistJobSearch(
+                  connectedClient,
+                  fetchedJobs,
+                  searchWord,
+                  is_auth,
+                );
+              }
+            }
+          }
           linkedInScraperFetch(
             connectedClient,
             searchWords[0],

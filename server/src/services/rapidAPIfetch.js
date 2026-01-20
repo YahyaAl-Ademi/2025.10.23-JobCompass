@@ -1,14 +1,12 @@
 import { logError } from "../util/logging.js";
-import { persistSearchResults } from "../services/persistSearchResults.js";
+import { processJobPost } from "../util/processJobPost.js";
 
 if (!process.env.X_RAPIDAPI_KEY) {
   throw new Error("X_RAPIDAPI_KEY environment variable is not set");
 }
 
 export async function rapidAPIfetch(
-  connectedClient,
   searchWord,
-  search_string,
   is_auth,
   location = "Netherlands",
 ) {
@@ -57,17 +55,11 @@ export async function rapidAPIfetch(
 
   results.forEach((apiResult) => {
     if (Array.isArray(apiResult)) {
-      aggregated.push(...apiResult);
+      aggregated.push(...apiResult.map((job) => processJobPost(job)));
     } else {
       logError(`Unexpected API response shape: ${JSON.stringify(apiResult)}`);
     }
   });
 
-  return await persistSearchResults(
-    connectedClient,
-    aggregated,
-    searchWord,
-    search_string,
-    is_auth,
-  );
+  return aggregated;
 }
