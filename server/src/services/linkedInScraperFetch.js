@@ -6,10 +6,6 @@ if (!process.env.LINKEDIN_SCRAPER_KEY) {
   throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
 }
 
-async function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export default async function linkedInScraperFetch() {
   const token = process.env.LINKEDIN_SCRAPER_KEY;
   const startUrl =
@@ -47,29 +43,27 @@ export default async function linkedInScraperFetch() {
     )}`;
 
     // Polling requests for completion
-    const endStates = new Set(["SUCCEEDED", "FAILED", "ABORTED"]);
     const startTime = Date.now();
-    let run;
-    let runStatus;
     let polling = true;
-    await sleep(pollIntervalMs);
+
     while (polling) {
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
       const response = await fetch(runUrl, { headers });
       if (!response.ok) throw new Error("Failed to fetch run status");
-      run = await response.json();
+      const run = await response.json();
       const runStatus = run?.data?.status;
       logInfo(`Run ${runId} status: ${runStatus}`);
-      if (endStates.has(runStatus)) {
-        polling = false;
-      } else if (Date.now() - startTime > waitTimeoutMs) {
-        throw new Error(`Timeout for run ${runId} to finish has ended`);
-      } else {
-        await sleep(pollIntervalMs);
+      switch (runStatus) {
+        case "SUCCEEDED":
+          polling = false;
+          break;
+        case "FAILED":
+        case "ABORTED":
+          throw new Error(`Apify run finished with status ${runStatus}`);
       }
-    }
-
-    if (runStatus !== "SUCCEEDED") {
-      throw new Error(`Apify run finished with status ${runStatus}`);
+      if (Date.now() - startTime > waitTimeoutMs) {
+        throw new Error(`Timeout for run ${runId} to finish has ended`);
+      }
     }
 
     // Collecting the data
