@@ -1,5 +1,5 @@
 const apifyBase = "https://api.apify.com/v2";
-const pollIntervalMs = 3 * 1000;
+const pollIntervalMs = 5 * 1000;
 const waitTimeoutMs = 10 * 60 * 1000;
 import { logInfo, logError } from "../util/logging.js";
 
@@ -44,38 +44,35 @@ export default async function linkedInScraperFetch(token, startUrl) {
     const endStates = new Set(["SUCCEEDED", "FAILED", "ABORTED"]);
     const startTime = Date.now();
     let run;
+    let runStatus;
     let polling = true;
+    await sleep(pollIntervalMs);
     while (polling) {
       const response = await fetch(runUrl, { headers });
       if (!response.ok) throw new Error("Failed to fetch run status");
       run = await response.json();
-      const status = run?.data?.status;
-      logInfo(`Run ${runId} status: ${status}`);
-      if (endStates.has(status)) {
+      const runStatus = run?.data?.status;
+      logInfo(`Run ${runId} status: ${runStatus}`);
+      if (endStates.has(runStatus)) {
         polling = false;
       } else if (Date.now() - startTime > waitTimeoutMs) {
-        throw new Error(
-          `Timeout waiting for run ${runId} to finish is expired`,
-        );
+        throw new Error(`Timeout for run ${runId} to finish has ended`);
       } else {
         await sleep(pollIntervalMs);
       }
     }
 
-    if (run.data.status !== "SUCCEEDED") {
-      throw new Error(`Apify run finished with status ${run.data.status}`);
+    if (runStatus !== "SUCCEEDED") {
+      throw new Error(`Apify run finished with status ${runStatus}`);
     }
 
     // Collecting the data
-    let fetching = true;
-    while (fetching) {
-      const dataFetchUrl = `${apifyBase}/actor-runs/${encodeURIComponent(
-        runId,
-      )}/dataset/items?format=json`;
-      const response = await fetch(dataFetchUrl, { headers });
-      if (!response.ok) throw new Error("Failed to fetch dataset items");
-      return await response.json();
-    }
+    const dataFetchUrl = `${apifyBase}/actor-runs/${encodeURIComponent(
+      runId,
+    )}/dataset/items?format=json`;
+    const response = await fetch(dataFetchUrl, { headers });
+    if (!response.ok) throw new Error("Failed to fetch dataset items");
+    return await response.json();
   } catch (error) {
     logError(`linkedInScraperFetch error: ${error}`);
   }
