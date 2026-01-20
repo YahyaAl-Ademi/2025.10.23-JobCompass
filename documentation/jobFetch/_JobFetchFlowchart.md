@@ -11,8 +11,14 @@ flowchart TD
     F --> G{Validation Success?}
     G -->|No| H["<a href='./4.2.Client-Side%20Error%20Handling.md'>4.2.Client-Side Error Handling</a>"]
     L -->|No| J["<a href='./4.4.Server-Network%20Error%20Handling.md'>4.4.Server-Network Error Handling</a>"]
-    G -->|Yes| K["<a href='./4.3.Search%20Processing%20&%20Results%20Aggregation.md'>4.3.Search Processing & Results Aggregation</a>"]
-    K --> L{Search Success?}
+    G -->|Yes| Q["<a href='./4.3.1.Cache%20Check%20for%20Full%20String.md'>4.3.1.Cache Check for Full String</a>"]
+    subgraph SearchProcessing["4.3.Search Processing & Results Aggregation"]
+    Q --> Q2{Is the full search_string cached?}
+    Q2 -->|Yes| R["<a href='./4.3.2.Full%20Search%20String%20Cached.md'>4.3.2.Full Search String Cached</a>"]
+    Q2 -->|No| S["<a href='./4.3.3.Not%20Cached%20for%20Full%20String.md'>4.3.3.Not Cached for Full String</a>"]
+    R --> L{Search Success?}
+    S --> L
+    end
     end
     H -->P[User Interaction]
     J -->P
@@ -30,6 +36,10 @@ flowchart TD
     style D fill:#647850,stroke:#4a9eff,color:#fff
     style E fill:#96783c,stroke:#4a9eff,color:#fff
     style G fill:#ff6b6b,stroke:#4a9eff,color:#fff
+    style Q fill:#647850,stroke:#4a9eff,color:#fff
+    style Q2 fill:#ff6b6b,stroke:#4a9eff,color:#fff
+    style R fill:#647850,stroke:#4a9eff,color:#fff
+    style S fill:#96783c,stroke:#4a9eff,color:#fff
     style M fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style O fill:#787846,stroke:#4a9eff,color:#fff
     style P fill:#4a9eff,stroke:#fff,color:#fff
