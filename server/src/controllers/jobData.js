@@ -82,11 +82,12 @@ export async function searchJobs(req, res) {
               );
             }
           }
-          return result;
+          return { searchWord, result };
         });
 
         const fetchedJobsArrays = await Promise.all(fetchPromises);
-        for (const fetchedJobs of fetchedJobsArrays) {
+        for (const fetchedJobData of fetchedJobsArrays) {
+          const { result: fetchedJobs } = fetchedJobData;
           for (const job of fetchedJobs) {
             if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
               aggregatedJobs.push(job);
@@ -97,7 +98,12 @@ export async function searchJobs(req, res) {
 
         (() => {
           responseData.msg = "Some more jobs will be available in ten minutes.";
-          linkedInScraperFetch();
+          linkedInScraperFetch(
+            connectedClient,
+            searchWords[0],
+            search_string,
+            is_auth,
+          );
         })();
       }
       responseData = { ...responseData, success: true, result: aggregatedJobs };
