@@ -1,7 +1,6 @@
 const apifyBase = "https://api.apify.com/v2";
 const pollIntervalMs = 3 * 1000;
 const waitTimeoutMs = 10 * 60 * 1000;
-const limit = 1000;
 import { logInfo, logError } from "../util/logging.js";
 
 async function sleep(ms) {
@@ -9,7 +8,6 @@ async function sleep(ms) {
 }
 
 export default async function linkedInScraperFetch(token, startUrl) {
-  let items = [];
   const headers = {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
@@ -17,13 +15,12 @@ export default async function linkedInScraperFetch(token, startUrl) {
 
   try {
     // Start scraper run
-    const startRunsUrl = `${apifyBase}/acts/curious_coder~linkedin-jobs-scraper/runs`;
+    const startRunUrl = `${apifyBase}/acts/curious_coder~linkedin-jobs-scraper/runs`;
     const requestBody = {
       urls: [startUrl],
       scrapeCompany: true,
-      count: 100,
     };
-    const startResponse = await fetch(startRunsUrl, {
+    const startResponse = await fetch(startRunUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,28 +66,17 @@ export default async function linkedInScraperFetch(token, startUrl) {
       throw new Error(`Apify run finished with status ${run.data.status}`);
     }
 
-    let offset = 0;
+    // Collecting the data
     let fetching = true;
     while (fetching) {
-      const dsUrl = `${apifyBase}/actor-runs/${encodeURIComponent(
+      const dataFetchUrl = `${apifyBase}/actor-runs/${encodeURIComponent(
         runId,
-      )}/dataset/items?format=json&offset=${offset}&limit=${limit}`;
-      const response = await fetch(dsUrl, { headers });
+      )}/dataset/items?format=json`;
+      const response = await fetch(dataFetchUrl, { headers });
       if (!response.ok) throw new Error("Failed to fetch dataset items");
-      const batch = await response.json();
-      if (!Array.isArray(batch) || batch.length === 0) {
-        fetching = false;
-      } else {
-        items.push(...batch);
-        if (batch.length < limit) {
-          fetching = false;
-        } else {
-          offset += batch.length;
-        }
-      }
+      return await response.json();
     }
   } catch (error) {
     logError(`linkedInScraperFetch error: ${error}`);
   }
-  return items;
 }

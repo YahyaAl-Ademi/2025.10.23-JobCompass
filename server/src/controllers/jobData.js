@@ -99,12 +99,11 @@ export async function searchJobs(req, res) {
         }
       }
       (async () => {
-        // const linkedInResults =
-        await linkedInScraperFetch(
+        const linkedInResults = await linkedInScraperFetch(
           process.env.LINKEDIN_SCRAPER_KEY,
           "https://www.linkedin.com/jobs/search?keywords=web%20developer&location=Drenthe&geoId=100735123&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0",
         );
-        // console.log("LinkedIn Scraper Results:", linkedInResults);
+        console.log("LinkedIn Scraper Results:", linkedInResults);
       })();
       responseData = { success: true, result: aggregatedJobs };
     }
