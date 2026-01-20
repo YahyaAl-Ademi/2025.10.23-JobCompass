@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS user_favorites (
 CREATE TABLE IF NOT EXISTS search_strings (
     search_string text NOT NULL,
     search_date timestamp without time zone,
-    is_auth uuid,
+    is_auth character varying(36),
     CONSTRAINT search_strings_pkey PRIMARY KEY (search_string)
 );
 
