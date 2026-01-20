@@ -3,6 +3,18 @@ import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import { logError } from "../util/logging.js";
 
+if (!process.env.SMTP_HOST) {
+  throw new Error("SMTP_HOST environment variable is not set");
+}
+
+if (!process.env.SMTP_USER) {
+  throw new Error("SMTP_USER environment variable is not set");
+}
+
+if (!process.env.SMTP_PASS) {
+  throw new Error("SMTP_PASS environment variable is not set");
+}
+
 // ansporter Gmail App Password
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST, // smtp.gmail.com

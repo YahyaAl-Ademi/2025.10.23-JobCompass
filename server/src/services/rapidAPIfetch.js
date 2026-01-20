@@ -1,6 +1,10 @@
 import { logError } from "../util/logging.js";
 import { persistSearchResults } from "../services/persistSearchResults.js";
 
+if (!process.env.X_RAPIDAPI_KEY) {
+  throw new Error("X_RAPIDAPI_KEY environment variable is not set");
+}
+
 export async function rapidAPIfetch(
   connectedClient,
   searchWord,

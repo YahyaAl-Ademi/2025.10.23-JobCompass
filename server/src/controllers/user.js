@@ -12,6 +12,10 @@ import { uploadImage } from "../services/ImageUpload.js";
 
 // JWT Configuration
 
+if (!process.env.JWT_EXPIRES_IN) {
+  throw new Error("JWT_EXPIRES_IN environment variable is not set");
+}
+
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const USER_FULL_INFO_QUERY = `
