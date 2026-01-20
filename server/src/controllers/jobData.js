@@ -50,12 +50,14 @@ export async function searchJobs(req, res) {
             searchWord,
             is_auth,
           );
+
+          let result;
           if (cachedJobs.length > 0) {
-            return cachedJobs;
-          }
-          // If not cached or DB error, use real search
-          return searchWords.length > 2 && i >= 2
-            ? new Promise((resolve) =>
+            result = cachedJobs;
+          } else {
+            // If not cached or DB error, use real search
+            if (searchWords.length > 2 && i >= 2) {
+              result = new Promise((resolve) =>
                 setTimeout(
                   () =>
                     resolve(
@@ -68,13 +70,18 @@ export async function searchJobs(req, res) {
                     ),
                   (i - 1) * 700,
                 ),
-              )
-            : rapidAPIfetch(
+              );
+            } else {
+              result = rapidAPIfetch(
                 connectedClient,
                 searchWord,
                 search_string,
                 is_auth,
               );
+            }
+          }
+
+          return result;
         });
 
         const fetchedJobsArrays = await Promise.all(fetchPromises);
