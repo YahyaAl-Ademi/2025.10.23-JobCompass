@@ -2,12 +2,18 @@ const apifyBase = "https://api.apify.com/v2";
 const pollIntervalMs = 5 * 1000;
 const waitTimeoutMs = 10 * 60 * 1000;
 import { logInfo, logError } from "../util/logging.js";
+if (!process.env.LINKEDIN_SCRAPER_KEY) {
+  throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
+}
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export default async function linkedInScraperFetch(token, startUrl) {
+export default async function linkedInScraperFetch() {
+  const token = process.env.LINKEDIN_SCRAPER_KEY;
+  const startUrl =
+    "https://www.linkedin.com/jobs/search?keywords=web%20developer&location=Drenthe&geoId=100735123&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0";
   const headers = {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,

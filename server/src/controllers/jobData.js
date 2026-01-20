@@ -4,10 +4,6 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
 
-if (!process.env.LINKEDIN_SCRAPER_KEY) {
-  throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
-}
-
 export async function searchJobs(req, res) {
   let is_auth = req?.user?.id || null;
   const {
@@ -17,7 +13,7 @@ export async function searchJobs(req, res) {
   } = await connectNeonDB();
 
   let responseStatus = 200;
-  let responseData = { success: true, result: [] };
+  let responseData = { success: true, result: [], msg: "" };
 
   try {
     if (connectionError) {
@@ -31,6 +27,7 @@ export async function searchJobs(req, res) {
     if (typeof search_string !== "string" || !search_string.trim()) {
       responseStatus = 400;
       responseData = {
+        ...responseData,
         success: false,
         msg: "You need to provide 'search_string' (non-empty string) in the request body.",
       };
@@ -97,15 +94,13 @@ export async function searchJobs(req, res) {
             }
           }
         }
+
+        (() => {
+          responseData.msg = "Some more jobs will be available in ten minutes.";
+          linkedInScraperFetch();
+        })();
       }
-      (async () => {
-        const linkedInResults = await linkedInScraperFetch(
-          process.env.LINKEDIN_SCRAPER_KEY,
-          "https://www.linkedin.com/jobs/search?keywords=web%20developer&location=Drenthe&geoId=100735123&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0",
-        );
-        console.log("LinkedIn Scraper Results:", linkedInResults);
-      })();
-      responseData = { success: true, result: aggregatedJobs };
+      responseData = { ...responseData, success: true, result: aggregatedJobs };
     }
   } catch (error) {
     logError(`searchJobs error: ${error}`);
