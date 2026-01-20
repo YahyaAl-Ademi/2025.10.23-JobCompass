@@ -1,5 +1,5 @@
 import { logError } from "../util/logging.js";
-import { rapidAPIfetch } from "./rapidAPIfetch.js";
+import { rapidAPIfetch } from "../services/rapidAPIfetch.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 
