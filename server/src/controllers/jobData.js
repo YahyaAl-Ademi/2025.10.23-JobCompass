@@ -2,6 +2,7 @@ import { logError } from "../util/logging.js";
 import { rapidAPIfetch } from "../services/rapidAPIfetch.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
+import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
 
 export async function searchJobs(req, res) {
   let is_auth = req?.user?.id || null;
@@ -80,7 +81,11 @@ export async function searchJobs(req, res) {
               );
             }
           }
-
+          const linkedInResults = await linkedInScraperFetch(
+            process.env.LINKEDIN_SCRAPER_KEY,
+            "https://www.linkedin.com/jobs/search?keywords=web%20developer&location=Drenthe&geoId=100735123&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0",
+          );
+          console.log("LinkedIn Scraper Results:", linkedInResults);
           return result;
         });
 
