@@ -17,7 +17,7 @@ export default function OpenPositions() {
 
   const {
     allJobs,
-    searchTerm,
+    searchString,
     isJobsLoading,
     jobFetchError,
     travelFetchError,
@@ -87,7 +87,7 @@ export default function OpenPositions() {
   }, [sortedJobs, activeFilters]);
 
   //pagination
-  const totalPages = Math.ceil(sortedJobs.length / jobsPerPage);
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
   const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
@@ -157,7 +157,7 @@ export default function OpenPositions() {
         {!isJobsLoading && filteredJobs.length > 0 && (
           <>
             <p className="job-message">
-              Found {allJobs.length} jobs in total for {searchTerm}.
+              Found {allJobs.length} jobs in total for {searchString}.
               {!Object.values(activeFilters).every(
                 (filterSet) => filterSet.size === 0,
               ) && ` Filtered ${filteredJobs.length} jobs`}

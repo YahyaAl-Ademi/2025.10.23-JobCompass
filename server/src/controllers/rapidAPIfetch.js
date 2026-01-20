@@ -1,15 +1,24 @@
 import { logError } from "../util/logging.js";
+import { persistSearchResults } from "../services/persistSearchResults.js";
 
-export const realJobSearch = async (
-  jobWord,
+export async function rapidAPIfetch(
+  connectedClient,
+  searchWord,
+  search_string,
+  is_auth,
   location = "Netherlands",
-  limit = 80,
-  maxIterations = 2,
-  initialOffset = 0,
-) => {
+) {
   const aggregated = [];
-
   const offsets = [];
+  let initialOffset = 0;
+
+  let limit = 5;
+  let maxIterations = 1;
+  if (is_auth) {
+    limit = 7;
+    maxIterations = 1;
+  }
+
   for (let i = 0; i < maxIterations; i++) {
     offsets.push(initialOffset + i * limit);
   }
@@ -23,7 +32,7 @@ export const realJobSearch = async (
 
   const fetchPromises = offsets.map((offset) => {
     const url = `https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d?limit=${limit}&offset=${offset}&title_filter=${encodeURIComponent(
-      jobWord,
+      searchWord,
     )}&location_filter=${encodeURIComponent(location)}&description_type=text`;
 
     return fetch(url, options).then(async (apiResponse) => {
@@ -50,5 +59,11 @@ export const realJobSearch = async (
     }
   });
 
-  return aggregated;
-};
+  return await persistSearchResults(
+    connectedClient,
+    aggregated,
+    searchWord,
+    search_string,
+    is_auth,
+  );
+}

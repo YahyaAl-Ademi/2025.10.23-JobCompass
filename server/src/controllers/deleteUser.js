@@ -22,7 +22,7 @@ export const deleteUser = async (req, res) => {
   // Connect to the database
   const { error, connectedClient, endConnection } = await connectNeonDB();
   if (error) {
-    logError("DB connection failed: " + error);
+    logError(`DB connection failed: ${error}`);
     return res.status(500).json({
       success: false,
       message: "Database connection failed",
@@ -31,7 +31,7 @@ export const deleteUser = async (req, res) => {
 
   try {
     // Delete the user record using the ID from the token
-    const query = "DELETE FROM users WHERE user_id = $1 RETURNING *";
+    const query = "DELETE FROM users WHERE id = $1 RETURNING *";
     const result = await connectedClient.query(query, [targetUserId]);
 
     if (result.rowCount === 0) {
@@ -48,7 +48,7 @@ export const deleteUser = async (req, res) => {
       deletedUser: result.rows,
     });
   } catch (err) {
-    logError("Error deleting user: " + err.message);
+    logError(`Error deleting user: ${err.message}`);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

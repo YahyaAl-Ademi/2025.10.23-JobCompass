@@ -8,13 +8,13 @@ const JobsProvider = ({ children }) => {
   const { user } = UseUser();
   const [allJobs, setAllJobs] = useState([]);
   const [travelDetails, setTravelDetails] = useState({});
-  const [searchTerm, setSearchTerm] = useState(""); //  global search term
+  const [searchString, setSearchString] = useState(""); //  global search term
 
   // Clear jobs when user logs in/out
   useEffect(() => {
     setAllJobs([]);
     setTravelDetails({});
-  }, [user.email]);
+  }, [user.id]);
 
   function handleJobFetchResults(data) {
     setAllJobs(data.result);
@@ -26,13 +26,6 @@ const JobsProvider = ({ children }) => {
     error: jobFetchError,
     performFetch: performJobFetch,
   } = useFetch("/jobs/search", handleJobFetchResults);
-
-  async function fetchJobWordsBySearchWords(searchWords) {
-    performJobFetch({
-      method: "POST",
-      body: JSON.stringify({ search_terms: searchWords }),
-    });
-  }
 
   function getCitiesToFetch(jobsArray) {
     const uniqueCities = [
@@ -112,9 +105,9 @@ const JobsProvider = ({ children }) => {
         jobFetchError,
         isTravelLoading,
         travelFetchError,
-        searchTerm,
-        setSearchTerm,
-        fetchJobWordsBySearchWords,
+        searchString,
+        setSearchString,
+        performJobFetch,
         fetchBatchTravelDetails,
       }}
     >

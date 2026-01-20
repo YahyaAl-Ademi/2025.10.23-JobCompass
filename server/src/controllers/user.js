@@ -16,11 +16,14 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const USER_FULL_INFO_QUERY = `
   SELECT
-    u.user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
+    u.id AS user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
     u.street, u.house_number, u.city, u.country, u.skills,
     uf.travel_time, uf.least_transfers,
-    j.* FROM users u
-  LEFT JOIN user_favorites uf ON u.user_id = uf.user_id
+    j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
+    j.employment_type, j.url, j.organization_logo, j.display_location,
+    j.work_mode, j.seniority, j.description_text, j.normalized_description
+  FROM users u
+  LEFT JOIN user_favorites uf ON u.id = uf.user_id
   LEFT JOIN jobs j ON uf.job_id = j.id
 `;
 
@@ -46,7 +49,7 @@ export const createUser = async (req, res) => {
     }
 
     const checkEmail = await connectedClient.query(
-      "SELECT user_id FROM users WHERE email = $1",
+      "SELECT id FROM users WHERE email = $1",
       [user.email],
     );
     if (checkEmail.rows.length > 0) {
@@ -64,11 +67,11 @@ export const createUser = async (req, res) => {
 
     const result = await connectedClient.query(
       `INSERT INTO users (
-        user_id, first_name, last_name, email, password,
+        id, first_name, last_name, email, password,
         avatar, street, house_number, city, country, skills
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING user_id, email, first_name, last_name, avatar, street, house_number, city, country, skills`,
+      RETURNING id, email, first_name, last_name, avatar, street, house_number, city, country, skills`,
       [
         newUserId,
         user.first_name,
@@ -88,7 +91,7 @@ export const createUser = async (req, res) => {
     newUser.favorites = [];
     // Generate JWT (Access Token)
     const token = jwt.sign(
-      { id: newUser.user_id, email: newUser.email },
+      { id: newUser.id, email: newUser.email },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN },
     );
@@ -163,7 +166,7 @@ export const loginUser = async (req, res) => {
     const userDataRow = rows[0];
 
     const user = {
-      user_id: userDataRow.user_id,
+      id: userDataRow.user_id,
       email: userDataRow.email,
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
@@ -180,9 +183,9 @@ export const loginUser = async (req, res) => {
     };
 
     rows.forEach((row) => {
-      if (row.id) {
+      if (row.job_id) {
         const jobFavorite = {
-          id: row.id,
+          id: row.job_id,
           date_posted: row.date_posted,
           title: row.title,
           organization: row.organization,
@@ -202,13 +205,9 @@ export const loginUser = async (req, res) => {
       }
     });
 
-    const token = jwt.sign(
-      { id: user.user_id, email: user.email },
-      JWT_SECRET,
-      {
-        expiresIn: JWT_EXPIRES_IN,
-      },
-    ); // Remove the hash before sending the user object in the response
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    }); // Remove the hash before sending the user object in the response
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -255,7 +254,7 @@ export const logoutUser = async (req, res) => {
 
 export const getMe = async (req, res) => {
   const token = req.cookies?.token;
-  if (!token) return res.json({ success: false });
+  if (!token) return res.json({ success: false, msg: "No token provided" });
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
@@ -268,15 +267,17 @@ export const getMe = async (req, res) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const result = await connectedClient.query(
-      `${USER_FULL_INFO_QUERY} WHERE u.user_id = $1`,
+      `${USER_FULL_INFO_QUERY} WHERE u.id = $1`,
       [decoded.id],
     );
-    if (result.rows.length === 0) return res.json({ success: false });
+    if (result.rows.length === 0) {
+      return res.json({ success: false, msg: "User not found" });
+    }
     const rows = result.rows;
     const userDataRow = rows[0];
 
     const user = {
-      user_id: userDataRow.user_id,
+      id: userDataRow.user_id,
       email: userDataRow.email,
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
@@ -291,9 +292,9 @@ export const getMe = async (req, res) => {
       favorites: [],
     };
     rows.forEach((row) => {
-      if (row.id) {
+      if (row.job_id) {
         const jobFavorite = {
-          id: row.id,
+          id: row.job_id,
           date_posted: row.date_posted,
           title: row.title,
           organization: row.organization,
@@ -315,7 +316,13 @@ export const getMe = async (req, res) => {
 
     res.json({ success: true, user: user });
   } catch (err) {
-    res.json({ success: false });
+    // JWT verification errors (expired, invalid token, etc.)
+    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
+      return res.json({ success: false, msg: "Invalid or expired token" });
+    }
+    // Other errors
+    logError(`Error in getMe: ${err}`);
+    return res.json({ success: false, msg: "Failed to fetch user data" });
   } finally {
     if (endConnection) await endConnection();
   }
@@ -345,7 +352,7 @@ export const updateUserAvatar = async (req, res) => {
     await connectedClient.query(
       `UPDATE users
       SET avatar = $1
-      WHERE user_id = $2 `,
+      WHERE id = $2 `,
       [imageUrl, user_id],
     );
 

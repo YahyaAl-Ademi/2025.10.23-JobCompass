@@ -47,11 +47,14 @@ Connect talented professionals with opportunities that match their skills, prefe
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 - **Concurrently** - Run multiple commands
+- **express-rate-limit** - API rate limiting
+- **Jest** - Testing framework
+- **Multer** - File upload handling
 
 ## 📁 Project Structure
 
 ```
-c53-final-project-group-A/
+2025.10.23-JobCompass/
 ├── client/                 # React frontend application
 │   ├── src/
 │   │   ├── components/    # Reusable React components
@@ -79,13 +82,16 @@ c53-final-project-group-A/
 
 ## Backend Routes Overview
 
-- `POST /api/users` – sign up; `POST /api/users/login` / `/logout` – auth via HTTP-only cookie.
-- `GET /api/users/me` – current user; `PUT /api/users/profile` – update profile fields.
-- `POST /api/users/update-avatar` – upload avatar (Multer memory storage → Firebase Storage).
+- `POST /api/users` – sign up;
+- `POST /api/users/login` / `/logout` – auth via HTTP-only cookie.
+- `GET /api/users/me` – current user;
+- `PUT /api/users/profile` – update profile fields.
+- `POST /api/users/update-avatar` – upload avatar (Multer memory storage → Firebase Storage, 6MB limit, JPEG/PNG/GIF/WebP only).
 - `POST /api/users/change-password` / `/change-skills` – profile mutations.
-- `POST /api/users/favorites/toggle` – save/unsave a job; `DELETE /api/users/delete/:user_id` – delete account.
+- `POST /api/users/favorites/toggle` – save/unsave a job;
+- `DELETE /api/users/delete` – delete account.
 - `POST /api/users/forgot-password` / `/reset-password` – email reset flow.
-- `POST /api/jobs/search` – search jobs (RapidAPI LinkedIn + local processing).
+- `POST /api/jobs/search` – search jobs (RapidAPI LinkedIn + local processing, requires authentication).
 - `POST /api/travel/batch` – batch transit time + transfer counts for job locations.
 
 ## 🚀 Getting Started
@@ -105,8 +111,8 @@ c53-final-project-group-A/
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/HackYourFuture/c53-final-project-group-A.git
-   cd c53-final-project-group-A
+   git clone https://github.com/YaroslavKazeev/2025.10.23-JobCompass.git
+   cd 2025.10.23-JobCompass
    ```
 
 2. **Install dependencies**
@@ -128,9 +134,21 @@ c53-final-project-group-A/
    ```
 
    This will start both the client (Vite dev server) and server (Express with nodemon) concurrently.
-
    - Frontend: http://localhost:5173 (or the port Vite assigns)
    - Backend: http://localhost:3000 (or your configured PORT)
+
+## 📝 Development Environment
+
+### Recommended VS Code Extensions
+
+For the best experience with this project's documentation and codebase, we recommend installing these VS Code extensions:
+
+- **Markdown All in One** - Enhanced Markdown editing, preview, and syntax highlighting
+- **Markdown Preview Mermaid Support** - Render Mermaid diagrams in Markdown preview
+- **Mermaid Markdown Syntax Highlighting** - Syntax highlighting for Mermaid diagram code blocks
+- **Mermaid Lens** - Interactive Mermaid diagram preview and editing
+
+These extensions will provide full access to the documentation features, including the Entity Relationship Diagram and other visual elements.
 
 ## 📜 Available Root Level Scripts
 
@@ -141,21 +159,41 @@ c53-final-project-group-A/
 
 ## 🚢 Deployment
 
-The project is configured for Heroku deployment. The `Procfile` specifies the production start command.
+The project is configured for a professional CI/CD pipeline using **GitHub Actions**, **Heroku**, and repository scripts.
 
-### Heroku Deployment Steps
+### 🔄 CI/CD Pipeline
 
-1. Create a Heroku app
-2. Set environment variables in Heroku dashboard
-3. Push to Heroku:
-   ```bash
-   git push heroku main
-   ```
+1.  **Continuous Integration (GitHub Actions)**: Every Pull Request triggers automated workflows:
+    - `client-code-style-check`: Runs Prettier and Lint for the frontend.
+    - `server-code-style-check`: Runs Prettier and Lint for the backend.
+    - (Optional) Performance and unit tests are executed to ensure stability.
+2.  **Automated Deployment (Heroku)**:
+    - **Review Apps**: Every PR automatically creates a temporary, isolated environment on Heroku. A link is provided in the PR for manual testing and QA.
+    - **Production**: Merging to `main` (or `develop`) triggers an automatic deployment to the main Heroku application.
 
-The `heroku-postbuild` script will automatically:
+### 🛠️ Build Scripts
 
-- Install dependencies
-- Build the client application
+The deployment relies on the following scripts in the root `package.json`:
+
+- `heroku-postbuild`: Automatically runs during Heroku's build phase. It sets up dependencies and builds the client production bundle.
+  ```bash
+  npm run heroku-postbuild
+  ```
+- `start`: The production start command, as defined in the `Procfile`.
+  ```bash
+  npm start
+  ```
+
+### 🚀 Manual Deployment (Alternative)
+
+If you need to deploy manually from your terminal:
+
+1.  Logged into Heroku CLI: `heroku login`
+2.  Add the Heroku remote (if not done): `heroku git:remote -a <your-app-name>`
+3.  Push to Heroku:
+    ```bash
+    git push heroku main
+    ```
 
 ## 👥 Contributors
 

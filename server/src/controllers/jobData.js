@@ -1,53 +1,104 @@
 import { logError } from "../util/logging.js";
-import { realJobSearch } from "./realJobSearch.js";
-import { fakeJobSearch } from "./fakeJobSearch.js";
-import processJobPost from "../util/processJobPost.js";
+import { rapidAPIfetch } from "./rapidAPIfetch.js";
+import connectNeonDB from "../db/connectNeonDB.js";
+import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 
-const isSearchReal = false; // Set to true to enable real job search
+export async function searchJobs(req, res) {
+  let is_auth = req?.user?.id || null;
+  const {
+    connectedClient,
+    error: connectionError,
+    endConnection,
+  } = await connectNeonDB();
 
-export const searchJobs = async (req, res) => {
+  let responseStatus = 200;
+  let responseData = { success: true, result: [] };
+
   try {
-    const { search_terms } = req.body;
+    if (connectionError) {
+      throw new Error(`DB Connection Error: ${connectionError}`);
+    }
+
+    const { search_string } = req.body;
     const aggregatedJobsIdsSet = new Set();
     let aggregatedJobs = [];
-    if (typeof search_terms !== "string" || !search_terms.trim()) {
-      return res.status(400).json({
+
+    if (typeof search_string !== "string" || !search_string.trim()) {
+      responseStatus = 400;
+      responseData = {
         success: false,
-        msg: "You need to provide 'search_terms' (non-empty string) in the request body.",
-      });
-    }
+        msg: "You need to provide 'search_string' (non-empty string) in the request body.",
+      };
+    } else {
+      // Check if search_string is cached
+      const cachedJobsPerSearchString = await getCachedJobsBySearchString(
+        connectedClient,
+        search_string,
+        is_auth,
+      );
+      if (cachedJobsPerSearchString.length > 0) {
+        aggregatedJobs = cachedJobsPerSearchString;
+      } else {
+        const searchWords = search_string
+          .split(new RegExp("[\\s\\-.'/]+"))
+          .filter(Boolean);
+        // Fetch results for all search words concurrently
+        const fetchPromises = searchWords.map(async (searchWord, i) => {
+          // Try to get cached jobs first
+          const cachedJobs = await getCachedJobsBySearchString(
+            connectedClient,
+            searchWord,
+            is_auth,
+          );
+          if (cachedJobs.length > 0) {
+            return cachedJobs;
+          }
+          // If not cached or DB error, use real search
+          return searchWords.length > 2 && i >= 2
+            ? new Promise((resolve) =>
+                setTimeout(
+                  () =>
+                    resolve(
+                      rapidAPIfetch(
+                        connectedClient,
+                        searchWord,
+                        search_string,
+                        is_auth,
+                      ),
+                    ),
+                  (i - 1) * 700,
+                ),
+              )
+            : rapidAPIfetch(
+                connectedClient,
+                searchWord,
+                search_string,
+                is_auth,
+              );
+        });
 
-    const searchWords = search_terms
-      .split(new RegExp("[\\s\\-.'/]+"))
-      .filter(Boolean);
-    // Fetch results for all search words concurrently
-    const fetchPromises = searchWords.map((jobWord, i) =>
-      isSearchReal
-        ? searchWords.length > 2 && i >= 2
-          ? new Promise((resolve) =>
-              setTimeout(() => resolve(realJobSearch(jobWord)), (i - 1) * 700),
-            )
-          : realJobSearch(jobWord)
-        : Promise.resolve(fakeJobSearch(jobWord)),
-    );
-
-    const fetchedJobsArrays = await Promise.all(fetchPromises);
-
-    for (const fetchedJobs of fetchedJobsArrays) {
-      for (const job of fetchedJobs) {
-        if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
-          aggregatedJobs.push(processJobPost(job));
-          aggregatedJobsIdsSet.add(job.id);
+        const fetchedJobsArrays = await Promise.all(fetchPromises);
+        for (const fetchedJobs of fetchedJobsArrays) {
+          for (const job of fetchedJobs) {
+            if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
+              aggregatedJobs.push(job);
+              aggregatedJobsIdsSet.add(job.id);
+            }
+          }
         }
       }
+      responseData = { success: true, result: aggregatedJobs };
     }
-
-    res.status(200).json({ success: true, result: aggregatedJobs });
   } catch (error) {
-    logError("searchJobs error:", error);
-    res.status(500).json({
+    logError(`searchJobs error: ${error}`);
+    responseStatus = 500;
+    responseData = {
       success: false,
       msg: "Unable to search for jobs, please try again later.",
-    });
+    };
+  } finally {
+    if (endConnection) await endConnection();
   }
-};
+
+  res.status(responseStatus).json(responseData);
+}

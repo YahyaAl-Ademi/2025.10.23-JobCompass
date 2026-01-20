@@ -2,11 +2,14 @@ import connectNeonDB from "../db/connectNeonDB.js";
 
 const USER_FULL_INFO_QUERY = `
   SELECT
-    u.user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
+    u.id AS user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
     u.street, u.house_number, u.city, u.country, u.skills,
     uf.travel_time, uf.least_transfers,
-    j.* FROM users u
-  LEFT JOIN user_favorites uf ON u.user_id = uf.user_id
+    j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
+    j.employment_type, j.url, j.organization_logo, j.display_location,
+    j.work_mode, j.seniority, j.description_text, j.normalized_description
+  FROM users u
+  LEFT JOIN user_favorites uf ON u.id = uf.user_id
   LEFT JOIN jobs j ON uf.job_id = j.id
 `;
 
@@ -38,7 +41,7 @@ export const updateUserProfile = async (user_id, fieldsToUpdate) => {
   const updateQuery = `
     UPDATE users
     SET ${setParts.join(", ")}
-    WHERE user_id = $${updateUserIdIndex}
+    WHERE id = $${updateUserIdIndex}
   `;
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
@@ -47,7 +50,7 @@ export const updateUserProfile = async (user_id, fieldsToUpdate) => {
   try {
     await connectedClient.query(updateQuery, values);
 
-    const fetchQuery = `${USER_FULL_INFO_QUERY} WHERE u.user_id = $1`;
+    const fetchQuery = `${USER_FULL_INFO_QUERY} WHERE u.id = $1`;
     const result = await connectedClient.query(fetchQuery, [user_id]);
 
     if (result.rows.length === 0) {
@@ -58,7 +61,7 @@ export const updateUserProfile = async (user_id, fieldsToUpdate) => {
     const userDataRow = rows[0];
 
     const updatedUser = {
-      user_id: userDataRow.user_id,
+      id: userDataRow.user_id,
       email: userDataRow.email,
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
@@ -74,9 +77,9 @@ export const updateUserProfile = async (user_id, fieldsToUpdate) => {
     };
 
     rows.forEach((row) => {
-      if (row.id) {
+      if (row.job_id) {
         const jobFavorite = {
-          id: row.id,
+          id: row.job_id,
           date_posted: row.date_posted,
           title: row.title,
           organization: row.organization,

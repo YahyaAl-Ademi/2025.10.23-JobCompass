@@ -1,14 +1,16 @@
 # Entity Relationship Diagram (ERD)
 
-This diagram illustrates the current database architecture for the JobCompass application. See [`create_tables.sql`](../database/create_tables.sql) for the SQL implementation of this schema.
+This diagram illustrates the current database architecture for the JobCompass application. See [`create_tables.sql`](../db_migrations/create_tables.sql) for the SQL implementation of this schema.
 
 ```mermaid
 erDiagram
     users ||--o{ user_favorites : "saves"
     jobs ||--o{ user_favorites : "is saved by"
+    search_strings ||--o{ search_strings_jobs : ""
+    jobs ||--o{ search_strings_jobs : ""
 
     users {
-        uuid user_id PK "NOT NULL, CONSTRAINT users_pkey"
+        uuid id PK "NOT NULL, CONSTRAINT users_pkey"
         character_varying_255 email "NOT NULL"
         character_varying_255 password "NOT NULL"
         character_varying_100 first_name
@@ -44,5 +46,16 @@ erDiagram
         text job_id PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_job_id_fkey, ON DELETE CASCADE"
         smallint travel_time
         smallint least_transfers
+    }
+
+    search_strings {
+        text search_string PK "NOT NULL, CONSTRAINT search_strings_pkey"
+        timestamp search_date
+        uuid is_auth
+    }
+
+    search_strings_jobs {
+        text search_string PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_search_string_fkey, ON DELETE CASCADE"
+        text job_id PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_job_id_fkey, ON DELETE CASCADE"
     }
 ```

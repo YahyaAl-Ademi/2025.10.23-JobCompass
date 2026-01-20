@@ -30,7 +30,7 @@ export async function changeSkills(req, res) {
     const result = await connectedClient.query(
       `UPDATE users
       SET skills = $1
-      WHERE user_id = $2
+      WHERE id = $2
       RETURNING *`,
       [skills.join(","), user_id],
     );

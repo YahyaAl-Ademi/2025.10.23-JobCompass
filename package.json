@@ -1,5 +1,5 @@
 {
-  "name": "final-project-template",
+  "name": "job-compass",
   "version": "1.0.0",
   "description": "## Notable libraries",
   "main": "index.js",
@@ -39,14 +39,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HackYourFuture/final-project-template.git"
+    "url": "git+https://github.com/YaroslavKazeev/2025.10.23-JobCompass.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/HackYourFuture/final-project-template/issues"
+    "url": "https://github.com/YaroslavKazeev/2025.10.23-JobCompass/issues"
   },
-  "homepage": "https://github.com/HackYourFuture/final-project-template#readme",
+  "homepage": "https://github.com/YaroslavKazeev/2025.10.23-JobCompass",
   "devDependencies": {
     "husky": "^9.0.0"
   },
