@@ -60,17 +60,19 @@ export async function searchJobs(req, res) {
             fetchedJobs = cachedJobs;
           } else {
             // If not cached or DB error, use real search
-            inProgressSearches[search_string] = {
-              status: true,
-              is_complete_string: true,
-              fetchedJobs: [],
-            };
-            if (searchWord !== search_string) {
-              inProgressSearches[searchWord] = {
+            if (!inProgressSearches[search_string]) {
+              inProgressSearches[search_string] = {
                 status: true,
-                is_complete_string: false,
+                is_complete_string: true,
                 fetchedJobs: [],
               };
+              if (!inProgressSearches[searchWord]) {
+                inProgressSearches[searchWord] = {
+                  status: true,
+                  is_complete_string: false,
+                  fetchedJobs: [],
+                };
+              }
             }
 
             if (searchWords.length > 2 && i >= 2) {
@@ -127,12 +129,13 @@ export async function searchJobs(req, res) {
                       await persistJobSearch(
                         connectedClient,
                         scraperJobsToPersist,
-                        search_string,
+                        searchWord,
                         is_auth,
                       );
                     }
                   }
                 }
+                delete inProgressSearches[searchWord];
               },
             );
           }
