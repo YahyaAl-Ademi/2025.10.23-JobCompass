@@ -12,7 +12,8 @@ export default function processScraperJob(job) {
     employmentType: employment_type,
     location,
     seniorityLevel: normalizedSeniority,
-    descriptionText: description_text = "",
+    descriptionText = "",
+    descriptionHtml: description_text = "",
     companyName: organization,
     companyWebsite: organization_url,
     companyLogo: organization_logo,
@@ -28,7 +29,7 @@ export default function processScraperJob(job) {
     seniority: normalizedSeniority,
     description_text,
     normalized_description:
-      normalizeDescription(title) + normalizeDescription(description_text),
+      normalizeDescription(title) + normalizeDescription(descriptionText),
     travel_time: null,
     least_transfers: null,
     organization,
