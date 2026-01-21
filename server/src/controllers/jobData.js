@@ -72,9 +72,8 @@ export async function searchJobs(req, res) {
             fetchedJobs = [...cachedJobs];
           } else {
             // If not cached or DB error, use real search
-
+            inProgressSearches[searchWord] = { fetchedJobs: [] };
             if (searchWords.length > 2 && i >= 2) {
-              inProgressSearches[searchWord] = { fetchedJobs: [] };
               fetchedJobs = await new Promise((resolve) =>
                 setTimeout(
                   () => resolve(rapidAPIfetch(searchWord, is_auth)),
