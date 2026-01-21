@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DOMPurify from "dompurify";
 import {
   Bus,
   Briefcase,
@@ -208,11 +209,15 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
               </div>
             </div>
 
-            <p className="job-description">
-              {job.description_text
-                ? job.description_text.substring(0, 350) + "..."
-                : "No description available."}
-            </p>
+            <p
+              className="job-description"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  (job?.description_text?.slice(0, 400) ||
+                    "No description available") + "...",
+                ),
+              }}
+            />
 
             <div className="job-card-footer">
               <div className="skill-match-container">

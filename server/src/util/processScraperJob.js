@@ -3,63 +3,28 @@ function normalizeDescription(str) {
   return " " + s.replace(/[^A-Za-z0-9+#]/g, " ").replace(/ +/g, " ") + " ";
 }
 
-export default function processScraperJob(job, functionName) {
+export default function processScraperJob(job) {
   const {
     id,
-    url,
+    applyUrl: url,
     title,
-    date_posted,
-    employment_type = [],
-    remote_derived = false,
-    locations_derived = [],
-    seniority,
-    description_text = "",
-    organization,
-    organization_url,
-    organization_logo,
+    postedAt: date_posted,
+    employmentType: employment_type,
+    location,
+    seniorityLevel: normalizedSeniority,
+    descriptionText: description_text = "",
+    companyName: organization,
+    companyWebsite: organization_url,
+    companyLogo: organization_logo,
   } = job || {};
-  // normalize seniority values coming from the job source
-  let normalizedSeniority;
-  switch (seniority) {
-    case "Stagiair":
-      normalizedSeniority = "Internship";
-      break;
-    case "Instapniveau":
-    case "Berufseinstieg":
-      normalizedSeniority = "Entry level";
-      break;
-    case "Medewerker":
-      normalizedSeniority = "Associate";
-      break;
-    case "Senior medewerker":
-      normalizedSeniority = "Mid-Senior level";
-      break;
-    case "Directeur":
-      normalizedSeniority = "Director";
-      break;
-    case "Algemeen directeur":
-      normalizedSeniority = "Executive";
-      break;
-    case "Niet van toepassing":
-      normalizedSeniority = "Not applicable";
-      break;
-    default:
-      normalizedSeniority = seniority;
-  }
   return {
     id,
     url,
     title,
     date_posted,
-    employment_type:
-      Array.isArray(employment_type) && employment_type.length > 0
-        ? employment_type[0].replace("_", " ")
-        : null,
-    work_mode: remote_derived === true ? "Remote" : "On-site",
-    display_location:
-      Array.isArray(locations_derived) && locations_derived.length > 0
-        ? locations_derived[0]
-        : null,
+    employment_type: employment_type || null,
+    work_mode: null,
+    display_location: location || null,
     seniority: normalizedSeniority,
     description_text,
     normalized_description:
