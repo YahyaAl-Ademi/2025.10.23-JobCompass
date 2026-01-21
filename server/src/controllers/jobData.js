@@ -37,7 +37,7 @@ export async function searchJobs(req, res) {
         msg: "You need to provide 'search_string' (non-empty string) in the request body.",
       };
     } else {
-      // Check if search_string is cached
+      // Check if the whole search_string is cached
       const cachedJobsPerSearchString = await getCachedJobsBySearchString(
         connectedClient,
         search_string,
@@ -127,7 +127,7 @@ export async function searchJobs(req, res) {
 
           if (Object.keys(inProgressSearches).length > 0) {
             Object.entries(inProgressSearches).forEach(
-              async ([searchWord, search]) => {
+              async ([searchTerm, search]) => {
                 const {
                   connectedClient,
                   error: connectionError,
@@ -137,42 +137,45 @@ export async function searchJobs(req, res) {
                   await persistJobSearch(
                     connectedClient,
                     search,
-                    searchWord,
+                    searchTerm,
                     is_auth,
                     processRapidAPIjob,
                   );
                   if (endConnection) await endConnection();
                 }
-                {
-                  const { is_complete_string } = search;
-                  if (is_auth && is_complete_string) {
-                    const scraperJobsToPersist =
-                      await linkedInScraperFetch(searchWord);
-                    if (scraperJobsToPersist.length > 0) {
-                      const {
-                        connectedClient,
-                        error: connectionError,
-                        endConnection,
-                      } = await connectNeonDB();
-                      if (!connectionError) {
-                        await persistJobSearch(
-                          connectedClient,
-                          {
-                            fetchedJobs: scraperJobsToPersist,
-                            is_complete_string: true,
-                          },
-                          searchWord,
-                          is_auth,
-                          processScraperJob,
-                        );
-                      }
-                      if (endConnection) await endConnection();
-                    }
-                  }
-                }
-                delete inProgressSearches[searchWord];
+                searchTerm !== search_string &&
+                  delete inProgressSearches[searchTerm];
               },
             );
+            {
+              const is_complete_string =
+                inProgressSearches?.[search_string]?.is_complete_string;
+              if (is_auth && is_complete_string) {
+                const scraperJobsToPersist =
+                  await linkedInScraperFetch(search_string);
+                if (scraperJobsToPersist.length > 0) {
+                  const {
+                    connectedClient,
+                    error: connectionError,
+                    endConnection,
+                  } = await connectNeonDB();
+                  if (!connectionError) {
+                    await persistJobSearch(
+                      connectedClient,
+                      {
+                        fetchedJobs: scraperJobsToPersist,
+                        is_complete_string,
+                      },
+                      search_string,
+                      is_auth,
+                      processScraperJob,
+                    );
+                  }
+                  delete inProgressSearches[search_string];
+                  if (endConnection) await endConnection();
+                }
+              }
+            }
           }
         })();
       }

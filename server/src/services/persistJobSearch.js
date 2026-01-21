@@ -31,7 +31,12 @@ export async function persistJobSearch(
     for (const job of fetchedJobs) {
       if (
         !Object.entries(job)
-          .filter(([key]) => key !== "travel_time" && key !== "least_transfers")
+          .filter(
+            ([key]) =>
+              key !== "travel_time" &&
+              key !== "least_transfers" &&
+              key !== "work_mode",
+          )
           .some(([, value]) => value === null) &&
         new Date(job.date_posted) >= oneMonthAgo
       ) {
