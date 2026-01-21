@@ -2,6 +2,7 @@ const apifyBase = "https://api.apify.com/v2";
 const pollIntervalMs = 5 * 1000;
 const waitTimeoutMs = 10 * 60 * 1000;
 import { logInfo, logError } from "../util/logging.js";
+import processJobPost from "../util/processJobPost.js";
 if (!process.env.LINKEDIN_SCRAPER_KEY) {
   throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
 }
