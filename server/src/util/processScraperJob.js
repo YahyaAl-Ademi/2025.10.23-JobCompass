@@ -1,7 +1,5 @@
-function normalizeDescription(str) {
-  const s = typeof str === "string" ? str : "";
-  return " " + s.replace(/[^A-Za-z0-9+#]/g, " ").replace(/ +/g, " ") + " ";
-}
+import normalizeDescription from "./normalizeDescription.js";
+import validateJob from "./validateJob.js";
 
 export default function processScraperJob(job) {
   const {
@@ -18,7 +16,8 @@ export default function processScraperJob(job) {
     companyWebsite: organization_url,
     companyLogo: organization_logo,
   } = job || {};
-  return {
+  
+  const processedJob = {
     id,
     url,
     title,
@@ -36,4 +35,6 @@ export default function processScraperJob(job) {
     organization_url,
     organization_logo,
   };
+
+  return validateJob(processedJob) ? processedJob : null;
 }

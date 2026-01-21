@@ -55,7 +55,11 @@ export async function rapidAPIfetch(
 
   results.forEach((apiResult) => {
     if (Array.isArray(apiResult)) {
-      aggregated.push(...apiResult.map((job) => processRapidAPIjob(job)));
+      aggregated.push(
+        ...apiResult
+          .map((job) => processRapidAPIjob(job))
+          .filter((job) => job !== null),
+      );
     } else {
       logError(`Unexpected API response shape: ${JSON.stringify(apiResult)}`);
     }

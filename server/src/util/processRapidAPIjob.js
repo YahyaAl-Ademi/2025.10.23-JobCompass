@@ -1,7 +1,5 @@
-function normalizeDescription(str) {
-  const s = typeof str === "string" ? str : "";
-  return " " + s.replace(/[^A-Za-z0-9+#]/g, " ").replace(/ +/g, " ") + " ";
-}
+import normalizeDescription from "./normalizeDescription.js";
+import validateJob from "./validateJob.js";
 
 export default function processRapidAPIjob(job) {
   const {
@@ -47,7 +45,8 @@ export default function processRapidAPIjob(job) {
     default:
       normalizedSeniority = seniority;
   }
-  return {
+  
+  const processedJob = {
     id,
     url: ur2 || url1,
     title,
@@ -71,4 +70,6 @@ export default function processRapidAPIjob(job) {
     organization_url,
     organization_logo,
   };
+
+  return validateJob(processedJob) ? processedJob : null;
 }

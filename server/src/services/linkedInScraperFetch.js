@@ -1,8 +1,8 @@
+import { logInfo, logError } from "../util/logging.js";
+import processScraperJob from "../util/processScraperJob.js";
 const apifyBase = "https://api.apify.com/v2";
 const pollIntervalMs = 5 * 1000;
 const waitTimeoutMs = 10 * 60 * 1000;
-import { logInfo, logError } from "../util/logging.js";
-import processScraperJob from "../util/processScraperJob.js";
 if (!process.env.LINKEDIN_SCRAPER_KEY) {
   throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
 }
@@ -56,17 +56,21 @@ export default async function linkedInScraperFetch(
       if (!response.ok) throw new Error("Failed to fetch run status");
       const run = await response.json();
       const runStatus = run?.data?.status;
-      logInfo(`Run ${runId} status: ${runStatus}`);
+      logInfo(`Run ${runId} for ${search_string} status: ${runStatus}`);
       switch (runStatus) {
         case "SUCCEEDED":
           polling = false;
           break;
         case "FAILED":
         case "ABORTED":
-          throw new Error(`Apify run finished with status ${runStatus}`);
+          throw new Error(
+            `The run ${runId} for ${search_string} has finished with status ${runStatus}`,
+          );
       }
       if (Date.now() - startTime > waitTimeoutMs) {
-        throw new Error(`Timeout for run ${runId} to finish has ended`);
+        throw new Error(
+          `The waiting time for ${runId} for ${search_string} has expired`,
+        );
       }
     }
 
@@ -79,7 +83,11 @@ export default async function linkedInScraperFetch(
     const results = await response.json();
 
     if (Array.isArray(results)) {
-      aggregated.push(...results.map((job) => processScraperJob(job)));
+      aggregated.push(
+        ...results
+          .map((job) => processScraperJob(job))
+          .filter((job) => job !== null),
+      );
     } else {
       throw new Error(
         `Unexpected API response shape: ${JSON.stringify(results)}`,

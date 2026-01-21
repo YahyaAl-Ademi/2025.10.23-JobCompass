@@ -6,14 +6,13 @@ export async function persistJobSearch(
   search_string,
   is_auth = null,
 ) {
-  // Validate fetchedJobs is an array
+  const jobsToInsert = [];
+  const searchStringJobsToInsert = [];
+
   if (!Array.isArray(fetchedJobs)) {
     logError(`fetchedJobs is not an array: ${typeof fetchedJobs}`);
     return;
   }
-
-  const jobsToInsert = [];
-  const searchStringJobsToInsert = [];
 
   await connectedClient.query("BEGIN");
   try {
