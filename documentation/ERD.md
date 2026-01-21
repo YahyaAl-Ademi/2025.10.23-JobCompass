@@ -59,3 +59,21 @@ erDiagram
         text job_id PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_job_id_fkey, ON DELETE CASCADE"
     }
 ```
+
+## Database Schema Overview
+
+The JobCompass database consists of 5 main tables that support user management, job searching, and personalization features:
+
+- **users** - User accounts and profile information
+- **jobs** - Job listings fetched from external APIs
+- **user_favorites** - Many-to-many relationship between users and saved jobs
+- **search_strings** - Search query tracking with authentication context
+- **search_strings_jobs** - Many-to-many relationship linking searches to resulting jobs
+
+## Key Features
+
+- **User Authentication**: JWT-based authentication with password reset functionality
+- **Job Search Integration**: LinkedIn jobs via RapidAPI with local caching
+- **Personalization**: User favorites with commute time calculations
+- **Search Analytics**: Tracking of search queries and their results
+- **Automated Cleanup**: Daily cron jobs remove old data and maintain database performance

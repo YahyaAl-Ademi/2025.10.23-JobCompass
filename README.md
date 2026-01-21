@@ -55,44 +55,118 @@ Connect talented professionals with opportunities that match their skills, prefe
 
 ```
 2025.10.23-JobCompass/
-├── client/                 # React frontend application
+├── client/                     # React frontend application
+│   ├── public/                 # Static assets (favicon, etc.)
 │   ├── src/
-│   │   ├── components/    # Reusable React components
-│   │   ├── pages/         # Page components
-│   │   ├── context/       # React Context providers
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── util/          # Utility functions
-│   │   └── assets/        # Static assets
-│   └── package.json
-├── server/                 # Express backend application
+│   │   ├── components/         # Reusable React components (37 items)
+│   │   │   ├── Layout/         # Main application layout
+│   │   │   ├── AuthForms/      # Login/Signup forms
+│   │   │   ├── ProtectedRoute/ # Authentication wrapper
+│   │   │   └── [33 more...]    # UI components
+│   │   ├── pages/              # Page-level components (14 items)
+│   │   │   ├── jobSearch/      # Job search interface
+│   │   │   ├── openPositions/  # Browse job listings
+│   │   │   ├── Profile/        # User profile management
+│   │   │   ├── MyFavorites/    # Saved jobs management
+│   │   │   ├── About/          # About page
+│   │   │   └── [8 more...]     # Additional pages
+│   │   ├── context/            # React Context providers (2 items)
+│   │   ├── hooks/              # Custom React hooks (3 items)
+│   │   ├── util/               # Utility functions (12 items)
+│   │   ├── reducers/           # State management (1 item)
+│   │   ├── data/               # Static data files (1 item)
+│   │   ├── assets/             # Static assets (5 items)
+│   │   ├── App.jsx             # Main application component with routing
+│   │   ├── main.jsx            # Application entry point
+│   │   └── index.css           # Global styles
+│   ├── .babelrc                # Babel configuration
+│   ├── .eslintrc.js            # ESLint configuration
+│   ├── .env.example            # Environment variables template
+│   └── package.json            # Frontend dependencies
+├── server/                     # Express backend application
 │   ├── src/
-│   │   ├── controllers/   # Route controllers
-│   │   ├── routes/        # API routes
-│   │   ├── middleware/    # Express middleware
-│   │   ├── services/      # Business logic services
-│   │   ├── db/            # Database configuration
-│   │   ├── config/        # Configuration files
-│   │   ├── data/          # Data files
-│   │   └── util/          # Utility functions
-│   └── package.json
-├── .github/               # GitHub workflows
-├── .husky/                # Git hooks
-└── package.json           # Root package.json with workspace scripts
+│   │   ├── controllers/        # Route controllers (10 items)
+│   │   │   ├── user.js         # User management logic
+│   │   │   ├── jobData.js      # Job search and data processing
+│   │   │   ├── travelController.js # Commute calculations
+│   │   │   └── [7 more...]     # Additional controllers
+│   │   ├── routes/             # API route definitions (3 items)
+│   │   │   ├── user.js         # User-related endpoints
+│   │   │   ├── job.js          # Job search endpoints
+│   │   │   └── travel.js       # Travel time endpoints
+│   │   ├── services/           # Business logic services (8 items)
+│   │   │   ├── persistJobSearch.js # Job data persistence
+│   │   │   ├── linkedInScraperFetch.js # LinkedIn API integration
+│   │   │   ├── rapidAPIfetch.js # RapidAPI client
+│   │   │   ├── googleMapsApi.js # Google Maps integration
+│   │   │   └── [4 more...]     # Additional services
+│   │   ├── middleware/         # Express middleware (2 items)
+│   │   │   ├── authVerify.js   # JWT authentication
+│   │   │   └── rateLimiter.js  # API rate limiting
+│   │   ├── db/                 # Database configuration (1 item)
+│   │   │   └── connectNeonDB.js # PostgreSQL connection
+│   │   ├── config/             # Configuration files (1 item)
+│   │   ├── util/               # Utility functions (9 items)
+│   │   │   ├── logging.js      # Error and info logging
+│   │   │   └── [8 more...]     # Additional utilities
+│   │   ├── app.js              # Express app configuration
+│   │   └── index.js            # Server entry point with cron jobs
+│   ├── .env.example            # Environment variables template
+│   ├── .eslintrc.cjs           # ESLint configuration
+│   ├── babel.config.cjs        # Babel configuration
+│   └── package.json            # Backend dependencies
+├── db_migrations/              # Database schema and migrations
+│   └── create_tables.sql       # PostgreSQL table definitions
+├── documentation/              # Project documentation
+│   ├── ERD.md                  # Entity Relationship Diagram
+│   ├── authentication/         # Authentication flow docs (11 items)
+│   ├── jobFetch/              # Job fetching process docs (12 items)
+│   └── devdata/               # Development data samples (3 items)
+├── .github/                   # GitHub workflows
+│   └── workflows/             # CI/CD pipeline configurations
+│       ├── client-code-style-check.yml
+│       └── server-code-style-check.yml
+├── .husky/                    # Git hooks configuration
+│   └── pre-commit             # Pre-commit hooks
+├── .gitignore                 # Git ignore rules
+├── .prettierrc.json           # Prettier configuration
+├── Procfile                   # Heroku deployment configuration
+├── package.json               # Root package.json with workspace scripts
+└── README.md                  # Project documentation
 ```
 
-## Backend Routes Overview
+## Backend API Routes
 
-- `POST /api/users` – sign up;
-- `POST /api/users/login` / `/logout` – auth via HTTP-only cookie.
-- `GET /api/users/me` – current user;
-- `PUT /api/users/profile` – update profile fields.
-- `POST /api/users/update-avatar` – upload avatar (Multer memory storage → Firebase Storage, 6MB limit, JPEG/PNG/GIF/WebP only).
-- `POST /api/users/change-password` / `/change-skills` – profile mutations.
-- `POST /api/users/favorites/toggle` – save/unsave a job;
-- `DELETE /api/users/delete` – delete account.
-- `POST /api/users/forgot-password` / `/reset-password` – email reset flow.
-- `POST /api/jobs/search` – search jobs (RapidAPI LinkedIn + local processing, requires authentication).
-- `POST /api/travel/batch` – batch transit time + transfer counts for job locations.
+### User Management (`/api/users`)
+
+- `POST /api/users` – User registration (rate limited: 5 requests per 5 minutes)
+- `POST /api/users/login` – User authentication (rate limited: 5 requests per 5 minutes)
+- `POST /api/users/logout` – User logout (requires authentication)
+- `GET /api/users/me` – Get current user profile (requires authentication)
+- `PUT /api/users/profile` – Update user profile information (requires authentication)
+- `POST /api/users/update-avatar` – Upload user avatar (requires authentication, 6MB limit, JPEG/PNG/GIF/WebP)
+- `POST /api/users/change-password` – Change user password (requires authentication)
+- `POST /api/users/change-skills` – Update user skills (requires authentication)
+- `POST /api/users/favorites/toggle` – Add/remove job from favorites (requires authentication)
+- `DELETE /api/users/delete` – Delete user account (requires authentication)
+- `POST /api/users/forgot-password` – Initiate password reset via email
+- `POST /api/users/reset-password` – Complete password reset with token
+
+### Job Management (`/api/jobs`)
+
+- `POST /api/jobs/search` – Search jobs using LinkedIn RapidAPI integration (requires authentication)
+
+### Travel & Commute (`/api/travel`)
+
+- `POST /api/travel/batch` – Calculate batch travel times and transfer counts for multiple job locations
+
+## Authentication & Security
+
+- **JWT Tokens**: HTTP-only cookie-based authentication
+- **Rate Limiting**: Authentication endpoints limited to 5 requests per 5 minutes
+- **File Upload**: Avatar uploads limited to 6MB with image type validation
+- **Password Security**: bcrypt hashing for password storage
+- **Session Management**: Secure token-based authentication with expiration
 
 ## 🚀 Getting Started
 
