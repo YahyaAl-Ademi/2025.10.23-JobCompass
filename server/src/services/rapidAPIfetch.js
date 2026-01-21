@@ -1,5 +1,5 @@
 import { logError } from "../util/logging.js";
-import { processRapidAPIjob } from "../util/processRapidAPIjob.js";
+import processRapidAPIjob from "../util/processRapidAPIjob.js";
 
 if (!process.env.X_RAPIDAPI_KEY) {
   throw new Error("X_RAPIDAPI_KEY environment variable is not set");
