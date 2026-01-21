@@ -110,6 +110,20 @@ export async function searchJobs(req, res) {
               jobsToPersist[0].search_string,
               is_auth,
             );
+            const scraperJobsToPersist = await linkedInScraperFetch(
+              connectedClient,
+              searchWords[0],
+              search_string,
+              is_auth,
+            );
+            if (scraperJobsToPersist.length > 0) {
+              await persistJobSearch(
+                connectedClient,
+                scraperJobsToPersist,
+                search_string,
+                is_auth,
+              );
+            }
             if (jobsToPersist.length > 1) {
               for (const jobsData of jobsToPersist) {
                 const { searchWord, fetchedJobs } = jobsData;
@@ -122,12 +136,6 @@ export async function searchJobs(req, res) {
               }
             }
           }
-          linkedInScraperFetch(
-            connectedClient,
-            searchWords[0],
-            search_string,
-            is_auth,
-          );
         })();
       }
       responseData = { ...responseData, success: true, result: aggregatedJobs };
