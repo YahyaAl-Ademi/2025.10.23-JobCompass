@@ -2,12 +2,10 @@ import { logError } from "../util/logging.js";
 
 export async function persistJobSearch(
   connectedClient,
-  search,
+  fetchedJobs,
   search_string,
   is_auth = null,
 ) {
-  const { fetchedJobs, is_complete_string } = search;
-
   // Validate fetchedJobs is an array
   if (!Array.isArray(fetchedJobs)) {
     logError(`fetchedJobs is not an array: ${typeof fetchedJobs}`);
@@ -21,8 +19,8 @@ export async function persistJobSearch(
   try {
     // Insert search string
     await connectedClient.query(
-      "INSERT INTO search_strings (search_string, search_date, is_auth, is_complete_string) VALUES ($1, NOW(), $2, $3) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW(), is_auth = $2, is_complete_string = $3",
-      [search_string, is_auth, is_complete_string],
+      "INSERT INTO search_strings (search_string, search_date, is_auth) VALUES ($1, NOW(), $2) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW(), is_auth = $2",
+      [search_string, is_auth],
     );
 
     // Process all jobs and collect data for batch operations

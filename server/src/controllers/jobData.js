@@ -1,11 +1,9 @@
 import { logError } from "../util/logging.js";
-import processRapidAPIjob from "../util/processRapidAPIjob.js";
-import processScraperJob from "../util/processScraperJob.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import getCachedJobsBySearchString from "../services/getCachedJobsBySearchString.js";
 import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
-import { persistJobSearch } from "../services/persistJobSearch.js";
 import { rapidAPIfetch } from "../services/rapidAPIfetch.js";
+import { fetchPersister } from "../services/fetchPersister.js";
 
 const inProgressSearches = {};
 
@@ -26,7 +24,6 @@ export async function searchJobs(req, res) {
     }
 
     const { search_string } = req.body;
-    const aggregatedJobsIdsSet = new Set();
     let aggregatedJobs = [];
 
     if (typeof search_string !== "string" || !search_string.trim()) {
@@ -44,12 +41,25 @@ export async function searchJobs(req, res) {
         is_auth,
       );
       if (cachedJobsPerSearchString.length > 0) {
-        aggregatedJobs = cachedJobsPerSearchString;
+        aggregatedJobs = [...cachedJobsPerSearchString];
       } else {
-        const searchWords = search_string
-          .split(new RegExp("[\\s\\-.'/]+"))
-          .filter(Boolean);
-        // Fetch results for all search words concurrently
+        if (is_auth) {
+          // Persist jobs from rapidAPI, then start and persist jobs from LinkedIn scraper
+          responseData.msg = "Some more jobs will be available in ten minutes.";
+          fetchPersister(
+            search_string,
+            is_auth,
+            inProgressSearches,
+            linkedInScraperFetch,
+          );
+        }
+      }
+
+      const searchWords = search_string
+        .split(new RegExp("[\\s\\-.'/]+"))
+        .filter(Boolean);
+      // Fetch results for all search words concurrently
+      if (searchWords.length > 1) {
         const fetchPromises = searchWords.map(async (searchWord, i) => {
           // Try to get cached jobs first
           const cachedJobs = await getCachedJobsBySearchString(
@@ -59,58 +69,32 @@ export async function searchJobs(req, res) {
           );
           let fetchedJobs;
           if (cachedJobs.length > 0) {
-            fetchedJobs = cachedJobs;
+            fetchedJobs = [...cachedJobs];
           } else {
             // If not cached or DB error, use real search
-            if (!inProgressSearches[search_string]) {
-              inProgressSearches[search_string] = {
-                status: true,
-                is_complete_string: true,
-                fetchedJobs: [],
-              };
-            }
-            if (
-              !inProgressSearches[searchWord] &&
-              searchWord !== search_string
-            ) {
-              inProgressSearches[searchWord] = {
-                status: true,
-                is_complete_string: false,
-                fetchedJobs: [],
-              };
-            }
 
             if (searchWords.length > 2 && i >= 2) {
+              inProgressSearches[searchWord] = { fetchedJobs: [] };
               fetchedJobs = await new Promise((resolve) =>
                 setTimeout(
                   () => resolve(rapidAPIfetch(searchWord, is_auth)),
                   (i - 1) * 700,
                 ),
               );
-              inProgressSearches[searchWord] = {
-                ...inProgressSearches[searchWord],
-                fetchedJobs,
-              };
-              inProgressSearches[search_string] = {
-                ...inProgressSearches[search_string],
-                fetchedJobs,
-              };
+              inProgressSearches[searchWord].fetchedJobs = [...fetchedJobs];
+              fetchPersister(searchWord, is_auth, inProgressSearches);
             } else {
               fetchedJobs = await rapidAPIfetch(searchWord, is_auth);
-              inProgressSearches[searchWord] = {
-                ...inProgressSearches[searchWord],
-                fetchedJobs,
-              };
-              inProgressSearches[search_string] = {
-                ...inProgressSearches[search_string],
-                fetchedJobs,
-              };
+              inProgressSearches[searchWord].fetchedJobs = [...fetchedJobs];
+              fetchPersister(searchWord, is_auth, inProgressSearches);
             }
           }
           return fetchedJobs;
         });
-
         // Deduplicate jobs
+        const aggregatedJobsIdsSet = new Set(
+          aggregatedJobs.map((job) => job.id),
+        );
         const fetchedJobsArrays = await Promise.all(fetchPromises);
         for (const fetchedJobs of fetchedJobsArrays) {
           for (const job of fetchedJobs) {
@@ -120,64 +104,6 @@ export async function searchJobs(req, res) {
             }
           }
         }
-
-        // Persist jobs from rapidAPI, then start and persist jobs from LinkedIn scraper
-        (async () => {
-          responseData.msg = "Some more jobs will be available in ten minutes.";
-
-          if (Object.keys(inProgressSearches).length > 0) {
-            Object.entries(inProgressSearches).forEach(
-              async ([searchTerm, search]) => {
-                const {
-                  connectedClient,
-                  error: connectionError,
-                  endConnection,
-                } = await connectNeonDB();
-                if (!connectionError) {
-                  await persistJobSearch(
-                    connectedClient,
-                    search,
-                    searchTerm,
-                    is_auth,
-                    processRapidAPIjob,
-                  );
-                  if (endConnection) await endConnection();
-                }
-                searchTerm !== search_string &&
-                  delete inProgressSearches[searchTerm];
-              },
-            );
-            {
-              const is_complete_string =
-                inProgressSearches?.[search_string]?.is_complete_string;
-              if (is_auth && is_complete_string) {
-                const scraperJobsToPersist =
-                  await linkedInScraperFetch(search_string);
-                if (scraperJobsToPersist.length > 0) {
-                  const {
-                    connectedClient,
-                    error: connectionError,
-                    endConnection,
-                  } = await connectNeonDB();
-                  if (!connectionError) {
-                    await persistJobSearch(
-                      connectedClient,
-                      {
-                        fetchedJobs: scraperJobsToPersist,
-                        is_complete_string,
-                      },
-                      search_string,
-                      is_auth,
-                      processScraperJob,
-                    );
-                  }
-                  delete inProgressSearches[search_string];
-                  if (endConnection) await endConnection();
-                }
-              }
-            }
-          }
-        })();
       }
 
       responseData = { ...responseData, success: true, result: aggregatedJobs };
