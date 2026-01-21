@@ -45,7 +45,7 @@ export default function processRapidAPIjob(job) {
     default:
       normalizedSeniority = seniority;
   }
-  
+
   const processedJob = {
     id,
     url: ur2 || url1,

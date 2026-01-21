@@ -16,7 +16,7 @@ export default function processScraperJob(job) {
     companyWebsite: organization_url,
     companyLogo: organization_logo,
   } = job || {};
-  
+
   const processedJob = {
     id,
     url,
