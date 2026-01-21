@@ -1,5 +1,5 @@
 import { logError } from "../util/logging.js";
-import processJobPost from "../util/processJobPost.js";
+import processRapidAPIjob from "../util/processRapidAPIjob.js";
 
 export async function persistJobSearch(
   connectedClient,
@@ -24,7 +24,7 @@ export async function persistJobSearch(
       if (!job.id) continue;
 
       try {
-        jobsToInsert.push(processJobPost(job));
+        jobsToInsert.push(processRapidAPIjob(job));
 
         // Collect search_strings_jobs relationships
         searchStringJobsToInsert.push({

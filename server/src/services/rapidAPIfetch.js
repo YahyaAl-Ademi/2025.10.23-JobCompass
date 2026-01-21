@@ -1,5 +1,5 @@
 import { logError } from "../util/logging.js";
-import { processJobPost } from "../util/processJobPost.js";
+import { processRapidAPIjob } from "../util/processRapidAPIjob.js";
 
 if (!process.env.X_RAPIDAPI_KEY) {
   throw new Error("X_RAPIDAPI_KEY environment variable is not set");
@@ -55,7 +55,7 @@ export async function rapidAPIfetch(
 
   results.forEach((apiResult) => {
     if (Array.isArray(apiResult)) {
-      aggregated.push(...apiResult.map((job) => processJobPost(job)));
+      aggregated.push(...apiResult.map((job) => processRapidAPIjob(job)));
     } else {
       logError(`Unexpected API response shape: ${JSON.stringify(apiResult)}`);
     }
