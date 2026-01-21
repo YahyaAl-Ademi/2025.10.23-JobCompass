@@ -1,4 +1,7 @@
-export default function PopupForFavorites({ handleLoginRedirect, setShowPopup }) {
+export default function PopupForFavorites({
+  handleLoginRedirect,
+  setShowPopup,
+}) {
   return (
     <div className="popup-overlay">
       <div className="popup-card">

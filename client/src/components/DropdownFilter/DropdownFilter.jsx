@@ -2,7 +2,13 @@ import { useState, useRef } from "react";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import "./DropdownFilter.css";
 
-export default function DropdownFilter({ filterKey, label, options, activeValues, onFilterChange }) {
+export default function DropdownFilter({
+  filterKey,
+  label,
+  options,
+  activeValues,
+  onFilterChange,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 

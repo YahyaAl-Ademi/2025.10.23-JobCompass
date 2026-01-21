@@ -1,4 +1,7 @@
-export default function PopupForMoreAndApply({ handleLoginRedirect, setShowPopup }) {
+export default function PopupForMoreAndApply({
+  handleLoginRedirect,
+  setShowPopup,
+}) {
   return (
     <div className="popup-overlay">
       <div className="popup-card">

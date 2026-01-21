@@ -1,7 +1,14 @@
 import { UseUser } from "../../context/UserContext";
 import "./AddressSettings.css";
 
-export default function AddressSettings({ handleSaveClick, streetInputRef, houseInputRef, cityInputRef, countryInputRef, clearAlert }) {
+export default function AddressSettings({
+  handleSaveClick,
+  streetInputRef,
+  houseInputRef,
+  cityInputRef,
+  countryInputRef,
+  clearAlert,
+}) {
   const { user } = UseUser();
 
   function pressEnterKey(e) {
