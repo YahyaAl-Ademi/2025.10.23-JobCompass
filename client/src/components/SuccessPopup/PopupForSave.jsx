@@ -1,10 +1,5 @@
 import "../JobCard/JobCard.css";
-export default function PopupForSave({
-  title = "Want to save your settings?",
-  message = "Log in to hop on board!",
-  handleLoginRedirect,
-  setShowSavePopup,
-}) {
+export default function PopupForSave({ title = "Want to save your settings?", message = "Log in to hop on board!", handleLoginRedirect, setShowSavePopup }) {
   return (
     <div className="popup-overlay">
       <div className="popup-card">

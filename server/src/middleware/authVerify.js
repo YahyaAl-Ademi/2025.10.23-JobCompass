@@ -10,7 +10,7 @@ export const blacklistedTokens = [];
 // ========================
 // VERIFY TOKEN - Middleware
 // ========================
-export const verifyToken = (req, res, next) => {
+export function verifyToken(req, res, next) {
   let msg;
   try {
     const token = req.cookies?.token;
@@ -43,4 +43,4 @@ export const verifyToken = (req, res, next) => {
   } else {
     return res.status(401).json({ success: false, msg });
   }
-};
+}
