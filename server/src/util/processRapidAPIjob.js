@@ -6,7 +6,8 @@ function normalizeDescription(str) {
 export default function processRapidAPIjob(job) {
   const {
     id,
-    url,
+    url: url1,
+    external_apply_url: ur2,
     title,
     date_posted,
     employment_type = [],
@@ -15,7 +16,7 @@ export default function processRapidAPIjob(job) {
     seniority,
     description_text = "",
     organization,
-    organization_url,
+    linkedin_org_url: organization_url,
     organization_logo,
   } = job || {};
   // normalize seniority values coming from the job source
@@ -48,7 +49,7 @@ export default function processRapidAPIjob(job) {
   }
   return {
     id,
-    url,
+    url: ur2 || url1,
     title,
     date_posted,
     employment_type:
