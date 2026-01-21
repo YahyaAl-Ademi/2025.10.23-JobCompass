@@ -257,9 +257,6 @@ export const logoutUser = async (req, res) => {
 };
 
 export const getMe = async (req, res) => {
-  const token = req.cookies?.token;
-  if (!token) return res.json({ success: false, msg: "No token provided" });
-
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
     return res.status(503).json({
@@ -269,13 +266,14 @@ export const getMe = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // User is already verified by verifyToken middleware
+    const decoded = req.user;
     const result = await connectedClient.query(
       `${USER_FULL_INFO_QUERY} WHERE u.id = $1`,
       [decoded.id],
     );
     if (result.rows.length === 0) {
-      return res.json({ success: false, msg: "User not found" });
+      return res.status(401).json({ success: false, msg: "User not found" });
     }
     const rows = result.rows;
     const userDataRow = rows[0];
@@ -320,13 +318,11 @@ export const getMe = async (req, res) => {
 
     res.json({ success: true, user: user });
   } catch (err) {
-    // JWT verification errors (expired, invalid token, etc.)
-    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
-      return res.json({ success: false, msg: "Invalid or expired token" });
-    }
-    // Other errors
     logError(`Error in getMe: ${err}`);
-    return res.json({ success: false, msg: "Failed to fetch user data" });
+    return res
+
+      .status(500)
+      .json({ success: false, msg: "Failed to fetch user data" });
   } finally {
     if (endConnection) await endConnection();
   }
