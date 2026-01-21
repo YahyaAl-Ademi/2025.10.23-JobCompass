@@ -52,6 +52,7 @@ erDiagram
         text search_string PK "NOT NULL, CONSTRAINT search_strings_pkey"
         timestamp search_date
         uuid is_auth
+        boolean is_complete_string "DEFAULT false"
     }
 
     search_strings_jobs {
