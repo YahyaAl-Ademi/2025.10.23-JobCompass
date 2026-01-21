@@ -1,11 +1,13 @@
 import { logError } from "../util/logging.js";
 import processRapidAPIjob from "../util/processRapidAPIjob.js";
+import processScraperJob from "../util/processScraperJob.js";
 
 export async function persistJobSearch(
   connectedClient,
   search,
   search_string,
   is_auth = null,
+  processorFunction = processRapidAPIjob,
 ) {
   const { fetchedJobs = [], is_complete_string = false } = search;
   const jobsToInsert = [];
@@ -24,7 +26,8 @@ export async function persistJobSearch(
       if (!job.id) continue;
 
       try {
-        jobsToInsert.push(processRapidAPIjob(job));
+        const functionName = processorFunction.name;
+        jobsToInsert.push(processorFunction(job, functionName));
 
         // Collect search_strings_jobs relationships
         searchStringJobsToInsert.push({

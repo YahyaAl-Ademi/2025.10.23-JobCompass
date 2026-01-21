@@ -1,9 +1,11 @@
 import { logError } from "../util/logging.js";
-import { rapidAPIfetch } from "../services/rapidAPIfetch.js";
+import processRapidAPIjob from "../util/processRapidAPIjob.js";
+import processScraperJob from "../util/processScraperJob.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
 import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
 import { persistJobSearch } from "../services/persistJobSearch.js";
+import { rapidAPIfetch } from "../services/rapidAPIfetch.js";
 
 const inProgressSearches = {};
 
@@ -119,6 +121,7 @@ export async function searchJobs(req, res) {
                   search,
                   searchWord,
                   is_auth,
+                  processRapidAPIjob,
                 );
                 {
                   const { is_complete_string } = search;
@@ -131,6 +134,7 @@ export async function searchJobs(req, res) {
                         scraperJobsToPersist,
                         searchWord,
                         is_auth,
+                        processScraperJob,
                       );
                     }
                   }

@@ -3,7 +3,7 @@ function normalizeDescription(str) {
   return " " + s.replace(/[^A-Za-z0-9+#]/g, " ").replace(/ +/g, " ") + " ";
 }
 
-export default function processRapidAPIjob(job, functionName) {
+export default function processScraperJob(job, functionName) {
   const {
     id,
     url,
