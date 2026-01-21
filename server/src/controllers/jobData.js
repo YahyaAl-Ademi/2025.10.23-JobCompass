@@ -5,7 +5,7 @@ import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchSt
 import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
 import { persistJobSearch } from "../services/persistJobSearch.js";
 
-const searchesInProgress = new Set();
+const inProgressSearches = {};
 
 export async function searchJobs(req, res) {
   let is_auth = req?.user?.id || null;
@@ -41,15 +41,12 @@ export async function searchJobs(req, res) {
         search_string,
         is_auth,
       );
-      searchesInProgress.add(search_string);
       if (cachedJobsPerSearchString.length > 0) {
         aggregatedJobs = cachedJobsPerSearchString;
       } else {
-        const jobsToPersist = [];
         const searchWords = search_string
           .split(new RegExp("[\\s\\-.'/]+"))
           .filter(Boolean);
-        searchWords.forEach((word) => searchesInProgress.add(word));
         // Fetch results for all search words concurrently
         const fetchPromises = searchWords.map(async (searchWord, i) => {
           // Try to get cached jobs first
@@ -58,36 +55,41 @@ export async function searchJobs(req, res) {
             searchWord,
             is_auth,
           );
-
           let fetchedJobs;
           if (cachedJobs.length > 0) {
             fetchedJobs = cachedJobs;
           } else {
             // If not cached or DB error, use real search
+            inProgressSearches[search_string] = {
+              status: true,
+              is_complete_string: true,
+              fetchedJobs: [],
+            };
+            if (searchWord !== search_string) {
+              inProgressSearches[searchWord] = {
+                status: true,
+                is_complete_string: false,
+                fetchedJobs: [],
+              };
+            }
+
             if (searchWords.length > 2 && i >= 2) {
               fetchedJobs = new Promise((resolve) =>
                 setTimeout(
-                  () =>
-                    resolve(
-                      rapidAPIfetch(
-                        connectedClient,
-                        searchWord,
-                        search_string,
-                        is_auth,
-                      ),
-                    ),
+                  () => resolve(rapidAPIfetch(searchWord, is_auth)),
                   (i - 1) * 700,
                 ),
               );
-              jobsToPersist.push({ searchWord, search_string, fetchedJobs });
+              inProgressSearches[searchWord] = {
+                ...inProgressSearches[searchWord],
+                fetchedJobs,
+              };
             } else {
-              fetchedJobs = rapidAPIfetch(
-                connectedClient,
-                searchWord,
-                search_string,
-                is_auth,
-              );
-              jobsToPersist.push({ searchWord, search_string, fetchedJobs });
+              fetchedJobs = rapidAPIfetch(searchWord, is_auth);
+              inProgressSearches[searchWord] = {
+                ...inProgressSearches[searchWord],
+                fetchedJobs,
+              };
             }
           }
           return fetchedJobs;
@@ -104,51 +106,35 @@ export async function searchJobs(req, res) {
           }
         }
 
-        // Persist jobs and start LinkedIn scraper
+        // Persist jobs from rapidAPI, then start and persist jobs from LinkedIn scraper
         (async () => {
           responseData.msg = "Some more jobs will be available in ten minutes.";
-          if (
-            jobsToPersist.length > 0 &&
-            !searchesInProgress.has(jobsToPersist[0].search_string) &&
-            !jobsToPersist
-              .map((search) => search.searchWord)
-              .some((searchWord) => searchesInProgress.has(searchWord))
-          ) {
-            await persistJobSearch(
-              connectedClient,
-              [...jobsToPersist],
-              jobsToPersist[0].search_string,
-              is_auth,
-            );
-            const scraperJobsToPersist = await linkedInScraperFetch(
-              connectedClient,
-              searchWords[0],
-              search_string,
-              is_auth,
-            );
-            if (scraperJobsToPersist.length > 0) {
-              await persistJobSearch(
-                connectedClient,
-                scraperJobsToPersist,
-                search_string,
-                is_auth,
-              );
-            }
-            if (jobsToPersist.length > 1) {
-              for (const jobsData of jobsToPersist) {
-                const { searchWord, fetchedJobs } = jobsData;
+          if (Object.keys(inProgressSearches).length > 0) {
+            Object.entries(inProgressSearches).forEach(
+              async ([searchWord, search]) => {
                 await persistJobSearch(
                   connectedClient,
-                  fetchedJobs,
+                  search,
                   searchWord,
                   is_auth,
                 );
-              }
-            }
-            searchesInProgress.delete(jobsToPersist[0].search_string);
-            jobsToPersist
-              .map((search) => search.searchWord)
-              .every((searchWord) => searchesInProgress.delete(searchWord));
+                {
+                  const { is_complete_string } = search;
+                  if (is_auth && is_complete_string) {
+                    const scraperJobsToPersist =
+                      await linkedInScraperFetch(searchWord);
+                    if (scraperJobsToPersist.length > 0) {
+                      await persistJobSearch(
+                        connectedClient,
+                        scraperJobsToPersist,
+                        search_string,
+                        is_auth,
+                      );
+                    }
+                  }
+                }
+              },
+            );
           }
         })();
       }

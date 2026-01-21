@@ -3,10 +3,11 @@ import processJobPost from "../util/processJobPost.js";
 
 export async function persistJobSearch(
   connectedClient,
-  aggregated,
+  search,
   search_string,
   is_auth = null,
 ) {
+  const { fetchedJobs = [], is_complete_string = false } = search;
   const jobsToInsert = [];
   const searchStringJobsToInsert = [];
 
@@ -14,12 +15,12 @@ export async function persistJobSearch(
   try {
     // Insert search string
     await connectedClient.query(
-      "INSERT INTO search_strings (search_string, search_date, is_auth) VALUES ($1, NOW(), $2) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW(), is_auth = $2",
-      [search_string, is_auth],
+      "INSERT INTO search_strings (search_string, search_date, is_auth, is_complete_string) VALUES ($1, NOW(), $2, $3) ON CONFLICT (search_string) DO UPDATE SET search_date = NOW(), is_auth = $2, is_complete_string = $3",
+      [search_string, is_auth, is_complete_string],
     );
 
     // Process all jobs and collect data for batch operations
-    for (const job of aggregated) {
+    for (const job of fetchedJobs) {
       if (!job.id) continue;
 
       try {
@@ -27,7 +28,7 @@ export async function persistJobSearch(
 
         // Collect search_strings_jobs relationships
         searchStringJobsToInsert.push({
-          searchString: search_string,
+          search_string,
           jobId: job.id,
         });
       } catch (jobErr) {
@@ -96,6 +97,4 @@ export async function persistJobSearch(
     await connectedClient.query("ROLLBACK");
     logError(`Transaction error: ${error}`);
   }
-
-  return jobsToInsert;
 }

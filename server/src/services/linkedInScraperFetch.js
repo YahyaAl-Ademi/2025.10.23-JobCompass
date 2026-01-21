@@ -6,15 +6,13 @@ if (!process.env.LINKEDIN_SCRAPER_KEY) {
   throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
 }
 
-export default async function linkedInScraperFetch() {
-  // connectedClient,
-  // searchWords,
-  // search_string,
-  // is_auth,
-  // location = "Netherlands",
+export default async function linkedInScraperFetch(
+  search_string,
+  location = "Netherlands",
+) {
+  const aggregated = [];
   const token = process.env.LINKEDIN_SCRAPER_KEY;
-  const startUrl =
-    "https://www.linkedin.com/jobs/search?keywords=web%20developer&location=Drenthe&geoId=100735123&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0";
+  const startUrl = `https://www.linkedin.com/jobs/search?keywords=${encodeURIComponent(search_string)}&location=${encodeURIComponent(location)}`;
   const headers = {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
@@ -77,7 +75,17 @@ export default async function linkedInScraperFetch() {
     )}/dataset/items?format=json`;
     const response = await fetch(dataFetchUrl, { headers });
     if (!response.ok) throw new Error("Failed to fetch dataset items");
-    return await response.json();
+    const results = await response.json();
+
+    if (Array.isArray(results)) {
+      aggregated.push(...results.map((job) => processJobPost(job)));
+    } else {
+      throw new Error(
+        `Unexpected API response shape: ${JSON.stringify(results)}`,
+      );
+    }
+
+    return aggregated;
   } catch (error) {
     logError(`linkedInScraperFetch error: ${error}`);
   }
