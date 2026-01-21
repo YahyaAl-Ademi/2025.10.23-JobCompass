@@ -1,4 +1,4 @@
-import { logError } from "../util/logging.js";
+import { logError, logWarning } from "../util/logging.js";
 import { getTransitRouteSummary } from "../services/googleMapsApi.js";
 
 function formatAddress(address) {
@@ -12,36 +12,51 @@ function formatAddress(address) {
   return addressParts.join(", ");
 }
 
+const workPlacesSet = new Set([
+  "Netherlands",
+  "Drenthe, Netherlands",
+  "Flevoland, Netherlands",
+  "Friesland, Netherlands",
+  "Gelderland, Netherlands",
+  "Groningen, Netherlands",
+  "Limburg, Netherlands",
+  "Noord-Brabant, Netherlands",
+  "Noord-Holland, Netherlands",
+  "Overijssel, Netherlands",
+  "Utrecht, Netherlands",
+  "Zeeland, Netherlands",
+  "Zuid-Holland, Netherlands",
+]);
+
 export default async function calculateBatchTravelTime(req, res) {
   try {
-    const { homeAddress, workCities } = req.body;
+    const { homeAddress, workCities } = req.body || {};
+
+    if (!homeAddress || !workCities || !Array.isArray(workCities)) {
+      logWarning("Invalid request body for batch travel calculation");
+      return res.status(400).json({
+        success: false,
+        msg: "Missing homeAddress or workCities array",
+      });
+    }
+
     const { homeCity } = homeAddress;
     const formattedHomeAddress = formatAddress(homeAddress);
 
     const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(escapeRegExp(" " + homeCity + " "), "i");
+    const re = homeCity
+      ? new RegExp(escapeRegExp(" " + homeCity + " "), "i")
+      : null;
 
-    // Build an array of promises. For same-city matches we return an
-    // already-resolved promise with zero travel time. For external cities
-    // start all `getTransitRouteSummary` calls immediately (concurrent).
-    const workPlacesSet = new Set([
-      "Netherlands",
-      "Drenthe, Netherlands",
-      "Flevoland, Netherlands",
-      "Friesland, Netherlands",
-      "Gelderland, Netherlands",
-      "Groningen, Netherlands",
-      "Limburg, Netherlands",
-      "Noord-Brabant, Netherlands",
-      "Noord-Holland, Netherlands",
-      "Overijssel, Netherlands",
-      "Utrecht, Netherlands",
-      "Zeeland, Netherlands",
-      "Zuid-Holland, Netherlands",
-    ]);
-    const promises = workCities.map((workCity) => {
+    // Filter out non-string work cities and process
+    const validWorkCities = workCities.filter(
+      (city) => typeof city === "string",
+    );
+
+    const promises = validWorkCities.map((workCity) => {
+      const normalizedWorkCity = workCity.replace(",", " ");
       if (
-        re.test(" " + workCity.replace(",", " ") + " ") ||
+        (re && re.test(" " + normalizedWorkCity + " ")) ||
         workPlacesSet.has(workCity)
       ) {
         return Promise.resolve({
@@ -62,10 +77,13 @@ export default async function calculateBatchTravelTime(req, res) {
             least_transfers: travelData.least_transfers,
           };
         })
-        .catch((error) => ({
-          workCity,
-          error: error.message,
-        }));
+        .catch((error) => {
+          logWarning(`Travel fetch failed for ${workCity}: ${error.message}`);
+          return {
+            workCity,
+            error: error.message,
+          };
+        });
     });
 
     const results = await Promise.all(promises);
@@ -80,7 +98,7 @@ export default async function calculateBatchTravelTime(req, res) {
     logError(`Batch travel calculation error: ${error}`);
     return res.status(500).json({
       success: false,
-      msg: "Error calculating travel times",
+      msg: "An unexpected error occurred during travel calculation",
       error: error.message,
     });
   }
