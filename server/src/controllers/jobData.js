@@ -91,10 +91,18 @@ export async function searchJobs(req, res) {
                 ...inProgressSearches[searchWord],
                 fetchedJobs,
               };
+              inProgressSearches[search_string] = {
+                ...inProgressSearches[search_string],
+                fetchedJobs,
+              };
             } else {
               fetchedJobs = await rapidAPIfetch(searchWord, is_auth);
               inProgressSearches[searchWord] = {
                 ...inProgressSearches[searchWord],
+                fetchedJobs,
+              };
+              inProgressSearches[search_string] = {
+                ...inProgressSearches[search_string],
                 fetchedJobs,
               };
             }
