@@ -268,6 +268,15 @@ export const getMe = async (req, res) => {
   try {
     // User is already verified by verifyToken middleware
     const decoded = req.user;
+
+    // Safety check: if req.user is not set, return 401
+    if (!decoded || !decoded.id) {
+      return res.status(401).json({
+        success: false,
+        msg: "Unauthorized - Invalid or missing authentication",
+      });
+    }
+
     const result = await connectedClient.query(
       `${USER_FULL_INFO_QUERY} WHERE u.id = $1`,
       [decoded.id],
