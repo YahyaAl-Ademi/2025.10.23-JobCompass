@@ -5,6 +5,8 @@ import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchSt
 import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
 import { persistJobSearch } from "../services/persistJobSearch.js";
 
+const searchesInProgress = new Set();
+
 export async function searchJobs(req, res) {
   let is_auth = req?.user?.id || null;
   const {
@@ -39,6 +41,7 @@ export async function searchJobs(req, res) {
         search_string,
         is_auth,
       );
+      searchesInProgress.add(search_string);
       if (cachedJobsPerSearchString.length > 0) {
         aggregatedJobs = cachedJobsPerSearchString;
       } else {
@@ -46,6 +49,7 @@ export async function searchJobs(req, res) {
         const searchWords = search_string
           .split(new RegExp("[\\s\\-.'/]+"))
           .filter(Boolean);
+        searchWords.forEach((word) => searchesInProgress.add(word));
         // Fetch results for all search words concurrently
         const fetchPromises = searchWords.map(async (searchWord, i) => {
           // Try to get cached jobs first
@@ -103,7 +107,13 @@ export async function searchJobs(req, res) {
         // Persist jobs and start LinkedIn scraper
         (async () => {
           responseData.msg = "Some more jobs will be available in ten minutes.";
-          if (jobsToPersist.length > 0) {
+          if (
+            jobsToPersist.length > 0 &&
+            !searchesInProgress.has(jobsToPersist[0].search_string) &&
+            !jobsToPersist
+              .map((search) => search.searchWord)
+              .some((searchWord) => searchesInProgress.has(searchWord))
+          ) {
             await persistJobSearch(
               connectedClient,
               [...jobsToPersist],
@@ -135,9 +145,14 @@ export async function searchJobs(req, res) {
                 );
               }
             }
+            searchesInProgress.delete(jobsToPersist[0].search_string);
+            jobsToPersist
+              .map((search) => search.searchWord)
+              .every((searchWord) => searchesInProgress.delete(searchWord));
           }
         })();
       }
+
       responseData = { ...responseData, success: true, result: aggregatedJobs };
     }
   } catch (error) {
