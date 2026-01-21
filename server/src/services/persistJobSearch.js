@@ -7,7 +7,14 @@ export async function persistJobSearch(
   is_auth = null,
   processorFunction,
 ) {
-  const { fetchedJobs = [], is_complete_string = false } = search;
+  const { fetchedJobs, is_complete_string } = search;
+
+  // Validate fetchedJobs is an array
+  if (!Array.isArray(fetchedJobs)) {
+    logError(`fetchedJobs is not an array: ${typeof fetchedJobs}`);
+    return;
+  }
+
   const jobsToInsert = [];
   const searchStringJobsToInsert = [];
 
@@ -80,7 +87,7 @@ export async function persistJobSearch(
         .join(", ");
 
       const values = searchStringJobsToInsert.flatMap((rel) => [
-        rel.searchString,
+        rel.search_string,
         rel.jobId,
       ]);
 

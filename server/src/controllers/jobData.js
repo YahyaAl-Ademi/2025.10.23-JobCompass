@@ -68,17 +68,22 @@ export async function searchJobs(req, res) {
                 is_complete_string: true,
                 fetchedJobs: [],
               };
-              if (!inProgressSearches[searchWord]) {
-                inProgressSearches[searchWord] = {
-                  status: true,
-                  is_complete_string: false,
-                  fetchedJobs: [],
-                };
-              }
+              console.log("inProgressSearches:", inProgressSearches);
+            }
+            if (
+              !inProgressSearches[searchWord] &&
+              searchWord !== search_string
+            ) {
+              inProgressSearches[searchWord] = {
+                status: true,
+                is_complete_string: false,
+                fetchedJobs: [],
+              };
+              console.log("inProgressSearches:", inProgressSearches);
             }
 
             if (searchWords.length > 2 && i >= 2) {
-              fetchedJobs = new Promise((resolve) =>
+              fetchedJobs = await new Promise((resolve) =>
                 setTimeout(
                   () => resolve(rapidAPIfetch(searchWord, is_auth)),
                   (i - 1) * 700,
@@ -89,7 +94,7 @@ export async function searchJobs(req, res) {
                 fetchedJobs,
               };
             } else {
-              fetchedJobs = rapidAPIfetch(searchWord, is_auth);
+              fetchedJobs = await rapidAPIfetch(searchWord, is_auth);
               inProgressSearches[searchWord] = {
                 ...inProgressSearches[searchWord],
                 fetchedJobs,
@@ -113,29 +118,49 @@ export async function searchJobs(req, res) {
         // Persist jobs from rapidAPI, then start and persist jobs from LinkedIn scraper
         (async () => {
           responseData.msg = "Some more jobs will be available in ten minutes.";
+
           if (Object.keys(inProgressSearches).length > 0) {
             Object.entries(inProgressSearches).forEach(
               async ([searchWord, search]) => {
-                await persistJobSearch(
+                const {
                   connectedClient,
-                  search,
-                  searchWord,
-                  is_auth,
-                  processRapidAPIjob,
-                );
+                  error: connectionError,
+                  endConnection,
+                } = await connectNeonDB();
+                if (!connectionError) {
+                  await persistJobSearch(
+                    connectedClient,
+                    search,
+                    searchWord,
+                    is_auth,
+                    processRapidAPIjob,
+                  );
+                  if (endConnection) await endConnection();
+                }
                 {
                   const { is_complete_string } = search;
                   if (is_auth && is_complete_string) {
                     const scraperJobsToPersist =
                       await linkedInScraperFetch(searchWord);
                     if (scraperJobsToPersist.length > 0) {
-                      await persistJobSearch(
+                      const {
                         connectedClient,
-                        scraperJobsToPersist,
-                        searchWord,
-                        is_auth,
-                        processScraperJob,
-                      );
+                        error: connectionError,
+                        endConnection,
+                      } = await connectNeonDB();
+                      if (!connectionError) {
+                        await persistJobSearch(
+                          connectedClient,
+                          {
+                            fetchedJobs: scraperJobsToPersist,
+                            is_complete_string: true,
+                          },
+                          searchWord,
+                          is_auth,
+                          processScraperJob,
+                        );
+                      }
+                      if (endConnection) await endConnection();
                     }
                   }
                 }
