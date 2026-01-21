@@ -18,6 +18,7 @@ export default function processScraperJob(job) {
     companyWebsite: organization_url,
     companyLogo: organization_logo,
   } = job || {};
+  console.log("Processing scraper job:", job);
   return {
     id,
     url,

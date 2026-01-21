@@ -17,7 +17,7 @@ export async function rapidAPIfetch(
   let limit = 5;
   let maxIterations = 1;
   if (is_auth) {
-    limit = 7;
+    limit = 3;
     maxIterations = 1;
   }
 

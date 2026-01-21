@@ -27,19 +27,26 @@ export async function persistJobSearch(
     );
 
     // Process all jobs and collect data for batch operations
+    const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
     for (const job of fetchedJobs) {
-      if (!job.id) continue;
+      if (
+        !Object.values(job).some(
+          (value) => value === null || value === undefined,
+        ) &&
+        new Date(job.date_posted) >= oneMonthAgo
+      ) {
+        try {
+          jobsToInsert.push(processorFunction(job));
 
-      try {
-        jobsToInsert.push(processorFunction(job));
-
-        // Collect search_strings_jobs relationships
-        searchStringJobsToInsert.push({
-          search_string,
-          jobId: job.id,
-        });
-      } catch (jobErr) {
-        logError(`Error processing job ${job.id}: ${jobErr}`);
+          // Collect search_strings_jobs relationships
+          searchStringJobsToInsert.push({
+            search_string,
+            jobId: job.id,
+          });
+        } catch (jobErr) {
+          logError(`Error processing job ${job.id}: ${jobErr}`);
+        }
       }
     }
 
