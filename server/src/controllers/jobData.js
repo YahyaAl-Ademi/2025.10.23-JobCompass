@@ -68,7 +68,6 @@ export async function searchJobs(req, res) {
                 is_complete_string: true,
                 fetchedJobs: [],
               };
-              console.log("inProgressSearches:", inProgressSearches);
             }
             if (
               !inProgressSearches[searchWord] &&
@@ -79,7 +78,6 @@ export async function searchJobs(req, res) {
                 is_complete_string: false,
                 fetchedJobs: [],
               };
-              console.log("inProgressSearches:", inProgressSearches);
             }
 
             if (searchWords.length > 2 && i >= 2) {

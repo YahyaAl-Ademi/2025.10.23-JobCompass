@@ -5,7 +5,6 @@ export async function persistJobSearch(
   search,
   search_string,
   is_auth = null,
-  processorFunction,
 ) {
   const { fetchedJobs, is_complete_string } = search;
 
@@ -37,7 +36,7 @@ export async function persistJobSearch(
         new Date(job.date_posted) >= oneMonthAgo
       ) {
         try {
-          jobsToInsert.push(processorFunction(job));
+          jobsToInsert.push(job);
 
           // Collect search_strings_jobs relationships
           searchStringJobsToInsert.push({

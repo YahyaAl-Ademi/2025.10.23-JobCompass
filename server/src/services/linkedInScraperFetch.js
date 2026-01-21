@@ -2,7 +2,7 @@ const apifyBase = "https://api.apify.com/v2";
 const pollIntervalMs = 5 * 1000;
 const waitTimeoutMs = 10 * 60 * 1000;
 import { logInfo, logError } from "../util/logging.js";
-import processRapidAPIjob from "../util/processRapidAPIjob.js";
+import processScraperJob from "../util/processScraperJob.js";
 if (!process.env.LINKEDIN_SCRAPER_KEY) {
   throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
 }
@@ -79,7 +79,7 @@ export default async function linkedInScraperFetch(
     const results = await response.json();
 
     if (Array.isArray(results)) {
-      aggregated.push(...results.map((job) => processRapidAPIjob(job)));
+      aggregated.push(...results.map((job) => processScraperJob(job)));
     } else {
       throw new Error(
         `Unexpected API response shape: ${JSON.stringify(results)}`,
