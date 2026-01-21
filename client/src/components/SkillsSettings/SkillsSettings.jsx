@@ -7,9 +7,9 @@ import AlertMessage from "../AlertMessage/AlertMessage";
 import PopupForSave from "../SuccessPopup/PopupForSave";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
-import { cleanUpText } from "../../util/cleanUpText";
+import cleanUpText from "../../util/cleanUpText";
 import { regexEndNormalizeSkill } from "../../util/regexEndNormalizeSkill";
-import { validateSkillInput } from "../../util/skillValidation";
+import validateSkillInput from "../../util/skillValidation";
 import { gif } from "../../assets/index.js";
 // Styles
 import "./SkillsSettings.css";

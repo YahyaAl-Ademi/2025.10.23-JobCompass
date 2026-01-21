@@ -26,4 +26,6 @@ admin.initializeApp({
   storageBucket: process.env.STORAGE_BUCKET,
 });
 
-export const bucket = admin.storage().bucket();
+const bucket = admin.storage().bucket();
+
+export default bucket;

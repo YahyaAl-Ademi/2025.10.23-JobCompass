@@ -18,7 +18,7 @@ import {
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
-import { fixUserSkills } from "../util/fixUserSkills";
+import fixUserSkills from "../util/fixUserSkills";
 import { defaultUser } from "../data/defaultUser";
 
 const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {

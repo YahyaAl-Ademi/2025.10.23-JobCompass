@@ -6,9 +6,9 @@ import {
   useEffect,
 } from "react";
 import { defaultUser } from "../data/defaultUser";
-import { fixUserSkills } from "../util/fixUserSkills";
+import fixUserSkills from "../util/fixUserSkills";
 import useFetch from "../hooks/useFetch";
-import { userReducer } from "../reducers/userReducer";
+import userReducer from "../reducers/userReducer";
 
 const UserContext = createContext();
 

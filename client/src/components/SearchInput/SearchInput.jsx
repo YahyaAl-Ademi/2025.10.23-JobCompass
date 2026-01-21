@@ -2,9 +2,9 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { UseJobs } from "../../context/JobsContext";
 import AlertMessage from "../AlertMessage/AlertMessage";
-import { validateJobInput } from "../../util/searchValidation";
+import validateJobInput from "../../util/searchValidation";
 import "./SearchInput.css";
-import { cleanUpText } from "../../util/cleanUpText";
+import cleanUpText from "../../util/cleanUpText";
 
 export default function SearchInput() {
   const { setSearchString, setAllJobs, performJobFetch } = UseJobs();

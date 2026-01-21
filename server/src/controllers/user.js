@@ -7,7 +7,7 @@ import validationErrorMessage from "../util/validationErrorMessage.js";
 import { logError } from "../util/logging.js";
 import { blacklistedTokens } from "../middleware/authVerify.js";
 import validateCreactUser from "../util/validateCreactUser.js";
-import { updateUserProfile } from "./profile.js";
+import updateUserProfile from "./profile.js";
 import { uploadImage } from "../services/ImageUpload.js";
 
 // JWT Configuration

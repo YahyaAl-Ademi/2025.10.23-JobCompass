@@ -13,7 +13,7 @@ const USER_FULL_INFO_QUERY = `
   LEFT JOIN jobs j ON uf.job_id = j.id
 `;
 
-export const updateUserProfile = async (user_id, fieldsToUpdate) => {
+const updateUserProfile = async (user_id, fieldsToUpdate) => {
   let setParts = [];
   let values = [];
   let i = 1;
@@ -104,3 +104,5 @@ export const updateUserProfile = async (user_id, fieldsToUpdate) => {
     if (endConnection) await endConnection();
   }
 };
+
+export default updateUserProfile;

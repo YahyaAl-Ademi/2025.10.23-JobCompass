@@ -2,7 +2,7 @@ import { logError } from "../util/logging.js";
 import processRapidAPIjob from "../util/processRapidAPIjob.js";
 import processScraperJob from "../util/processScraperJob.js";
 import connectNeonDB from "../db/connectNeonDB.js";
-import { getCachedJobsBySearchString } from "../services/getCachedJobsBySearchString.js";
+import getCachedJobsBySearchString from "../services/getCachedJobsBySearchString.js";
 import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
 import { persistJobSearch } from "../services/persistJobSearch.js";
 import { rapidAPIfetch } from "../services/rapidAPIfetch.js";
