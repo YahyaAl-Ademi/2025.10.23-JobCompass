@@ -23,21 +23,20 @@ flowchart TD
     D --> E["<a href='./3.Navigation.md'>3.Navigation</a>"]
     E --> F["<a href='./4.1.Request%20Validation%20&%20Initiation.md'>4.1.Request Validation & Initiation</a>"]
 
-    subgraph JobSearch[4.Job Search Fetch]
+    subgraph JobSearch["4.Job Search, Processing, Persistence"]
         F --> G{Validation Success?}
         G -->|No| H["<a href='./4.2.Client-Side%20Error%20Handling.md'>4.2.Client-Side Error Handling</a>"]
         G -->|Yes| Q["<a href='./4.3.1.Cache%20Check%20for%20Full%20String.md'>4.3.1.Cache Check for Full String</a>"]
 
-        subgraph SearchProcessing["4.3.Search Processing & Results Aggregation"]
             Q --> Q2{Is the full search_string cached?}
             Q2 -->|Yes| R["<a href='./4.3.2.Full%20Search%20String%20Cached.md'>4.3.2.Full Search String Cached</a>"]
             Q2 -->|No| S["<a href='./4.3.3.Not%20Cached%20for%20Full%20String.md'>4.3.3.Not Cached for Full String</a>"]
 
-            Q2 -->|No & is_auth| T["<a href='./4.5.Background%20Scraper%20Fetch.md'>4.5.Background Scraper Fetch</a>"]
+            S --> S2{Is authenticated?}
+            S2 -->|Yes| T["<a href='./4.5.Background%20Scraper%20Fetch.md'>4.5.Background Scraper Fetch</a>"]
+            S2 -->|No| L
 
             R --> L{Search Success?}
-            S --> L
-        end
 
         L -->|No| J["<a href='./4.4.Server-Network%20Error%20Handling.md'>4.4.Server-Network Error Handling</a>"]
     end
@@ -55,7 +54,7 @@ flowchart TD
     O --> P[User Interaction]
     N --> P
     C --> P
-    T -->|Background Process| P
+    T
 
     style A fill:#4a9eff,stroke:#fff,color:#fff
     style B fill:#ff6b6b,stroke:#4a9eff,color:#fff
@@ -66,6 +65,7 @@ flowchart TD
     style Q2 fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style R fill:#647850,stroke:#4a9eff,color:#fff
     style S fill:#96783c,stroke:#4a9eff,color:#fff
+    style S2 fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style T fill:#96783c,stroke:#4a9eff,color:#fff
     style M fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style O fill:#787846,stroke:#4a9eff,color:#fff
