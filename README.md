@@ -154,11 +154,11 @@ Connect talented professionals with opportunities that match their skills, prefe
 
 ### Job Management (`/api/jobs`)
 
-- `POST /api/jobs/search` – Search jobs using LinkedIn RapidAPI integration (requires authentication)
+- `POST /api/jobs/search` – Search jobs using LinkedIn RapidAPI integration (accessible to both authenticated and unauthenticated users; authenticated users get enhanced results with background LinkedIn scraper)
 
 ### Travel & Commute (`/api/travel`)
 
-- `POST /api/travel/batch` – Calculate batch travel times and transfer counts for multiple job locations
+- `POST /api/travel/batch` – Calculate batch travel times and transfer counts for multiple job locations (no authentication required)
 
 ## Authentication & Security
 
