@@ -46,7 +46,7 @@ export async function searchJobs(req, res) {
         if (is_auth) {
           // Persist jobs from rapidAPI, then start and persist jobs from LinkedIn scraper
           responseData.msg =
-            "We have found more vacancies. They will be available in our database for one to ten minutes; use the same job title in the search to find them.";
+            "New vacancies will be available in our DB in 1-10 min; search for the same job title to find them.";
           fetchPersister(
             search_string,
             is_auth,
