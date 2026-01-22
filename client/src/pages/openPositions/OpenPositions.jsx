@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { gif } from "../../assets/index.js";
 import DropdownFilter from "../../components/DropdownFilter/DropdownFilter";
 import JobCard from "../../components/JobCard/JobCard";
@@ -11,9 +11,11 @@ import getSkillsInDescription from "../../util/getSkillsInDescription";
 import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
 import { UseJobs } from "../../context/JobsContext";
 import createSortComparator from "../../util/createSortComparator";
+import AlertMessage from "../../components/AlertMessage/AlertMessage";
 
 export default function OpenPositions() {
   const { user } = UseUser();
+  const [alert, setAlert] = useState({ type: "", message: "" });
 
   const {
     allJobs,
@@ -21,6 +23,8 @@ export default function OpenPositions() {
     isJobsLoading,
     jobFetchError,
     travelFetchError,
+    serverMessage,
+    setServerMessage,
   } = UseJobs();
 
   const favorites = Array.isArray(user?.favorites) ? user.favorites : [];
@@ -40,6 +44,30 @@ export default function OpenPositions() {
     "Nearest first",
     "Newest first",
   ]);
+
+  function handleClearAlert() {
+    setAlert({ type: "", message: "" });
+  }
+
+  function delayedClearAlert() {
+    setTimeout(() => {
+      handleClearAlert();
+    }, 5000);
+  }
+
+  useEffect(() => {
+    if (jobFetchError) {
+      setAlert({ type: "error", message: String(jobFetchError) });
+      delayedClearAlert();
+    } else if (travelFetchError) {
+      setAlert({ type: "error", message: String(travelFetchError) });
+      delayedClearAlert();
+    } else if (serverMessage) {
+      setAlert({ type: "info", message: serverMessage });
+      setServerMessage("");
+      delayedClearAlert();
+    }
+  }, [jobFetchError, travelFetchError, serverMessage, setServerMessage]);
 
   const jobsWithSkills = useMemo(() => {
     return allJobs.map((job) => {
@@ -140,18 +168,19 @@ export default function OpenPositions() {
           </div>
         </div>
 
-        {(jobFetchError || travelFetchError) && (
-          <div className="error-message">
-            Error loading jobs or commute info:{" "}
-            {jobFetchError || travelFetchError}
+        {alert.message && (
+          <div className="md:w-auto">
+            <AlertMessage type={alert.type} message={alert.message} />
           </div>
         )}
 
         {!isJobsLoading && filteredJobs.length === 0 && (
-          <p className="job-message">
-            No jobs are shown. Go to <strong>Job search</strong> or{" "}
-            <strong>Clear filters</strong> to see more results.
-          </p>
+          <div className="md:w-auto">
+            <AlertMessage
+              type="info"
+              message="No jobs are shown. Go to Job search or Clear filters to see more results."
+            />
+          </div>
         )}
 
         {!isJobsLoading && filteredJobs.length > 0 && (

@@ -9,6 +9,7 @@ const JobsProvider = ({ children }) => {
   const [allJobs, setAllJobs] = useState([]);
   const [travelDetails, setTravelDetails] = useState({});
   const [searchString, setSearchString] = useState(""); //  global search term
+  const [serverMessage, setServerMessage] = useState("");
 
   // Clear jobs when user logs in/out
   useEffect(() => {
@@ -18,6 +19,9 @@ const JobsProvider = ({ children }) => {
 
   function handleJobFetchResults(data) {
     setAllJobs(data.result);
+    if (data.msg) {
+      setServerMessage(data.msg);
+    }
     fetchBatchTravelDetails(data.result);
   }
 
@@ -109,6 +113,8 @@ const JobsProvider = ({ children }) => {
         setSearchString,
         performJobFetch,
         fetchBatchTravelDetails,
+        serverMessage,
+        setServerMessage,
       }}
     >
       {children}
