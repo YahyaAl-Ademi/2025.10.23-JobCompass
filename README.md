@@ -160,6 +160,59 @@ Connect talented professionals with opportunities that match their skills, prefe
 
 - `POST /api/travel/batch` – Calculate batch travel times and transfer counts for multiple job locations (no authentication required)
 
+## Job Search Architecture
+
+### Multi-Source Job Fetching
+
+JobCompass integrates multiple job sources to provide comprehensive coverage:
+
+#### RapidAPI LinkedIn Integration
+
+- **Real-time Results**: Immediate job fetching from LinkedIn Job Search API
+- **Rate Limits**: 100 results for authenticated users, 5 for guests
+- **Location Support**: Configurable geographic filtering (default: Netherlands)
+- **Data Processing**: Normalized job data with seniority level mapping
+
+#### Apify LinkedIn Scraper
+
+- **Background Processing**: Asynchronous execution for authenticated users only
+- **Enhanced Data**: Company information, logos, and detailed descriptions
+- **Polling System**: 30-second intervals with 10-minute timeout
+- **Company Scraping**: Includes detailed company information
+
+### Intelligent Caching System
+
+- **Authentication-Aware**: Separate cache for authenticated vs guest users
+- **Search String Tracking**: Records all search queries with timestamps
+- **Automatic Cleanup**: Daily cron jobs remove old cache entries
+- **Performance Optimization**: Reduces API calls and improves response times
+
+### Search Processing Pipeline
+
+1. **Input Validation**: Client-side validation with `validateJobInput()`
+2. **Cache Check**: First attempts to find cached results for complete search
+3. **Word-by-Word Processing**: Splits search string for broader coverage
+4. **API Integration**: Fetches from multiple sources simultaneously
+5. **Data Normalization**: Standardizes job data from different sources
+6. **Deduplication**: Removes duplicate jobs across sources
+7. **Persistence**: Stores results for future cache hits
+
+### Data Processing & Normalization
+
+#### Job Data Standardization
+
+- **Seniority Mapping**: Normalizes Dutch/German seniority levels to English
+- **Employment Types**: Standardizes employment type formatting
+- **Location Processing**: Normalizes location display and work mode detection
+- **Description Handling**: Text normalization for search optimization
+
+#### Validation & Quality Control
+
+- **Field Validation**: Ensures required fields are present and valid
+- **Data Integrity**: Maintains consistency across different API sources
+- **Error Handling**: Graceful degradation when API sources fail
+- **Logging**: Comprehensive error tracking and monitoring
+
 ## Authentication & Security
 
 - **JWT Tokens**: HTTP-only cookie-based authentication
