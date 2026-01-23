@@ -49,7 +49,7 @@ export async function searchJobs(req, res) {
       if (cachedJobsPerSearchString.length > 0) {
         aggregatedJobs = [...cachedJobsPerSearchString];
       } else {
-        if (is_auth) {
+        if (is_auth && !inProgressStringFetch[search_string]) {
           // Persist jobs from rapidAPI, then start and persist jobs from LinkedIn scraper
           inProgressStringFetch[search_string] = {
             fetchedJobs: [],
@@ -69,9 +69,10 @@ export async function searchJobs(req, res) {
       const searchWords = search_string
         .split(new RegExp("[\\s\\-.'/]+"))
         .filter(Boolean);
-      // Fetch results for all search words concurrently
-      if (searchWords.length > 1) {
-        const fetchPromises = searchWords.map(async (searchWord, i) => {
+      // Fetch results for all search words sequentially
+      if (searchWords.length > 0) {
+        for (let i = 0; i < searchWords.length; i++) {
+          const searchWord = searchWords[i];
           // Try to get cached jobs first
           const cachedJobs = await getCachedJobsBySearchString(
             connectedClient,
@@ -83,34 +84,22 @@ export async function searchJobs(req, res) {
             fetchedJobs = [...cachedJobs];
           } else {
             // If not cached, use real search
-            inProgressWordFetch[searchWord] = {
-              fetchedJobs: [],
-              is_auth: is_auth,
-              timestamp: Date.now(),
-            };
-            if (searchWords.length > 2 && i >= 2) {
-              fetchedJobs = await new Promise((resolve) =>
-                setTimeout(
-                  () => resolve(rapidAPIfetch(searchWord, is_auth)),
-                  (i - 1) * 700,
-                ),
-              );
-              inProgressWordFetch[searchWord].fetchedJobs = [...fetchedJobs];
-              fetchPersister(inProgressWordFetch, searchWord);
-            } else {
+            if (!inProgressWordFetch[searchWord]) {
+              inProgressWordFetch[searchWord] = {
+                fetchedJobs: [],
+                is_auth: is_auth,
+                timestamp: Date.now(),
+              };
               fetchedJobs = await rapidAPIfetch(searchWord, is_auth);
               inProgressWordFetch[searchWord].fetchedJobs = [...fetchedJobs];
               fetchPersister(inProgressWordFetch, searchWord);
             }
           }
-          return fetchedJobs;
-        });
-        // Deduplicate jobs
-        const aggregatedJobsIdsSet = new Set(
-          aggregatedJobs.map((job) => job.id),
-        );
-        const fetchedJobsArrays = await Promise.all(fetchPromises);
-        for (const fetchedJobs of fetchedJobsArrays) {
+
+          // Deduplicate jobs immediately after each fetch
+          const aggregatedJobsIdsSet = new Set(
+            aggregatedJobs.map((job) => job.id),
+          );
           for (const job of fetchedJobs) {
             if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
               aggregatedJobs.push(job);

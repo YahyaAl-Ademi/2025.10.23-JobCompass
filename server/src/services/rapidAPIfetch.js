@@ -17,13 +17,13 @@ export async function rapidAPIfetch(
   let limit = 5;
   let maxIterations = 1;
   if (is_auth) {
-    limit = 3;
-    maxIterations = 2;
+    limit = 100;
+    maxIterations = 12;
   }
-
   for (let i = 0; i < maxIterations; i++) {
     offsets.push(initialOffset + i * limit);
   }
+
   const options = {
     method: "GET",
     headers: {
@@ -32,12 +32,15 @@ export async function rapidAPIfetch(
     },
   };
 
-  const fetchPromises = offsets.map((offset) => {
+  // Run requests sequentially and aggregate results
+  for (const offset of offsets) {
     const url = `https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d?limit=${limit}&offset=${offset}&title_filter=${encodeURIComponent(
       searchWord,
     )}&location_filter=${encodeURIComponent(location)}&description_type=text`;
 
-    return fetch(url, options).then(async (apiResponse) => {
+    try {
+      const apiResponse = await fetch(url, options);
+
       if (!apiResponse.ok) {
         const errorText = await apiResponse.text();
         logError(
@@ -46,24 +49,23 @@ export async function rapidAPIfetch(
         logError(`Linkedin API Error: ${errorText}`);
         throw new Error(`Failed to fetch from Linkedin API: ${errorText}`);
       }
-      return apiResponse.json();
-    });
-  });
 
-  // Run all requests concurrently and aggregate results
-  const results = await Promise.all(fetchPromises);
+      const apiResult = await apiResponse.json();
 
-  results.forEach((apiResult) => {
-    if (Array.isArray(apiResult)) {
-      aggregated.push(
-        ...apiResult
-          .map((job) => processRapidAPIjob(job))
-          .filter((job) => job !== null),
-      );
-    } else {
-      logError(`Unexpected API response shape: ${JSON.stringify(apiResult)}`);
+      if (Array.isArray(apiResult)) {
+        aggregated.push(
+          ...apiResult
+            .map((job) => processRapidAPIjob(job))
+            .filter((job) => job !== null),
+        );
+      } else {
+        logError(`Unexpected API response shape: ${JSON.stringify(apiResult)}`);
+      }
+    } catch (error) {
+      logError(`Error fetching offset ${offset}: ${error.message}`);
+      // Continue with next offset instead of failing completely
     }
-  });
+  }
 
   return aggregated;
 }
