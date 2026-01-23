@@ -9,7 +9,7 @@ if (!process.env.LINKEDIN_SCRAPER_KEY) {
 
 export default async function linkedInScraperFetch(
   search_string,
-  location = "Leeuwarden",
+  location = "Netherlands",
 ) {
   const aggregated = [];
   const token = process.env.LINKEDIN_SCRAPER_KEY;
