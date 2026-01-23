@@ -49,7 +49,6 @@ Connect talented professionals with opportunities that match their skills, prefe
 - **Concurrently** - Run multiple commands
 - **express-rate-limit** - API rate limiting
 - **Jest** - Testing framework
-- **Multer** - File upload handling
 
 ## 📁 Project Structure
 
@@ -58,18 +57,20 @@ Connect talented professionals with opportunities that match their skills, prefe
 ├── client/                     # React frontend application
 │   ├── public/                 # Static assets (favicon, etc.)
 │   ├── src/
-│   │   ├── components/         # Reusable React components (37 items)
-│   │   │   ├── Layout/         # Main application layout
+│   │   ├── components/         # Reusable React components
+│   │   │   ├── Layout.jsx       # Main application layout
 │   │   │   ├── AuthForms/      # Login/Signup forms
-│   │   │   ├── ProtectedRoute/ # Authentication wrapper
-│   │   │   └── [33 more...]    # UI components
-│   │   ├── pages/              # Page-level components (14 items)
+│   │   │   ├── ProtectedRoute.jsx # Authentication wrapper
+│   │   │   ├── JobCard/        # Job listing card
+│   │   │   ├── SearchInput/    # Job search input
+│   │   │   └── [and more]      # UI components
+│   │   ├── pages/              # Page-level components (9)
 │   │   │   ├── jobSearch/      # Job search interface
 │   │   │   ├── openPositions/  # Browse job listings
 │   │   │   ├── Profile/        # User profile management
 │   │   │   ├── MyFavorites/    # Saved jobs management
 │   │   │   ├── About/          # About page
-│   │   │   └── [8 more...]     # Additional pages
+│   │   │   └── [4 more]        # LoginForm, SignupForm, ForgotPassword, ResetPassword
 │   │   ├── context/            # React Context providers (2 items)
 │   │   ├── hooks/              # Custom React hooks (3 items)
 │   │   ├── util/               # Utility functions (12 items)
@@ -85,30 +86,30 @@ Connect talented professionals with opportunities that match their skills, prefe
 │   └── package.json            # Frontend dependencies
 ├── server/                     # Express backend application
 │   ├── src/
-│   │   ├── controllers/        # Route controllers (10 items)
+│   │   ├── controllers/        # Route controllers (10)
 │   │   │   ├── user.js         # User management logic
 │   │   │   ├── jobData.js      # Job search and data processing
 │   │   │   ├── travelController.js # Commute calculations
-│   │   │   └── [7 more...]     # Additional controllers
+│   │   │   └── [6 more]        # changePassword, changeSkills, deleteUser, forgotPassword, resetPassword, toggleFavoriteJob
 │   │   ├── routes/             # API route definitions (3 items)
 │   │   │   ├── user.js         # User-related endpoints
 │   │   │   ├── job.js          # Job search endpoints
 │   │   │   └── travel.js       # Travel time endpoints
-│   │   ├── services/           # Business logic services (8 items)
+│   │   ├── services/           # Business logic services (7)
 │   │   │   ├── persistJobSearch.js # Job data persistence
-│   │   │   ├── linkedInScraperFetch.js # LinkedIn API integration
+│   │   │   ├── linkedInScraperFetch.js # LinkedIn scraper integration
 │   │   │   ├── rapidAPIfetch.js # RapidAPI client
 │   │   │   ├── googleMapsApi.js # Google Maps integration
-│   │   │   └── [4 more...]     # Additional services
+│   │   │   └── [3 more]        # fetchPersister, getCachedJobsBySearchString, ImageUpload
 │   │   ├── middleware/         # Express middleware (2 items)
 │   │   │   ├── authVerify.js   # JWT authentication
 │   │   │   └── rateLimiter.js  # API rate limiting
 │   │   ├── db/                 # Database configuration (1 item)
 │   │   │   └── connectNeonDB.js # PostgreSQL connection
 │   │   ├── config/             # Configuration files (1 item)
-│   │   ├── util/               # Utility functions (9 items)
+│   │   ├── util/               # Utility functions (10)
 │   │   │   ├── logging.js      # Error and info logging
-│   │   │   └── [8 more...]     # Additional utilities
+│   │   │   └── [9 more]        # cleanupInProgress, normalizeDescription, processRapidAPIjob, processScraperJob, validateAllowedFields, validateCreactUser, validateJob, validatePassword, validationErrorMessage
 │   │   ├── app.js              # Express app configuration
 │   │   └── index.js            # Server entry point with cron jobs
 │   ├── .env.example            # Environment variables template
@@ -119,9 +120,9 @@ Connect talented professionals with opportunities that match their skills, prefe
 │   └── create_tables.sql       # PostgreSQL table definitions
 ├── documentation/              # Project documentation
 │   ├── ERD.md                  # Entity Relationship Diagram
-│   ├── authentication/         # Authentication flow docs (11 items)
-│   ├── jobFetch/              # Job fetching process docs (12 items)
-│   └── devdata/               # Development data samples (3 items)
+│   ├── authentication/         # Authentication flow docs (11)
+│   ├── jobFetch/               # Job fetching process docs (16)
+│   └── devdata/                # Development data samples (3 JSON files)
 ├── .github/                   # GitHub workflows
 │   └── workflows/             # CI/CD pipeline configurations
 │       ├── client-code-style-check.yml
@@ -147,7 +148,7 @@ Connect talented professionals with opportunities that match their skills, prefe
 - `POST /api/users/update-avatar` – Upload user avatar (requires authentication, 6MB limit, JPEG/PNG/GIF/WebP)
 - `POST /api/users/change-password` – Change user password (requires authentication)
 - `POST /api/users/change-skills` – Update user skills (requires authentication)
-- `POST /api/users/favorites/toggle` – Add/remove job from favorites (requires authentication)
+- `POST /api/users/favorites/toggle` – Add/remove job from favorites (requires authentication, job object in body)
 - `DELETE /api/users/delete` – Delete user account (requires authentication)
 - `POST /api/users/forgot-password` – Initiate password reset via email
 - `POST /api/users/reset-password` – Complete password reset with token
@@ -281,7 +282,7 @@ These extensions will provide full access to the documentation features, includi
 
 - `npm run dev` - Start both client and server in development mode
 - `npm run start` - Start the production server
-- `npm run build` - Build the client for production
+- `npm run build:client` - Build the client for production
 - `npm run setup` - Install dependencies for both client and server
 
 ## 🚢 Deployment
