@@ -29,7 +29,7 @@ export async function searchJobs(req, res) {
       throw new Error(`DB Connection Error: ${connectionError}`);
     }
 
-    const { search_string } = req.body;
+    let { search_string } = req.body;
     let aggregatedJobs = [];
 
     if (typeof search_string !== "string" || !search_string.trim()) {
@@ -41,6 +41,7 @@ export async function searchJobs(req, res) {
       };
     } else {
       // Check if the whole search_string is cached
+      search_string = search_string.toLowerCase();
       const cachedJobsPerSearchString = await getCachedJobsBySearchString(
         connectedClient,
         search_string,

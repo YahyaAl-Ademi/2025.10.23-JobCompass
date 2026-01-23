@@ -11,17 +11,14 @@ export async function rapidAPIfetch(
   location = "Netherlands",
 ) {
   const aggregated = [];
-  const offsets = [];
-  let initialOffset = 0;
-
-  let limit = 5;
-  let maxIterations = 1;
+  let currentIteration = 0;
+  let maxIterations;
+  let limit;
   if (is_auth) {
     limit = 100;
-    maxIterations = 12;
-  }
-  for (let i = 0; i < maxIterations; i++) {
-    offsets.push(initialOffset + i * limit);
+  } else {
+    limit = 5;
+    maxIterations = 1;
   }
 
   const options = {
@@ -32,9 +29,10 @@ export async function rapidAPIfetch(
     },
   };
 
-  // Run requests sequentially and aggregate results
-  for (const offset of offsets) {
-    const url = `https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d?limit=${limit}&offset=${offset}&title_filter=${encodeURIComponent(
+  let continueLoop = true;
+  let currentOffset = 0;
+  while (continueLoop) {
+    const url = `https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d?limit=${limit}&offset=${currentOffset}&title_filter=${encodeURIComponent(
       searchWord,
     )}&location_filter=${encodeURIComponent(location)}&description_type=text`;
 
@@ -53,6 +51,11 @@ export async function rapidAPIfetch(
       const apiResult = await apiResponse.json();
 
       if (Array.isArray(apiResult)) {
+        // Stop if apiResult.length === 0
+        if (apiResult.length === 0) {
+          continueLoop = false;
+        }
+
         aggregated.push(
           ...apiResult
             .map((job) => processRapidAPIjob(job))
@@ -60,10 +63,19 @@ export async function rapidAPIfetch(
         );
       } else {
         logError(`Unexpected API response shape: ${JSON.stringify(apiResult)}`);
+        continueLoop = false;
       }
     } catch (error) {
-      logError(`Error fetching offset ${offset}: ${error.message}`);
+      logError(`Error fetching offset ${currentOffset}: ${error.message}`);
       // Continue with next offset instead of failing completely
+    }
+
+    currentOffset += limit;
+    currentIteration++;
+
+    // Stop if !is_auth && maxIterations is reached
+    if (!is_auth && currentIteration >= maxIterations) {
+      continueLoop = false;
     }
   }
 
