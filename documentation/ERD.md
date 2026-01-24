@@ -143,7 +143,7 @@ Many-to-many relationship between searches and resulting jobs:
 ### Performance & Scalability
 
 - **Database Optimization**: Proper indexing and query optimization
-- **Connection Pooling**: Efficient database connection management
+- **Database Connections**: Basic PostgreSQL client connections
 - **Automated Cleanup**: Daily cron jobs for cache maintenance
 - **Rate Limiting**: API protection and fair usage enforcement
 
