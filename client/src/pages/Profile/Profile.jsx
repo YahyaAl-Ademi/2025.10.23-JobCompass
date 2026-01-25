@@ -99,12 +99,6 @@ export default function Profile() {
     const passwordResult =
       await changePasswordRef.current.handlePasswordChange();
 
-    if (passwordResult.validationError) {
-      setAlert({ type: "error", message: passwordResult.validationError });
-      delayedClearAlert();
-      return;
-    }
-
     const updatedFields = {};
 
     const first_name = cleanUpText(first_nameInputRef?.current.value);
@@ -128,39 +122,40 @@ export default function Profile() {
     });
     const houseValidationError = validateHouseNoInput({ text: house_number });
 
-    if (
+    const validationError =
       streetValidationError ||
       cityValidationError ||
       countryValidationError ||
-      houseValidationError
-    ) {
-      setAlert(
-        streetValidationError ||
-          cityValidationError ||
-          countryValidationError ||
-          houseValidationError,
-      );
-      delayedClearAlert();
-      return;
-    }
+      houseValidationError ||
+      passwordResult.validationError;
 
-    if (street !== user.street) updatedFields.street = street;
-    if (city !== user.city) updatedFields.city = city;
-    if (country !== user.country) updatedFields.country = country;
-    if (house_number !== user.house_number)
-      updatedFields.house_number = house_number;
-
-    if (Object.keys(updatedFields).length === 0) {
-      if (passwordResult.inputsFilled === false)
-        setAlert({ type: "info", message: "No changes detected." });
-      delayedClearAlert();
-      return;
-    } else {
-      performUpdateProfile({
-        method: "PUT",
-        body: JSON.stringify(updatedFields),
-        credentials: "include",
+    if (validationError) {
+      setAlert({
+        type: "error",
+        message:
+          validationError === passwordResult.validationError
+            ? passwordResult.validationError
+            : validationError,
       });
+      delayedClearAlert();
+    } else {
+      if (street !== user.street) updatedFields.street = street;
+      if (city !== user.city) updatedFields.city = city;
+      if (country !== user.country) updatedFields.country = country;
+      if (house_number !== user.house_number)
+        updatedFields.house_number = house_number;
+
+      if (Object.keys(updatedFields).length === 0) {
+        if (passwordResult.inputsFilled === false)
+          setAlert({ type: "info", message: "No changes detected." });
+        delayedClearAlert();
+      } else {
+        performUpdateProfile({
+          method: "PUT",
+          body: JSON.stringify(updatedFields),
+          credentials: "include",
+        });
+      }
     }
   }
 

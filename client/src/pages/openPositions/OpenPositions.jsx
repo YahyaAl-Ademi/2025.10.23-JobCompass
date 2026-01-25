@@ -106,8 +106,11 @@ export default function OpenPositions() {
   }
 
   const sortedJobs = useMemo(() => {
-    if (selectedSort.length === 0) return jobsWithSkills;
-    return [...jobsWithSkills].sort(createSortComparator(selectedSort));
+    const result =
+      selectedSort.length === 0
+        ? jobsWithSkills
+        : [...jobsWithSkills].sort(createSortComparator(selectedSort));
+    return result;
   }, [jobsWithSkills, selectedSort]);
 
   const filteredJobs = useMemo(() => {

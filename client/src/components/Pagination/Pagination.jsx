@@ -27,16 +27,15 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
 
   function submitPage() {
     const page = parseInt(inputValue, 10);
+    const isValidPage = !isNaN(page);
 
-    if (isNaN(page)) {
+    if (isValidPage) {
+      // Clamp the value between 1 and safeTotal
+      const validatedPage = Math.min(Math.max(page, 1), safeTotal);
+      onPageChange(validatedPage);
+    } else {
       setInputValue(currentPage);
-      setIsEditing(false);
-      return;
     }
-
-    // Clamp the value between 1 and safeTotal
-    const validatedPage = Math.min(Math.max(page, 1), safeTotal);
-    onPageChange(validatedPage);
     setIsEditing(false);
   }
 
