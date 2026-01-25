@@ -15,7 +15,7 @@ if (!process.env.SMTP_PASS) {
   throw new Error("SMTP_PASS environment variable is not set");
 }
 
-// ansporter Gmail App Password
+// transporter Gmail App Password
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST, // smtp.gmail.com
   secure: false,
