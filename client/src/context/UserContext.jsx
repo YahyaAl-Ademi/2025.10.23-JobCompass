@@ -11,6 +11,9 @@ import useFetch from "../hooks/useFetch";
 import userReducer from "../reducers/userReducer";
 
 const UserContext = createContext();
+function UseUser() {
+  return useContext(createContext());
+}
 
 function UserContextProvider({ children }) {
   const [user, dispatch] = useReducer(userReducer, defaultUser);
@@ -89,10 +92,6 @@ function UserContextProvider({ children }) {
       {children}
     </UserContext.Provider>
   );
-}
-
-function UseUser() {
-  return useContext(UserContext);
 }
 
 export { UserContextProvider, UseUser };

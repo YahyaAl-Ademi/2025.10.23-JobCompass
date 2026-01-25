@@ -21,6 +21,19 @@ import useFetch from "../hooks/useFetch";
 import fixUserSkills from "../util/fixUserSkills";
 import { defaultUser } from "../data/defaultUser";
 
+function renderRuleItem(condition, text) {
+  const isValid = condition;
+  return (
+    <li
+      key={text}
+      className={`password-rule-item ${isValid ? "valid" : "invalid"}`}
+    >
+      {isValid ? <CheckCircle size={16} /> : <XCircle size={16} />}
+      {text}
+    </li>
+  );
+}
+
 export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
   const [signupData, setSignupData] = useState({
     first_name: "",
@@ -116,19 +129,6 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
   }
 
   const pw = signupData.password;
-
-  const renderRuleItem = (condition, text) => {
-    const isValid = condition;
-    return (
-      <li
-        key={text}
-        className={`password-rule-item ${isValid ? "valid" : "invalid"}`}
-      >
-        {isValid ? <CheckCircle size={16} /> : <XCircle size={16} />}
-        {text}
-      </li>
-    );
-  };
 
   return (
     <div className="form-card" id="signup-form">

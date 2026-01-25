@@ -108,9 +108,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 onClick={handleFavoriteClick}
                 disabled={isToggleFavoriteLoading}
                 title={
-                  isInFavorites
-                    ? "Remove from favourites"
-                    : "Save to favourites"
+                  isInFavorites ? "Remove from favorites" : "Save to favorites"
                 }
               >
                 {isToggleFavoriteLoading ? (

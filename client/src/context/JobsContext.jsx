@@ -3,6 +3,9 @@ import { createContext, useContext, useState, useEffect } from "react";
 import useFetch from "../hooks/useFetch";
 
 const JobsContext = createContext();
+function UseJobs() {
+  return useContext(JobsContext);
+}
 
 function JobsProvider({ children }) {
   const { user } = UseUser();
@@ -120,10 +123,6 @@ function JobsProvider({ children }) {
       {children}
     </JobsContext.Provider>
   );
-}
-
-function UseJobs() {
-  return useContext(JobsContext);
 }
 
 export { JobsProvider, UseJobs };
