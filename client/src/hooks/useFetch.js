@@ -13,7 +13,7 @@ import { useState } from "react";
  * performFetch - this function will trigger the fetching. It is up to the user of the hook to determine when to do this!
  * cancelFetch - this function will cancel the fetch, call it when your component is unmounted
  */
-const useFetch = (route, onReceived) => {
+export default function useFetch(route, onReceived) {
   /**
    * We use the AbortController which is supported by all modern browsers to handle cancellations
    * For more info: https://developer.mozilla.org/en-US/docs/Web/API/AbortController
@@ -104,6 +104,4 @@ const useFetch = (route, onReceived) => {
   };
 
   return { isLoading, error, performFetch, cancelFetch };
-};
-
-export default useFetch;
+}

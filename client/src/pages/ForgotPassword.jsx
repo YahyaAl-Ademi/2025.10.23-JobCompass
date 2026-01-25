@@ -5,7 +5,7 @@ import { Mail } from "lucide-react";
 import { gif } from "../assets";
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 
-const ForgotPasswordForm = ({ switchToLogin }) => {
+export default function ForgotPasswordForm({ switchToLogin }) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const { setMessage } = UseUser();
@@ -100,6 +100,4 @@ const ForgotPasswordForm = ({ switchToLogin }) => {
       )}
     </div>
   );
-};
-
-export default ForgotPasswordForm;
+}

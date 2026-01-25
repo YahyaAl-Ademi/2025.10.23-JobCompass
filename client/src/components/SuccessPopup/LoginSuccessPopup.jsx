@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-const LoginSuccessPopup = ({ onClose }) => {
+export default function LoginSuccessPopup({ onClose }) {
   const navigate = useNavigate();
 
   const handleContinue = () => {
@@ -21,6 +21,4 @@ const LoginSuccessPopup = ({ onClose }) => {
       </div>
     </div>
   );
-};
-
-export default LoginSuccessPopup;
+}

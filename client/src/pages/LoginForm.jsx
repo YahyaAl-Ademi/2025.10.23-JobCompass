@@ -6,11 +6,11 @@ import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
 import fixUserSkills from "../util/fixUserSkills";
 
-const LoginForm = ({
+export default function LoginForm({
   setLoginSuccessPopup,
   switchToSignup,
   switchToForgotPassword,
-}) => {
+}) {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [alert, setAlert] = useState({ type: "", message: "" });
@@ -189,6 +189,4 @@ const LoginForm = ({
       </p>
     </div>
   );
-};
-
-export default LoginForm;
+}

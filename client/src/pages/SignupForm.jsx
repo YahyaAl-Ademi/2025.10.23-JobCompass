@@ -21,7 +21,7 @@ import useFetch from "../hooks/useFetch";
 import fixUserSkills from "../util/fixUserSkills";
 import { defaultUser } from "../data/defaultUser";
 
-const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
+export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
   const [signupData, setSignupData] = useState({
     first_name: "",
     last_name: "",
@@ -298,6 +298,4 @@ const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
       </p>
     </div>
   );
-};
-
-export default SignupForm;
+}

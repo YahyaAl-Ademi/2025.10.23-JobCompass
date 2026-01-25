@@ -1,7 +1,7 @@
 import "./SuccessPopup.css";
 import { UseUser } from "../../context/UserContext";
 
-const SignupSuccessPopup = ({ goToProfile }) => {
+export default function SignupSuccessPopup({ goToProfile }) {
   const { user } = UseUser();
   return (
     <div className="popup-overlay">
@@ -19,6 +19,4 @@ const SignupSuccessPopup = ({ goToProfile }) => {
       </div>
     </div>
   );
-};
-
-export default SignupSuccessPopup;
+}
