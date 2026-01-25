@@ -36,7 +36,7 @@ export default function AvatarUploader({ setAlert }) {
     }
   }, [error]);
 
-  const handleFileChange = async (e) => {
+  async function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) {
       return;
@@ -48,7 +48,7 @@ export default function AvatarUploader({ setAlert }) {
       method: "POST",
       body: formData,
     });
-  };
+  }
 
   return (
     <div className="avatar-uploader-container">

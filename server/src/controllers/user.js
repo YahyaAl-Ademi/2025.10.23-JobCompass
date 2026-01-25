@@ -33,7 +33,7 @@ const USER_FULL_INFO_QUERY = `
 
 // SIGNUP - Create a new user
 
-export const createUser = async (req, res) => {
+export async function createUser(req, res) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
     return res.status(503).json({
@@ -120,11 +120,11 @@ export const createUser = async (req, res) => {
   } finally {
     if (endConnection) await endConnection();
   }
-};
+}
 
 // LOGIN - Authenticate user
 
-export const loginUser = async (req, res) => {
+export async function loginUser(req, res) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
 
   if (error) {
@@ -236,11 +236,11 @@ export const loginUser = async (req, res) => {
     // 💡 Crucial: Ensure the connection is closed regardless of success or failure.
     if (endConnection) await endConnection();
   }
-};
+}
 
 // LOGOUT - Blacklist JWT token (In-Memory)
 
-export const logoutUser = async (req, res) => {
+export async function logoutUser(req, res) {
   try {
     // Extract token from "Bearer <token>" header
     const token = req.cookies?.token;
@@ -254,9 +254,9 @@ export const logoutUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, msg: "Logout error" });
   }
-};
+}
 
-export const getMe = async (req, res) => {
+export async function getMe(req, res) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
     return res.status(503).json({
@@ -335,9 +335,9 @@ export const getMe = async (req, res) => {
   } finally {
     if (endConnection) await endConnection();
   }
-};
+}
 
-export const updateProfile = async (req, res) => {
+export async function updateProfile(req, res) {
   const user_id = req.user.id;
   const fields = req.body;
 
@@ -350,9 +350,9 @@ export const updateProfile = async (req, res) => {
       msg: err instanceof Error ? err.message : "Update error",
     });
   }
-};
+}
 
-export const updateUserAvatar = async (req, res) => {
+export async function updateUserAvatar(req, res) {
   const { connectedClient, endConnection } = await connectNeonDB();
   try {
     const file = req.file;
@@ -379,4 +379,4 @@ export const updateUserAvatar = async (req, res) => {
   } finally {
     if (endConnection) await endConnection();
   }
-};
+}

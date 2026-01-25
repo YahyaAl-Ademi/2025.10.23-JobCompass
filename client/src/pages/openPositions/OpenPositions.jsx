@@ -87,23 +87,23 @@ export default function OpenPositions() {
     return findFilterOptions(allJobs);
   }, [allJobs]);
 
-  const handleFilterChange = (filterKey, value, isChecked) => {
+  function handleFilterChange(filterKey, value, isChecked) {
     setActiveFilters((prev) => {
       const newSet = new Set(prev[filterKey]);
       isChecked ? newSet.add(value) : newSet.delete(value);
       setCurrentPage(1);
       return { ...prev, [filterKey]: newSet };
     });
-  };
+  }
 
-  const handleClearFilters = () => {
+  function handleClearFilters() {
     setActiveFilters({
       seniorityLevel: new Set(),
       employmentType: new Set(),
       work_mode: new Set(),
     });
     setCurrentPage(1);
-  };
+  }
 
   const sortedJobs = useMemo(() => {
     if (selectedSort.length === 0) return jobsWithSkills;

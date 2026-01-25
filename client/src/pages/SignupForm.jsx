@@ -64,13 +64,13 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
     }
   }, [error]);
 
-  const handleChange = (e) => {
+  function handleChange(e) {
     const { name, value } = e.target;
     setSignupData({ ...signupData, [name]: value });
     handleClearAlert();
-  };
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     // Validate email
@@ -113,7 +113,7 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
       }),
       credentials: "include",
     });
-  };
+  }
 
   const pw = signupData.password;
 

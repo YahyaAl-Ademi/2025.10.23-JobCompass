@@ -15,7 +15,9 @@ const UserContext = createContext();
 function UserContextProvider({ children }) {
   const [user, dispatch] = useReducer(userReducer, defaultUser);
   const [message, setMessage] = useState(null);
-  const clearMessage = () => setMessage(null);
+  function clearMessage() {
+    setMessage(null);
+  }
 
   // -------------------- GET CURRENT USER --------------------
   function handleFetchMeResults(data) {

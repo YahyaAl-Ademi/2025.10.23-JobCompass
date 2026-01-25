@@ -1,6 +1,6 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import { logError } from "../util/logging.js";
-const toggleFavoriteJob = async (req, res) => {
+export default async function toggleFavoriteJob(req, res) {
   const user_id = req.user?.id;
   const { job } = req.body;
   const jobId = job?.id;
@@ -96,6 +96,4 @@ const toggleFavoriteJob = async (req, res) => {
   } finally {
     if (endConnection) await endConnection();
   }
-};
-
-export default toggleFavoriteJob;
+}

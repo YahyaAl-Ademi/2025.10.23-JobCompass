@@ -48,7 +48,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     },
   );
 
-  const handleFavoriteClick = (e) => {
+  function handleFavoriteClick(e) {
     e.stopPropagation();
     if (user.id) {
       performFetch({
@@ -59,9 +59,9 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     } else {
       setShowFavoritesPopup(true);
     }
-  };
+  }
 
-  const handleApplyClick = (e) => {
+  function handleApplyClick(e) {
     e.stopPropagation();
     if (user.id) {
       if (onApplyClick) {
@@ -70,13 +70,13 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
       return;
     }
     setShowApplyPopup(true);
-  };
+  }
 
-  const handleLoginRedirect = () => {
+  function handleLoginRedirect() {
     setShowApplyPopup(false);
     setShowFavoritesPopup(false);
     navigate("/login", {});
-  };
+  }
 
   return (
     <li className="job-item">

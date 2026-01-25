@@ -65,13 +65,13 @@ export default function LoginForm({
     }
   }, [error]);
 
-  const handleChange = (e) => {
+  function handleChange(e) {
     const { name, value } = e.target;
     setLoginData({ ...loginData, [name]: value });
     handleClearAlert();
-  };
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     performFetch({
       method: "POST",
@@ -81,7 +81,7 @@ export default function LoginForm({
       }),
       credentials: "include",
     });
-  };
+  }
 
   return (
     <div className="form-card" id="login-form">

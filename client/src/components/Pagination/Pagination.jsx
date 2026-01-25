@@ -25,7 +25,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   }
   if (safeTotal === 0) return null;
 
-  const submitPage = () => {
+  function submitPage() {
     const page = parseInt(inputValue, 10);
 
     if (isNaN(page)) {
@@ -38,7 +38,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
     const validatedPage = Math.min(Math.max(page, 1), safeTotal);
     onPageChange(validatedPage);
     setIsEditing(false);
-  };
+  }
 
   return (
     <div

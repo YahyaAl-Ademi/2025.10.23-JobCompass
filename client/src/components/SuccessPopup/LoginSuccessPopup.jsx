@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 export default function LoginSuccessPopup({ onClose }) {
   const navigate = useNavigate();
 
-  const handleContinue = () => {
+  function handleContinue() {
     onClose(); // Close the popup
     navigate("/"); // Redirect to home page
-  };
+  }
 
   return (
     <div className="popup-overlay">

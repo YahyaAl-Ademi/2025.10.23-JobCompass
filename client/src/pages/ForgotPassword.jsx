@@ -29,13 +29,13 @@ export default function ForgotPasswordForm({ switchToLogin }) {
     }
   }, [error]);
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault(); // Prevent page reload when the form is submitted
     performFetch({
       method: "POST",
       body: JSON.stringify({ email }),
     });
-  };
+  }
 
   return (
     <div className="form-card">

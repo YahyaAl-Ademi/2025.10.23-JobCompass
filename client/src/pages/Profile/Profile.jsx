@@ -76,22 +76,22 @@ export default function Profile() {
     }
   }, [user]);
 
-  const handleDeleteClick = () => {
+  function handleDeleteClick() {
     setShowDeletePopup(true);
-  };
+  }
 
-  const handlePasswordChangeSuccess = () => {
+  function handlePasswordChangeSuccess() {
     setAlert({
       type: "success",
       message: "Password changed successfully!",
     });
     delayedClearAlert();
-  };
+  }
 
-  const handlePasswordChangeError = (message) => {
+  function handlePasswordChangeError(message) {
     setAlert({ type: "error", message: String(message) });
     delayedClearAlert();
-  };
+  }
 
   async function handleSaveClick() {
     handleClearAlert();

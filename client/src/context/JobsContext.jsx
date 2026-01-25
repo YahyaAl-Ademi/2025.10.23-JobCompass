@@ -4,7 +4,7 @@ import useFetch from "../hooks/useFetch";
 
 const JobsContext = createContext();
 
-const JobsProvider = ({ children }) => {
+function JobsProvider({ children }) {
   const { user } = UseUser();
   const [allJobs, setAllJobs] = useState([]);
   const [travelDetails, setTravelDetails] = useState({});
@@ -120,7 +120,7 @@ const JobsProvider = ({ children }) => {
       {children}
     </JobsContext.Provider>
   );
-};
+}
 
 function UseJobs() {
   return useContext(JobsContext);

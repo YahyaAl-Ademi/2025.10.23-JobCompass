@@ -20,9 +20,9 @@ export default function useFetch(route, onReceived) {
    */
   const controller = new AbortController();
   const signal = controller.signal;
-  const cancelFetch = () => {
+  function cancelFetch() {
     controller.abort();
-  };
+  }
 
   if (route.includes("api/")) {
     /**
@@ -38,7 +38,7 @@ export default function useFetch(route, onReceived) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Add any args given to the function to the fetch function
-  const performFetch = (options) => {
+  function performFetch(options) {
     setError(null);
     setIsLoading(true);
 
@@ -53,7 +53,7 @@ export default function useFetch(route, onReceived) {
           },
     };
 
-    const fetchData = async () => {
+    async function fetchData() {
       // We add the /api subsection here to make it a single point of change if our configuration changes
 
       try {
@@ -98,10 +98,10 @@ export default function useFetch(route, onReceived) {
         setError(error.message || "An error occurred during fetch");
         setIsLoading(false);
       }
-    };
+    }
 
     fetchData();
-  };
+  }
 
   return { isLoading, error, performFetch, cancelFetch };
 }

@@ -13,7 +13,7 @@ export default function SearchInput() {
   const inputRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleSearch = async () => {
+  async function handleSearch() {
     const inputValue = inputRef.current?.value ?? "";
     const validationError = validateJobInput({ text: cleanUpText(inputValue) });
     if (validationError) {
@@ -32,7 +32,7 @@ export default function SearchInput() {
     navigate("/jobs");
     // clear the visible input field while keeping `searchString` in context
     if (inputRef.current) inputRef.current.value = "";
-  };
+  }
 
   return (
     <div className="search-input">
