@@ -35,22 +35,24 @@ export default async function searchJobs(req, res) {
         };
       } else {
         search_string = search_string.toLowerCase();
-        const { is_whole_string, cachedJobsPerSearchString } =
-          await getCachedJobsBySearchString(
-            connectedClient,
-            search_string,
-            is_auth,
-          );
+        const {
+          // is_whole_string,
+          cachedJobsPerSearchString,
+        } = await getCachedJobsBySearchString(
+          connectedClient,
+          search_string,
+          is_auth,
+        );
 
         if (cachedJobsPerSearchString.length > 0) {
           aggregatedJobs = [...cachedJobsPerSearchString];
         }
 
-        responseData.msg = scraperFetchPersister(
-          search_string,
-          is_whole_string,
-          is_auth,
-        );
+        // responseData.msg = scraperFetchPersister(
+        //   search_string,
+        //   is_whole_string,
+        //   is_auth,
+        // );
 
         const searchWords = search_string.split(/\s+/).filter(Boolean);
 
