@@ -1,19 +1,11 @@
 import { logError } from "../util/logging.js";
-import { cleanupInProgress } from "../util/cleanupInProgress.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import getCachedJobsBySearchString from "../services/getCachedJobsBySearchString.js";
-import linkedInScraperFetch from "../services/linkedInScraperFetch.js";
-import { rapidAPIfetch } from "../services/rapidAPIfetch.js";
-import { fetchPersister } from "../services/fetchPersister.js";
-
-const inProgressStringFetch = {};
-const inProgressWordFetch = {};
+import { scraperFetchPersister } from "../services/scraperFetchPersister.js";
+import { rapidAPIfetchPersister } from "../services/rapidAPIfetchPersister.js";
 
 export async function searchJobs(req, res) {
   let is_auth = req?.user?.id || null;
-
-  // Cleanup old entries from in-progress tracking
-  cleanupInProgress(inProgressWordFetch, inProgressStringFetch);
 
   const {
     connectedClient,
@@ -55,22 +47,11 @@ export async function searchJobs(req, res) {
           aggregatedJobs = [...cachedJobsPerSearchString];
         }
 
-        if (
-          !is_whole_string &&
-          is_auth &&
-          !inProgressStringFetch[search_string]
-        ) {
-          inProgressStringFetch[search_string] = {
-            is_auth: true,
-            is_whole_string: true,
-            isBackgroundFetch: true,
-            fetcher: linkedInScraperFetch,
-            timestamp: Date.now(),
-          };
-          responseData.msg =
-            "New vacancies will be available in our DB in 1-10 min; search for the same job title to find them.";
-          fetchPersister(inProgressStringFetch, search_string);
-        }
+        responseData.msg = scraperFetchPersister(
+          search_string,
+          is_whole_string,
+          is_auth,
+        );
 
         const searchWords = search_string.split(/\s+/).filter(Boolean);
 
@@ -85,18 +66,8 @@ export async function searchJobs(req, res) {
             let fetchedJobs = [];
             if (cachedResult.cachedJobsPerSearchString.length > 0) {
               fetchedJobs = [...cachedResult.cachedJobsPerSearchString];
-            } else if (!inProgressWordFetch[searchWord]) {
-              inProgressWordFetch[searchWord] = {
-                is_auth,
-                is_whole_string: false,
-                isBackgroundFetch: false,
-                fetcher: rapidAPIfetch,
-                timestamp: Date.now(),
-              };
-              fetchedJobs = await fetchPersister(
-                inProgressWordFetch,
-                searchWord,
-              );
+            } else {
+              fetchedJobs = await rapidAPIfetchPersister(searchWord, is_auth);
             }
 
             const aggregatedJobsIdsSet = new Set(

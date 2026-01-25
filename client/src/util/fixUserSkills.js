@@ -1,4 +1,4 @@
-import { regexEndNormalizeSkill } from "./regexEndNormalizeSkill";
+import regexEndNormalizeSkill from "./regexEndNormalizeSkill";
 
 const fixUserSkills = (skills) => {
   // Accept either an array of skill strings or a comma-separated skills string

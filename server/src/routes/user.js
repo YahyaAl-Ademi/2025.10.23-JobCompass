@@ -10,7 +10,7 @@ import {
 import { verifyToken } from "../middleware/authVerify.js";
 import createAuthLimiter from "../middleware/rateLimiter.js";
 import toggleFavoriteJob from "../controllers/toggleFavoriteJob.js";
-import { deleteUser } from "../controllers/deleteUser.js";
+import deleteUser from "../controllers/deleteUser.js";
 import { changePassword } from "../controllers/changePassword.js";
 import { changeSkills } from "../controllers/changeSkills.js";
 import { forgotPassword } from "../controllers/forgotPassword.js";

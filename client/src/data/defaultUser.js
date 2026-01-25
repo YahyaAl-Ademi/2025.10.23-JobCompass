@@ -1,5 +1,5 @@
 import { images } from "../assets";
-import { regexEndNormalizeSkill } from "../util/regexEndNormalizeSkill";
+import regexEndNormalizeSkill from "../util/regexEndNormalizeSkill";
 
 export function formatAddress(user) {
   const parts = [];
