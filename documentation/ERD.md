@@ -10,54 +10,54 @@ erDiagram
     jobs ||--o{ search_strings_jobs : "is retreived by"
 
     users {
-        uuid id PK "NOT NULL, CONSTRAINT users_pkey"
-        character_varying_255 email "NOT NULL"
-        character_varying_255 password "NOT NULL"
-        character_varying_100 first_name
-        character_varying_100 last_name
-        character_varying_255 avatar
-        character_varying_255 street
-        character_varying_50 house_number
-        character_varying_100 city
-        character_varying_100 country
-        text skills
-        uuid reset_token
-        timestamp reset_token_expires
+        id uuid PK "NOT NULL, CONSTRAINT users_pkey"
+        email character_varying_255 "NOT NULL"
+        password character_varying_255 "NOT NULL"
+        first_name character_varying_100
+        last_name character_varying_100
+        avatar character_varying_255
+        street character_varying_255
+        house_number character_varying_50
+        city character_varying_100
+        country character_varying_100
+        skills text
+        reset_token uuid
+        reset_token_expires timestamp
     }
 
     jobs {
-        text id PK "NOT NULL, CONSTRAINT jobs_pkey"
-        timestamp date_posted
-        character_varying_500 title
-        character_varying_255 organization
-        text organization_url
-        character_varying_255 employment_type
-        text url
-        text organization_logo
-        character_varying_500 display_location
-        character_varying_255 work_mode
-        character_varying_255 seniority
-        text description_text
-        text normalized_description
+        id text PK "NOT NULL, CONSTRAINT jobs_pkey"
+        date_posted timestamp
+        title character_varying_500
+        organization character_varying_255
+        organization_url text
+        employment_type character_varying_255
+        url text
+        organization_logo text
+        display_location character_varying_500
+        work_mode character_varying_255
+        seniority character_varying_255
+        description_text text
+        normalized_description text
     }
 
     user_favorites {
-        uuid user_id PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_user_id_fkey, ON DELETE CASCADE"
-        text job_id PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_job_id_fkey, ON DELETE CASCADE"
-        smallint travel_time
-        smallint least_transfers
+        user_id uuid PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_user_id_fkey, ON DELETE CASCADE"
+        job_id text PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_job_id_fkey, ON DELETE CASCADE"
+        travel_time smallint
+        least_transfers smallint
     }
 
     search_strings {
-        text search_string PK "NOT NULL, CONSTRAINT search_strings_pkey"
-        timestamp search_date
-        uuid is_auth
-        boolean is_whole_string "DEFAULT false"
+        search_string text PK "NOT NULL, CONSTRAINT search_strings_pkey"
+        search_date timestamp
+        is_auth uuid
+        is_whole_string boolean "DEFAULT false"
     }
 
     search_strings_jobs {
-        text search_string PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_search_string_fkey, ON DELETE CASCADE"
-        text job_id PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_job_id_fkey, ON DELETE CASCADE"
+        search_string text PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_search_string_fkey, ON DELETE CASCADE"
+        job_id text PK,FK "NOT NULL, PK: search_strings_jobs_pkey, FK: search_strings_jobs_job_id_fkey, ON DELETE CASCADE"
     }
 ```
 
