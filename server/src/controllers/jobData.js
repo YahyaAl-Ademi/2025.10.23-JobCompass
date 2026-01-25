@@ -2,6 +2,7 @@ import { logError } from "../util/logging.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import getCachedJobsBySearchString from "../services/getCachedJobsBySearchString.js";
 import rapidAPIfetchPersister from "../services/rapidAPIfetchPersister.js";
+import apifyScraperFetchPersister from "../services/apifyScraperFetchPersister.js";
 
 export default async function searchJobs(req, res) {
   let is_auth = req?.user?.id || null;
@@ -35,24 +36,22 @@ export default async function searchJobs(req, res) {
         };
       } else {
         search_string = search_string.toLowerCase();
-        const {
-          // is_whole_string,
-          cachedJobsPerSearchString,
-        } = await getCachedJobsBySearchString(
-          connectedClient,
-          search_string,
-          is_auth,
-        );
+        const { is_whole_string, cachedJobsPerSearchString } =
+          await getCachedJobsBySearchString(
+            connectedClient,
+            search_string,
+            is_auth,
+          );
 
         if (cachedJobsPerSearchString.length > 0) {
           aggregatedJobs = [...cachedJobsPerSearchString];
         }
 
-        // responseData.msg = scraperFetchPersister(
-        //   search_string,
-        //   is_whole_string,
-        //   is_auth,
-        // );
+        responseData.msg = apifyScraperFetchPersister(
+          search_string,
+          is_whole_string,
+          is_auth,
+        );
 
         const searchWords = search_string.split(/\s+/).filter(Boolean);
 
