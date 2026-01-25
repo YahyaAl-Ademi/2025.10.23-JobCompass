@@ -1,6 +1,10 @@
 import { logError, logWarning } from "../util/logging.js";
 import getTransitRouteSummary from "../services/googleMapsApi.js";
 
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function formatAddress(address) {
   const streetParts = [];
   if (address?.homeStreet) streetParts.push(address.homeStreet);
@@ -43,7 +47,6 @@ export default async function calculateBatchTravelTime(req, res) {
     const { homeCity } = homeAddress;
     const formattedHomeAddress = formatAddress(homeAddress);
 
-    const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const re = homeCity
       ? new RegExp(escapeRegExp(" " + homeCity + " "), "i")
       : null;

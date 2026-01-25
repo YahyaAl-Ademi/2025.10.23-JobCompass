@@ -122,6 +122,8 @@ const JobsProvider = ({ children }) => {
   );
 };
 
-const UseJobs = () => useContext(JobsContext);
+function UseJobs() {
+  return useContext(JobsContext);
+}
 
 export { JobsProvider, UseJobs };

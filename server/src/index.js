@@ -57,7 +57,7 @@ cron.schedule(
   },
 );
 
-const startServer = async () => {
+async function startServer() {
   try {
     app.listen(port, () => {
       logInfo(`Server started on port ${port}`);
@@ -65,7 +65,7 @@ const startServer = async () => {
   } catch (error) {
     logError(error);
   }
-};
+}
 
 /****** Host our client code for Heroku *****/
 /**

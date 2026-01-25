@@ -1,6 +1,6 @@
 import regexEndNormalizeSkill from "./regexEndNormalizeSkill";
 
-const fixUserSkills = (skills) => {
+function fixUserSkills(skills) {
   // Accept either an array of skill strings or a comma-separated skills string
   let arr = [];
   if (Array.isArray(skills)) {
@@ -17,6 +17,6 @@ const fixUserSkills = (skills) => {
   return arr
     .map((skill) => regexEndNormalizeSkill(skill))
     .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
-};
+}
 
 export default fixUserSkills;
