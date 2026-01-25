@@ -1,3 +1,14 @@
+/*
+Job Search Integration & Caching Implementation:
+- Multi-API Integration: LinkedIn jobs via RapidAPI and Apify scraper
+- Intelligent Caching: Authentication-aware caching with automatic cleanup
+- Search Optimization: Word-by-word processing for better result coverage
+- Data Normalization: Standardized job data from multiple sources
+- Cache Strategy: Authentication-aware result retrieval with privacy protection
+- Performance: Efficient database queries with proper joins and filtering
+- Analytics Foundation: Supports search pattern analysis and user behavior tracking
+*/
+
 /**
  * Retrieves cached jobs from the database for a given search word
  * @param {Object} connectedClient - Database client connection

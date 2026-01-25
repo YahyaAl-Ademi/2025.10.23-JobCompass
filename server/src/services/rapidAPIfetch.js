@@ -1,6 +1,16 @@
 import { logError } from "../util/logging.js";
 import processRapidAPIjob from "../util/processRapidAPIjob.js";
 
+/*
+RapidAPI LinkedIn Integration Details:
+- Service: LinkedIn Job Search API
+- Rate Limits: 100 results for authenticated users, 5 for guests
+- Processing: Real-time job fetching with immediate results
+- Location Support: Configurable geographic filtering
+- Error Handling: Comprehensive error logging and graceful degradation
+- Data Processing: Job validation and normalization through processRapidAPIjob utility
+*/
+
 if (!process.env.X_RAPIDAPI_KEY) {
   throw new Error("X_RAPIDAPI_KEY environment variable is not set");
 }

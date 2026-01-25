@@ -10,6 +10,17 @@ import validateCreactUser from "../util/validateCreactUser.js";
 import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
 
+/*
+Personalization Features Implementation:
+- User Profiles: Skills, location, and preference management
+- Favorites System: Save jobs with personalized commute calculations
+- Commute Integration: Google Maps API for travel time calculations
+- Avatar Upload: Firebase integration for profile images
+- Profile Management: Comprehensive user data handling with validation
+- Security: Password hashing, JWT tokens, and secure session management
+- Data Privacy: Proper handling of user data with authentication checks
+*/
+
 // JWT Configuration
 
 if (!process.env.JWT_EXPIRES_IN) {

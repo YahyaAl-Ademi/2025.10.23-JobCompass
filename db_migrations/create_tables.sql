@@ -57,3 +57,23 @@ CREATE TABLE IF NOT EXISTS search_strings_jobs (
     CONSTRAINT search_strings_jobs_search_string_fkey FOREIGN KEY (search_string) REFERENCES search_strings (search_string) ON DELETE CASCADE,
     CONSTRAINT search_strings_jobs_job_id_fkey FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE CASCADE
 );
+
+/*
+Database Performance & Maintenance Notes:
+- Database Optimization: Proper indexing and query optimization implemented
+- Database Connections: Basic PostgreSQL client connections used
+- Automated Cleanup: Daily cron jobs for cache maintenance (see server/src/index.js)
+- Rate Limiting: API protection and fair usage enforcement implemented
+- Cascade Delete: Automatic cleanup when users or jobs are removed to maintain data integrity
+- Composite Keys: Used for many-to-many relationships to ensure uniqueness
+- UUID Primary Keys: Used for users table to ensure global uniqueness
+- Text-based IDs: Used for jobs table to accommodate external API identifiers
+
+Data Processing Pipeline Notes:
+- Real-time Processing: Immediate job search results supported
+- Background Processing: Asynchronous LinkedIn scraping for authenticated users
+- Data Validation: Comprehensive job data validation and normalization
+- Deduplication: Cross-source job deduplication by unique identifiers
+- Cache Foundation: search_strings_jobs table enables efficient result retrieval for repeated searches
+- Analytics: Supports search result analysis and optimization
+*/

@@ -2,6 +2,17 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
 
+/*
+Google Maps Integration Details:
+- Commute Calculations: Travel time and transfer information for public transit
+- Batch Processing: Efficient calculation for multiple job locations
+- User Location: Based on user profile address settings
+- Cache Storage: Commute data persisted in user_favorites table
+- Route Analysis: Multiple route comparison with duration and transfer calculations
+- Error Handling: Comprehensive error handling for API failures and missing routes
+- Performance: Optimized for transit mode with duration and transfer metrics
+*/
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 

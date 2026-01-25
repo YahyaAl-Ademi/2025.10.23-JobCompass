@@ -1,5 +1,16 @@
 import { logInfo, logError } from "../util/logging.js";
 import processScraperJob from "../util/processScraperJob.js";
+
+/*
+Apify LinkedIn Scraper Integration Details:
+- Service: Apify LinkedIn Jobs Scraper
+- Background Processing: Asynchronous execution for authenticated users
+- Enhanced Data: Company information and detailed job descriptions
+- Polling: Status monitoring with configurable timeouts (30s intervals, 10min timeout)
+- Data Processing: Job validation and normalization through processScraperJob utility
+- Error Handling: Comprehensive error logging and status monitoring
+- Reliability: Robust polling mechanism with timeout protection
+*/
 const apifyBase = "https://api.apify.com/v2";
 const pollIntervalMs = 30 * 1000;
 const waitTimeoutMs = 10 * 60 * 1000;

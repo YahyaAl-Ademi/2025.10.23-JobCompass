@@ -8,6 +8,12 @@ import app from "./app.js";
 import { logInfo, logError } from "./util/logging.js";
 import connectNeonDB from "./db/connectNeonDB.js";
 
+/*
+Maintenance & Operations Implementation:
+- Daily Cleanup: Removal of old cache entries and expired data (see cleanupDatabase function below) and Cron jobs for scheduled maintenance tasks
+- Error Monitoring: Comprehensive logging and alerting (see logging utility)
+*/
+
 const port = process.env.PORT;
 if (port == null) {
   logError(new Error("Cannot find a PORT number, did you create a .env file?"));
