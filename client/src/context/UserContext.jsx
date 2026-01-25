@@ -12,7 +12,7 @@ import userReducer from "../reducers/userReducer";
 
 const UserContext = createContext();
 function UseUser() {
-  return useContext(createContext());
+  return useContext(UserContext);
 }
 
 function UserContextProvider({ children }) {
