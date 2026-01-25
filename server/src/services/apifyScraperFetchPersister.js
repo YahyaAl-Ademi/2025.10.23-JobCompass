@@ -5,7 +5,7 @@ import cleanupInProgress from "../util/cleanupInProgress.js";
 
 const inProgressScraperFetch = {};
 
-export default async function apifyScraperFetchPersister(
+export default function apifyScraperFetchPersister(
   search_string,
   is_whole_string,
   is_auth,
