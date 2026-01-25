@@ -10,7 +10,7 @@ export default async function apifyScraperFetchPersister(
   is_whole_string,
   is_auth,
 ) {
-  cleanupInProgress(inProgressScraperFetch, 3 * 60 * 1000);
+  cleanupInProgress(inProgressScraperFetch, 20 * 60 * 1000);
 
   // Check if conditions are met before proceeding
   if (!is_whole_string && is_auth && !inProgressScraperFetch[search_string]) {

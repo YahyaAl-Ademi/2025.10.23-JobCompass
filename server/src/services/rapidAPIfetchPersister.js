@@ -3,11 +3,9 @@ import { logError } from "../util/logging.js";
 import rapidAPIfetch from "./rapidAPIfetch.js";
 import cleanupInProgress from "../util/cleanupInProgress.js";
 
-export default async function rapidAPIfetchPersister(
-  inProgressRapidAPIfetch,
-  searchWord,
-  is_auth,
-) {
+const inProgressRapidAPIfetch = {};
+
+export default async function rapidAPIfetchPersister(searchWord, is_auth) {
   let fetchedJobs = [];
   cleanupInProgress(inProgressRapidAPIfetch, 3 * 60 * 1000);
 
