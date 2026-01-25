@@ -6,7 +6,7 @@ This diagram illustrates the current database architecture for the JobCompass ap
 erDiagram
     users ||--o{ user_favorites : "saves"
     jobs ||--o{ user_favorites : "is saved by"
-    search_strings ||--o{ search_strings_jobs : "retreives"
+    search_strings ||--o{ search_strings_jobs : "retrieves"
     jobs ||--o{ search_strings_jobs : "is retrieved by"
 
     users {
