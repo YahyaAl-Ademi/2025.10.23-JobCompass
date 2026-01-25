@@ -1,5 +1,5 @@
 import { logError, logWarning } from "../util/logging.js";
-import { getTransitRouteSummary } from "../services/googleMapsApi.js";
+import getTransitRouteSummary from "../services/googleMapsApi.js";
 
 function formatAddress(address) {
   const streetParts = [];

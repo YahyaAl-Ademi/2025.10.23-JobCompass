@@ -25,7 +25,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function forgotPassword(req, res) {
+export default async function forgotPassword(req, res) {
   const { email } = req.body;
 
   if (!email)

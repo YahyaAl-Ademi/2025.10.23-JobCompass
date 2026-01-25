@@ -1,11 +1,11 @@
-import { persistJobSearch } from "./persistJobSearch.js";
+import persistJobSearch from "./persistJobSearch.js";
 import { logError } from "../util/logging.js";
 import linkedInScraperFetch from "./linkedInScraperFetch.js";
 import cleanupInProgress from "../util/cleanupInProgress.js";
 
 const inProgressScraperFetch = {};
 
-export async function scraperFetchPersister(
+export default async function scraperFetchPersister(
   search_string,
   is_whole_string,
   is_auth,

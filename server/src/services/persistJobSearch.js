@@ -1,7 +1,7 @@
 import { logError } from "../util/logging.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 
-export async function persistJobSearch(
+export default async function persistJobSearch(
   fetchedJobs,
   search_string,
   is_auth = null,

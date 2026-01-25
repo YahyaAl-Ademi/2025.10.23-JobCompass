@@ -1,9 +1,9 @@
-import { persistJobSearch } from "./persistJobSearch.js";
+import persistJobSearch from "./persistJobSearch.js";
 import { logError } from "../util/logging.js";
-import { rapidAPIfetch } from "./rapidAPIfetch.js";
+import rapidAPIfetch from "./rapidAPIfetch.js";
 import cleanupInProgress from "../util/cleanupInProgress.js";
 
-export async function rapidAPIfetchPersister(
+export default async function rapidAPIfetchPersister(
   inProgressRapidAPIfetch,
   searchWord,
   is_auth,
