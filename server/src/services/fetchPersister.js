@@ -1,32 +1,47 @@
-import connectNeonDB from "../db/connectNeonDB.js";
 import { persistJobSearch } from "./persistJobSearch.js";
+import { logError } from "../util/logging.js";
 
-export function fetchPersister(inProgressSearches, search_term, fetcher) {
-  (async () => {
-    const is_auth = inProgressSearches?.[search_term]?.is_auth;
-    let fetchedJobs;
-    if (fetcher) {
-      fetchedJobs = await fetcher(search_term);
-    } else {
-      fetchedJobs = inProgressSearches?.[search_term]?.fetchedJobs;
-    }
+export async function fetchPersister(inProgressSearches, search_term) {
+  const { isBackgroundFetch, fetcher, is_auth, is_whole_string } =
+    inProgressSearches[search_term];
+  let fetchedJobs;
 
-    const {
-      connectedClient,
-      error: connectionError,
-      endConnection,
-    } = await connectNeonDB();
-
-    if (!connectionError) {
-      await persistJobSearch(
-        connectedClient,
-        fetchedJobs,
-        search_term,
-        is_auth,
-      );
-      if (endConnection) await endConnection();
-    }
-
-    delete inProgressSearches[search_term];
-  })();
+  if (isBackgroundFetch) {
+    (async () => {
+      try {
+        fetchedJobs = await fetcher(search_term);
+        await persistJobSearch(
+          fetchedJobs,
+          search_term,
+          is_auth,
+          is_whole_string,
+        );
+      } catch (error) {
+        logError(
+          `Background fetch failed for search term '${search_term}': ${error.message}`,
+        );
+      } finally {
+        delete inProgressSearches[search_term];
+      }
+    })();
+  } else {
+    fetchedJobs = await fetcher(search_term);
+    (async () => {
+      try {
+        await persistJobSearch(
+          fetchedJobs,
+          search_term,
+          is_auth,
+          is_whole_string,
+        );
+      } catch (error) {
+        logError(
+          `Background persistence failed for search term '${search_term}': ${error.message}`,
+        );
+      } finally {
+        delete inProgressSearches[search_term];
+      }
+    })();
+    return fetchedJobs;
+  }
 }

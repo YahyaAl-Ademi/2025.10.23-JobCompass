@@ -3,7 +3,7 @@
  * @param {Object} connectedClient - Database client connection
  * @param {string} searchWord - The search word to look up
  * @param {string|null} is_auth - Optional user identifier (uuid used as a boolean-ish flag for authenticated requests now, retained for future search analytics); leave null/undefined for anonymous lookups
- * @returns {Promise<Array>} Array of job objects or empty array if not found
+ * @returns {Promise<Object>} Object containing is_whole_string and cachedJobsPerSearchString array
  */
 export default async function getCachedJobsBySearchString(
   connectedClient,
@@ -12,10 +12,12 @@ export default async function getCachedJobsBySearchString(
 ) {
   // Check if the search word exists in search_strings table
   const checkWordResult = await connectedClient.query(
-    "SELECT search_string FROM search_strings WHERE search_string = $1",
+    "SELECT search_string, is_whole_string FROM search_strings WHERE search_string = $1",
     [searchWord],
   );
   if (checkWordResult.rows.length > 0) {
+    const isWholeString = checkWordResult.rows[0].is_whole_string;
+
     // Retrieve cached jobs
     const cachedJobsResult = await connectedClient.query(
       `SELECT j.* FROM jobs j
@@ -24,8 +26,15 @@ export default async function getCachedJobsBySearchString(
        WHERE swj.search_string = $1 AND ($2::uuid IS NULL OR ss.is_auth IS NOT NULL)`,
       [searchWord, is_auth],
     );
-    return cachedJobsResult.rows;
+
+    return {
+      is_whole_string: isWholeString,
+      cachedJobsPerSearchString: cachedJobsResult.rows,
+    };
   }
 
-  return [];
+  return {
+    is_whole_string: false,
+    cachedJobsPerSearchString: [],
+  };
 }

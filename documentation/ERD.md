@@ -6,8 +6,8 @@ This diagram illustrates the current database architecture for the JobCompass ap
 erDiagram
     users ||--o{ user_favorites : "saves"
     jobs ||--o{ user_favorites : "is saved by"
-    search_strings ||--o{ search_strings_jobs : ""
-    jobs ||--o{ search_strings_jobs : ""
+    search_strings ||--o{ search_strings_jobs : "retreives"
+    jobs ||--o{ search_strings_jobs : "is retreived by"
 
     users {
         uuid id PK "NOT NULL, CONSTRAINT users_pkey"
@@ -52,6 +52,7 @@ erDiagram
         text search_string PK "NOT NULL, CONSTRAINT search_strings_pkey"
         timestamp search_date
         uuid is_auth
+        boolean is_whole_string "DEFAULT false"
     }
 
     search_strings_jobs {
@@ -107,6 +108,7 @@ Tracks all search queries for caching and analytics:
 - **Search Context**: The actual search string used
 - **Authentication Context**: UUID of user who made the search (null for guests)
 - **Timestamp**: When the search was performed
+- **Whole String Flag**: Boolean indicating if search should match whole string only (defaults to false)
 - **Cache Key**: Used for efficient result retrieval
 
 ### search_strings_jobs Table

@@ -93,9 +93,9 @@ export default async function linkedInScraperFetch(
         `Unexpected API response shape: ${JSON.stringify(results)}`,
       );
     }
-
-    return aggregated;
   } catch (error) {
     logError(`linkedInScraperFetch error: ${error}`);
   }
+
+  return aggregated;
 }
