@@ -11,6 +11,7 @@ import cleanUpText from "../../util/cleanUpText";
 import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill";
 import validateSkillInput from "../../util/skillValidation";
 import { gif } from "../../assets/index.js";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 // Styles
 import "./SkillsSettings.css";
 
@@ -32,7 +33,7 @@ export default function SkillsSettings() {
   function delayedClearAlert() {
     setTimeout(() => {
       handleClearAlert();
-    }, 2000);
+    }, DELAYED_CLEAR_INTERVAL);
   }
 
   const {

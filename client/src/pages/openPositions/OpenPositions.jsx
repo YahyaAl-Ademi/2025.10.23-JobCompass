@@ -12,6 +12,7 @@ import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
 import { UseJobs } from "../../context/JobsContext";
 import createSortComparator from "../../util/createSortComparator";
 import AlertMessage from "../../components/AlertMessage/AlertMessage";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 
 export default function OpenPositions() {
   const { user } = UseUser();
@@ -52,7 +53,7 @@ export default function OpenPositions() {
   function delayedClearAlert() {
     setTimeout(() => {
       handleClearAlert();
-    }, 5000);
+    }, DELAYED_CLEAR_INTERVAL);
   }
 
   useEffect(() => {

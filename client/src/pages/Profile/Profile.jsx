@@ -11,6 +11,7 @@ import useFetch from "../../hooks/useFetch";
 import fixUserSkills from "../../util/fixUserSkills";
 import AvatarUploader from "../../components/AvatarUploader/AvatarUploader";
 import DeleteProfilePopup from "../../components/DeleteProfilePopup/DeleteProfilePopup";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import "./Profile.css";
 import { gif } from "../../assets/index.js";
 
@@ -33,7 +34,7 @@ export default function Profile() {
   function delayedClearAlert() {
     setTimeout(() => {
       handleClearAlert();
-    }, 2000);
+    }, DELAYED_CLEAR_INTERVAL);
   }
 
   const {
