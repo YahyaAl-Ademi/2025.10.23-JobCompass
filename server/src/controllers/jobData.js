@@ -1,7 +1,6 @@
 import { logError } from "../util/logging.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import getCachedJobsBySearchString from "../services/getCachedJobsBySearchString.js";
-import scraperFetchPersister from "../services/ScraperFetchPersister.js";
 import rapidAPIfetchPersister from "../services/rapidAPIfetchPersister.js";
 
 export default async function searchJobs(req, res) {
