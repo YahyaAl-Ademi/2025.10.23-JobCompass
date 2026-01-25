@@ -15,7 +15,7 @@ export default async function rapidAPIfetchPersister(searchWord, is_auth) {
       timestamp: Date.now(),
     };
 
-    fetchedJobs = await rapidAPIfetch(searchWord);
+    fetchedJobs = await rapidAPIfetch(searchWord, is_auth);
 
     (async () => {
       try {
