@@ -7,7 +7,7 @@ erDiagram
     users ||--o{ user_favorites : "saves"
     jobs ||--o{ user_favorites : "is saved by"
     search_strings ||--o{ search_strings_jobs : "retreives"
-    jobs ||--o{ search_strings_jobs : "is retreived by"
+    jobs ||--o{ search_strings_jobs : "is retrieved by"
 
     users {
         id uuid PK "NOT NULL, CONSTRAINT users_pkey"
