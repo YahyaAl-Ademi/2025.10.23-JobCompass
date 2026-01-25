@@ -22,13 +22,11 @@ export default async function rapidAPIfetch(
 ) {
   const aggregated = [];
   let currentIteration = 0;
-  let maxIterations;
-  let limit;
+  let limit = 5;
+  let maxIterations = 1;
   if (is_auth) {
     limit = 100;
-  } else {
-    limit = 5;
-    maxIterations = 1;
+    maxIterations = 25;
   }
 
   const options = {
