@@ -24,7 +24,7 @@ flowchart TD
     E --> F["<a href='./4.1.Request%20Validation%20&%20Initiation.md'>4.1.Request Validation & Initiation</a>"]
 
     subgraph JobSearch["4.Job Search, Processing, Persistence"]
-        F --> G{Validation Success?}
+        F --> G{Server Validation Success?}
         G -->|No| H["<a href='./4.2.Client-Side%20Error%20Handling.md'>4.2.Client-Side Error Handling</a>"]
         G -->|Yes| Q["<a href='./4.3.1.Cache%20Check%20for%20Full%20String.md'>4.3.1.Cache Check for Full String</a>"]
 
@@ -34,27 +34,31 @@ flowchart TD
 
             S --> S2{Is authenticated?}
             S2 -->|Yes| T["<a href='./4.5.Background%20Scraper%20Fetch.md'>4.5.Background Scraper Fetch</a>"]
-            S2 -->|No| L
+            S2 -->|No| U[Word-by-Word Search]
 
             R --> L{Search Success?}
+            U --> L
 
         L -->|No| J["<a href='./4.4.Server-Network%20Error%20Handling.md'>4.4.Server-Network Error Handling</a>"]
     end
 
     H --> P[User Interaction]
     J --> P
-    L -->|Yes| M{Travel Success?}
+    L -->|Yes| M{Travel Details Needed?}
     L -->|Yes| O["<a href='./6.Display%20Results.md'>6.Display Results</a>"]
 
     subgraph TravelDetails["<a href='./5.Travel%20Details%20Fetch.md'>5.Travel Details Fetch</a>"]
-        M -->|No| N[Display Travel Error]
-        M -->|Yes| O
+        M -->|No| O
+        M -->|Yes| N[Fetch Travel Details]
+        N --> N2{Travel Success?}
+        N2 -->|No| N3[Display Travel Error]
+        N2 -->|Yes| O
+        N3 --> O
     end
 
     O --> P[User Interaction]
-    N --> P
     C --> P
-    T
+    T --> U
 
     style A fill:#4a9eff,stroke:#fff,color:#fff
     style B fill:#ff6b6b,stroke:#4a9eff,color:#fff
@@ -67,7 +71,11 @@ flowchart TD
     style S fill:#96783c,stroke:#4a9eff,color:#fff
     style S2 fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style T fill:#96783c,stroke:#4a9eff,color:#fff
+    style U fill:#96783c,stroke:#4a9eff,color:#fff
     style M fill:#ff6b6b,stroke:#4a9eff,color:#fff
+    style N fill:#647850,stroke:#4a9eff,color:#fff
+    style N2 fill:#ff6b6b,stroke:#4a9eff,color:#fff
+    style N3 fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style O fill:#787846,stroke:#4a9eff,color:#fff
     style P fill:#4a9eff,stroke:#fff,color:#fff
     style L fill:#ff6b6b,stroke:#4a9eff,color:#fff
