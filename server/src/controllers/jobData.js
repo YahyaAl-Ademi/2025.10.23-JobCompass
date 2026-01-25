@@ -26,6 +26,7 @@ export default async function searchJobs(req, res) {
     try {
       let { search_string } = req.body;
       let aggregatedJobs = [];
+      const aggregatedJobsIdsSet = new Set();
 
       if (typeof search_string !== "string" || !search_string.trim()) {
         responseStatus = 400;
@@ -44,7 +45,10 @@ export default async function searchJobs(req, res) {
           );
 
         if (cachedJobsPerSearchString.length > 0) {
-          aggregatedJobs = [...cachedJobsPerSearchString];
+          cachedJobsPerSearchString.forEach((job) => {
+            aggregatedJobs.push(job);
+            if (job.id) aggregatedJobsIdsSet.add(job.id);
+          });
         }
 
         responseData.msg = apifyScraperFetchPersister(
@@ -70,9 +74,6 @@ export default async function searchJobs(req, res) {
               fetchedJobs = await rapidAPIfetchPersister(searchWord, is_auth);
             }
 
-            const aggregatedJobsIdsSet = new Set(
-              aggregatedJobs.map((job) => job.id),
-            );
             for (const job of fetchedJobs) {
               if (job.id && !aggregatedJobsIdsSet.has(job.id)) {
                 aggregatedJobs.push(job);
