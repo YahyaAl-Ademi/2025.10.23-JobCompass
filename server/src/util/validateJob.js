@@ -30,7 +30,9 @@ export default function validateJob(job) {
         key !== "least_transfers" &&
         key !== "work_mode",
     )
-    .some(([, value]) => value === null);
+    .some(([, value]) => {
+      return value === null || value === undefined;
+    });
 
   return !hasNullValues;
 }
