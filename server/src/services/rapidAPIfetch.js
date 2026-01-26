@@ -81,8 +81,8 @@ export default async function rapidAPIfetch(
     currentOffset += limit;
     currentIteration++;
 
-    // Stop if !is_auth && maxIterations is reached
-    if (!is_auth && currentIteration >= maxIterations) {
+    // Stop once maxIterations is reached for both auth and guest flows
+    if (currentIteration >= maxIterations) {
       continueLoop = false;
     }
   }
