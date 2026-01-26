@@ -17,11 +17,6 @@ export default async function persistJobSearch(
     const jobsToInsert = [];
     const searchStringJobsToInsert = [];
 
-    if (!Array.isArray(fetchedJobs)) {
-      logError(`fetchedJobs is not an array: ${typeof fetchedJobs}`);
-      return;
-    }
-
     await connectedClient.query("BEGIN");
     try {
       // Insert search string
