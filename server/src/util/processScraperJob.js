@@ -4,7 +4,8 @@ import validateJob from "./validateJob.js";
 export default function processScraperJob(job) {
   const {
     id,
-    applyUrl: url,
+    applyUrl: url1,
+    link: url2,
     title,
     postedAt: date_posted,
     employmentType: employment_type,
@@ -19,7 +20,7 @@ export default function processScraperJob(job) {
 
   const processedJob = {
     id,
-    url,
+    url: url1 || url2,
     title,
     date_posted,
     employment_type: employment_type || null,

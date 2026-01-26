@@ -5,7 +5,7 @@ export default function processRapidAPIjob(job) {
   const {
     id,
     url: url1,
-    external_apply_url: ur2,
+    external_apply_url: url2,
     title,
     date_posted,
     employment_type = [],
@@ -48,7 +48,7 @@ export default function processRapidAPIjob(job) {
 
   const processedJob = {
     id,
-    url: ur2 || url1,
+    url: url2 || url1,
     title,
     date_posted,
     employment_type:
