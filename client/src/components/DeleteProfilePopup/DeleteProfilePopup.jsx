@@ -3,6 +3,7 @@ import { UseUser } from "../../context/UserContext";
 import "./DeleteProfilePopup.css";
 import useFetch from "../../hooks/useFetch";
 import { gif } from "../../assets";
+import handleKeyDown from "../../util/handleKeyDown";
 
 export default function DeleteProfilePopup({ setShowDeletePopup }) {
   const { dispatch, setMessage } = UseUser();
@@ -34,6 +35,7 @@ export default function DeleteProfilePopup({ setShowDeletePopup }) {
           <button
             className="profile-btn-secondary"
             onClick={() => setShowDeletePopup(false)}
+            onKeyDown={(e) => handleKeyDown(e, () => setShowDeletePopup(false))}
           >
             Cancel
           </button>
@@ -41,6 +43,11 @@ export default function DeleteProfilePopup({ setShowDeletePopup }) {
             className="profile-btn-primary"
             onClick={() =>
               performFetch({ method: "DELETE", credentials: "include" })
+            }
+            onKeyDown={(e) =>
+              handleKeyDown(e, () =>
+                performFetch({ method: "DELETE", credentials: "include" }),
+              )
             }
             disabled={isLoading}
           >

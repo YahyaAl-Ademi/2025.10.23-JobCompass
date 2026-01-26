@@ -1,5 +1,6 @@
 import "./SuccessPopup.css";
 import { UseUser } from "../../context/UserContext";
+import handleKeyDown from "../../util/handleKeyDown";
 
 export default function SignupSuccessPopup({ goToProfile }) {
   const { user } = UseUser();
@@ -12,7 +13,11 @@ export default function SignupSuccessPopup({ goToProfile }) {
           address in your profile to get the most relevant jobs.
         </p>
         <div className="popup-buttons">
-          <button className="btn-primary" onClick={goToProfile}>
+          <button
+            className="btn-primary"
+            onClick={goToProfile}
+            onKeyDown={(e) => handleKeyDown(e, goToProfile)}
+          >
             Go to Profile
           </button>
         </div>

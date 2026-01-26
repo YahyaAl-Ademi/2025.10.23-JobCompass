@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import handleKeyDown from "../../util/handleKeyDown";
 
 export default function LoginSuccessPopup({ onClose }) {
   const navigate = useNavigate();
@@ -14,7 +15,11 @@ export default function LoginSuccessPopup({ onClose }) {
         <h2>Success!</h2>
         <p>You successfully logged in!</p>
         <div className="popup-buttons">
-          <button className="btn-primary" onClick={handleContinue}>
+          <button
+            className="btn-primary"
+            onClick={handleContinue}
+            onKeyDown={(e) => handleKeyDown(e, handleContinue)}
+          >
             Continue
           </button>
         </div>
