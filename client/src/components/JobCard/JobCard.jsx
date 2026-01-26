@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DOMPurify from "dompurify";
 import {
   Bus,
   Briefcase,
@@ -47,7 +48,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     },
   );
 
-  const handleFavoriteClick = (e) => {
+  function handleFavoriteClick(e) {
     e.stopPropagation();
     if (user.id) {
       performFetch({
@@ -58,24 +59,27 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     } else {
       setShowFavoritesPopup(true);
     }
-  };
+  }
 
-  const handleApplyClick = (e) => {
+  function handleApplyClick(e) {
     e.stopPropagation();
     if (user.id) {
       if (onApplyClick) {
-        window.open(job.applyLink || job.url, "_blank");
+        window.open(
+          job.url?.startsWith("http") ? job.url : `https://${job.url}`,
+          "_blank",
+        );
       }
       return;
     }
     setShowApplyPopup(true);
-  };
+  }
 
-  const handleLoginRedirect = () => {
+  function handleLoginRedirect() {
     setShowApplyPopup(false);
     setShowFavoritesPopup(false);
     navigate("/login", {});
-  };
+  }
 
   return (
     <li className="job-item">
@@ -83,7 +87,11 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
         <div className="job-card-content">
           <div className="company-logo-container">
             <a
-              href={job.organization_url}
+              href={
+                job.organization_url?.startsWith("http")
+                  ? job.organization_url
+                  : `https://${job.organization_url}`
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="company-link"
@@ -107,9 +115,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 onClick={handleFavoriteClick}
                 disabled={isToggleFavoriteLoading}
                 title={
-                  isInFavorites
-                    ? "Remove from favourites"
-                    : "Save to favourites"
+                  isInFavorites ? "Remove from favorites" : "Save to favorites"
                 }
               >
                 {isToggleFavoriteLoading ? (
@@ -208,11 +214,15 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
               </div>
             </div>
 
-            <p className="job-description">
-              {job.description_text
-                ? job.description_text.substring(0, 350) + "..."
-                : "No description available."}
-            </p>
+            <p
+              className="job-description"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  (job?.description_text?.slice(0, 400) ||
+                    "No description available") + "...",
+                ),
+              }}
+            />
 
             <div className="job-card-footer">
               <div className="skill-match-container">

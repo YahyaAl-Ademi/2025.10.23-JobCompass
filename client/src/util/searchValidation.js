@@ -1,4 +1,4 @@
-export function validateJobInput({ text }) {
+export default function validateJobInput({ text }) {
   if (text === "") {
     return {
       type: "error",

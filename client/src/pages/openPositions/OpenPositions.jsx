@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { gif } from "../../assets/index.js";
 import DropdownFilter from "../../components/DropdownFilter/DropdownFilter";
 import JobCard from "../../components/JobCard/JobCard";
@@ -11,9 +11,12 @@ import getSkillsInDescription from "../../util/getSkillsInDescription";
 import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
 import { UseJobs } from "../../context/JobsContext";
 import createSortComparator from "../../util/createSortComparator";
+import AlertMessage from "../../components/AlertMessage/AlertMessage";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 
 export default function OpenPositions() {
   const { user } = UseUser();
+  const [alert, setAlert] = useState({ type: "", message: "" });
 
   const {
     allJobs,
@@ -21,6 +24,8 @@ export default function OpenPositions() {
     isJobsLoading,
     jobFetchError,
     travelFetchError,
+    serverMessage,
+    setServerMessage,
   } = UseJobs();
 
   const favorites = Array.isArray(user?.favorites) ? user.favorites : [];
@@ -35,11 +40,35 @@ export default function OpenPositions() {
   });
 
   const [selectedSort, setSelectedSort] = useState([
-    "Most skill matches",
     "Fewest transport transfers",
     "Nearest first",
+    "Most skill matches",
     "Newest first",
   ]);
+
+  function handleClearAlert() {
+    setAlert({ type: "", message: "" });
+  }
+
+  function delayedClearAlert() {
+    setTimeout(() => {
+      handleClearAlert();
+    }, DELAYED_CLEAR_INTERVAL);
+  }
+
+  useEffect(() => {
+    if (jobFetchError) {
+      setAlert({ type: "error", message: String(jobFetchError) });
+      delayedClearAlert();
+    } else if (travelFetchError) {
+      setAlert({ type: "error", message: String(travelFetchError) });
+      delayedClearAlert();
+    } else if (serverMessage) {
+      setAlert({ type: "info", message: serverMessage });
+      setServerMessage("");
+      delayedClearAlert();
+    }
+  }, [jobFetchError, travelFetchError, serverMessage, setServerMessage]);
 
   const jobsWithSkills = useMemo(() => {
     return allJobs.map((job) => {
@@ -59,27 +88,30 @@ export default function OpenPositions() {
     return findFilterOptions(allJobs);
   }, [allJobs]);
 
-  const handleFilterChange = (filterKey, value, isChecked) => {
+  function handleFilterChange(filterKey, value, isChecked) {
     setActiveFilters((prev) => {
       const newSet = new Set(prev[filterKey]);
       isChecked ? newSet.add(value) : newSet.delete(value);
       setCurrentPage(1);
       return { ...prev, [filterKey]: newSet };
     });
-  };
+  }
 
-  const handleClearFilters = () => {
+  function handleClearFilters() {
     setActiveFilters({
       seniorityLevel: new Set(),
       employmentType: new Set(),
       work_mode: new Set(),
     });
     setCurrentPage(1);
-  };
+  }
 
   const sortedJobs = useMemo(() => {
-    if (selectedSort.length === 0) return jobsWithSkills;
-    return [...jobsWithSkills].sort(createSortComparator(selectedSort));
+    const result =
+      selectedSort.length === 0
+        ? jobsWithSkills
+        : [...jobsWithSkills].sort(createSortComparator(selectedSort));
+    return result;
   }, [jobsWithSkills, selectedSort]);
 
   const filteredJobs = useMemo(() => {
@@ -140,18 +172,19 @@ export default function OpenPositions() {
           </div>
         </div>
 
-        {(jobFetchError || travelFetchError) && (
-          <div className="error-message">
-            Error loading jobs or commute info:{" "}
-            {jobFetchError || travelFetchError}
+        {alert.message && (
+          <div className="md:w-auto">
+            <AlertMessage type={alert.type} message={alert.message} />
           </div>
         )}
 
         {!isJobsLoading && filteredJobs.length === 0 && (
-          <p className="job-message">
-            No jobs are shown. Go to <strong>Job search</strong> or{" "}
-            <strong>Clear filters</strong> to see more results.
-          </p>
+          <div className="md:w-auto">
+            <AlertMessage
+              type="info"
+              message="No jobs are shown. Go to Job search or Clear filters to see more results."
+            />
+          </div>
         )}
 
         {!isJobsLoading && filteredJobs.length > 0 && (

@@ -1,12 +1,11 @@
-function normalizeDescription(str) {
-  const s = typeof str === "string" ? str : "";
-  return " " + s.replace(/[^A-Za-z0-9+#]/g, " ").replace(/ +/g, " ") + " ";
-}
+import normalizeDescription from "./normalizeDescription.js";
+import validateJob from "./validateJob.js";
 
-export default function processJobPost(job) {
+export default function processRapidAPIjob(job) {
   const {
     id,
-    url,
+    url: url1,
+    external_apply_url: url2,
     title,
     date_posted,
     employment_type = [],
@@ -15,7 +14,7 @@ export default function processJobPost(job) {
     seniority,
     description_text = "",
     organization,
-    organization_url,
+    linkedin_org_url: organization_url,
     organization_logo,
   } = job || {};
   // normalize seniority values coming from the job source
@@ -46,9 +45,10 @@ export default function processJobPost(job) {
     default:
       normalizedSeniority = seniority;
   }
-  return {
+
+  const processedJob = {
     id,
-    url,
+    url: url2 || url1,
     title,
     date_posted,
     employment_type:
@@ -70,4 +70,6 @@ export default function processJobPost(job) {
     organization_url,
     organization_logo,
   };
+
+  return validateJob(processedJob) ? processedJob : null;
 }
