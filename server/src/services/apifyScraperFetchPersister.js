@@ -24,7 +24,7 @@ export default function apifyScraperFetchPersister(
         await persistJobSearch(
           fetchedJobs,
           search_string,
-          true, // is_auth
+          is_auth,
           true, // is_whole_string
         );
       } catch (error) {
