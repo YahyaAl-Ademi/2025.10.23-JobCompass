@@ -17,6 +17,7 @@ export default function LoginSuccessPopup({ onClose }) {
         <div className="popup-buttons">
           <button
             className="btn-primary"
+            autoFocus
             onClick={handleContinue}
             onKeyDown={(e) => handleKeyDown(e, handleContinue)}
           >

@@ -12,6 +12,7 @@ export default function PopupForFavorites({
         <div className="popup-buttons">
           <button
             className="btn-primary"
+            autoFocus
             onClick={handleLoginRedirect}
             onKeyDown={(e) => handleKeyDown(e, handleLoginRedirect)}
           >

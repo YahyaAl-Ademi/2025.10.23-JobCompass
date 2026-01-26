@@ -41,6 +41,7 @@ export default function DeleteProfilePopup({ setShowDeletePopup }) {
           </button>
           <button
             className="profile-btn-primary"
+            autoFocus
             onClick={() =>
               performFetch({ method: "DELETE", credentials: "include" })
             }
