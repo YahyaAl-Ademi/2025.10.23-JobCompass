@@ -65,7 +65,10 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     e.stopPropagation();
     if (user.id) {
       if (onApplyClick) {
-        window.open(job.applyLink || job.url, "_blank");
+        window.open(
+          job.url?.startsWith("http") ? job.url : `https://${job.url}`,
+          "_blank",
+        );
       }
       return;
     }
@@ -84,7 +87,11 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
         <div className="job-card-content">
           <div className="company-logo-container">
             <a
-              href={job.organization_url}
+              href={
+                job.organization_url?.startsWith("http")
+                  ? job.organization_url
+                  : `https://${job.organization_url}`
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="company-link"
