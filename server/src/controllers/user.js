@@ -340,7 +340,6 @@ export async function getMe(req, res) {
   } catch (err) {
     logError(`Error in getMe: ${err}`);
     return res
-
       .status(500)
       .json({ success: false, msg: "Failed to fetch user data" });
   } finally {
