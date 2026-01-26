@@ -40,9 +40,9 @@ export default function OpenPositions() {
   });
 
   const [selectedSort, setSelectedSort] = useState([
-    "Most skill matches",
     "Fewest transport transfers",
     "Nearest first",
+    "Most skill matches",
     "Newest first",
   ]);
 
