@@ -32,7 +32,8 @@ export default function JobSearch() {
           <span>
             Guest mode is limited to default settings — general skills such as{" "}
             {displayedSkills.toLowerCase()}, and others, along with the guest’s
-            home address {formatAddress(defaultUser)}.
+            home address {formatAddress(defaultUser)}, and may provide as few as
+            five job posts.
           </span>{" "}
           <Link to="/login" className="login-link">
             Log in
