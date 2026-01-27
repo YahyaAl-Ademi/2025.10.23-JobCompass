@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import SearchInput from "../../components/SearchInput/SearchInput";
 import "./JobSearch.css";
-import { icons } from "../../assets/index.js";
 import { defaultUser } from "../../data/defaultUser.js";
 import { formatAddress } from "../../data/defaultUser.js";
 import { UseUser } from "../../context/UserContext";
