@@ -21,7 +21,7 @@ export default async function getCachedJobsBySearchString(
   searchWord,
   is_auth,
 ) {
-  let cashedResult = {
+  let cachedResult = {
     is_whole_string: undefined,
     cachedJobsPerSearchString: [],
   };
@@ -42,10 +42,10 @@ export default async function getCachedJobsBySearchString(
       [searchWord, is_auth],
     );
 
-    cashedResult = {
+    cachedResult = {
       is_whole_string: isWholeString,
       cachedJobsPerSearchString: cachedJobsResult.rows,
     };
   }
-  return cashedResult;
+  return cachedResult;
 }
