@@ -24,7 +24,7 @@ export default async function cleanupDatabase() {
       await endConnection();
     }
   } else {
-    logError(`DB connection error: ${error.message}`);
+    logError(`DB connection error during database cleanup: ${error.message}`);
     if (endConnection) {
       await endConnection();
     }

@@ -40,10 +40,10 @@ cron.schedule(
 async function startServer() {
   try {
     app.listen(port, () => {
-      () => {
+      (() => {
         logInfo("Starting database cleanup on server start...");
         cleanupDatabase();
-      };
+      })();
       logInfo(`Server started on port ${port}`);
     });
   } catch (error) {
