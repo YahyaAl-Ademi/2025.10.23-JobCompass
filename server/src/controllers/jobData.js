@@ -57,9 +57,9 @@ export default async function searchJobs(req, res) {
           is_auth,
         );
 
-        const searchWords = search_string.split(/\s+/).filter(Boolean);
-
-        if (searchWords.length > 0) {
+        const searchWords = search_string.split(/[\s\-/]+/).filter(Boolean);
+        // If the DB has already responded with the job title which is the single keyword, there's no need to break it down further and re-query for the same keyword.
+        if (is_whole_string === undefined || searchWords.length > 1) {
           for (let i = 0; i < searchWords.length; i++) {
             const searchWord = searchWords[i];
             const cachedResult = await getCachedJobsBySearchString(
