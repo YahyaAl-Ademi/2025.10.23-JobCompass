@@ -2,14 +2,15 @@ import { images } from "../assets";
 import regexEndNormalizeSkill from "../util/regexEndNormalizeSkill";
 
 export function formatAddress(user) {
-  const streetParts = [];
-  if (user?.street) streetParts.push(user.street);
-  if (user?.house_number) streetParts.push(user.house_number);
-  if (user?.city) streetParts.push(user.city);
+  const streetAddress = [
+    user?.street,
+    user?.street && user?.house_number,
+    user?.city,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  const addressParts = [streetParts.join(" ")];
-  if (user?.country) addressParts.push(user.country);
-  return addressParts.join(", ");
+  return [streetAddress, user?.country].filter(Boolean).join(", ");
 }
 
 // list of default skill display names

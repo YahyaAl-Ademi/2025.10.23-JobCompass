@@ -6,14 +6,15 @@ function escapeRegExp(s) {
 }
 
 function formatAddress(address) {
-  const streetParts = [];
-  if (address?.homeStreet) streetParts.push(address.homeStreet);
-  if (address?.homeHouseNumber) streetParts.push(address.homeHouseNumber);
-  if (address?.homeCity) streetParts.push(address.homeCity);
+  const streetAddress = [
+    address?.homeStreet,
+    address?.homeStreet && address?.homeHouseNumber,
+    address?.homeCity,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  const addressParts = [streetParts.join(" ")];
-  if (address?.homeCountry) addressParts.push(address.homeCountry);
-  return addressParts.join(", ");
+  return [streetAddress, address?.homeCountry].filter(Boolean).join(", ");
 }
 
 const workPlacesSet = new Set([
