@@ -21,6 +21,10 @@ export default async function getCachedJobsBySearchString(
   searchWord,
   is_auth,
 ) {
+  let cachedResult = {
+    is_whole_string: undefined,
+    cachedJobsPerSearchString: [],
+  };
   // Check if the search word exists in search_strings table
   const checkWordResult = await connectedClient.query(
     "SELECT search_string, is_whole_string FROM search_strings WHERE search_string = $1",
@@ -38,14 +42,10 @@ export default async function getCachedJobsBySearchString(
       [searchWord, is_auth],
     );
 
-    return {
+    cachedResult = {
       is_whole_string: isWholeString,
       cachedJobsPerSearchString: cachedJobsResult.rows,
     };
   }
-
-  return {
-    is_whole_string: false,
-    cachedJobsPerSearchString: [],
-  };
+  return cachedResult;
 }

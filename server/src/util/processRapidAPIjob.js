@@ -53,7 +53,10 @@ export default function processRapidAPIjob(job) {
     date_posted,
     employment_type:
       Array.isArray(employment_type) && employment_type.length > 0
-        ? employment_type[0].replace("_", " ")
+        ? (
+            employment_type[0].charAt(0).toUpperCase() +
+            employment_type[0].slice(1).toLowerCase()
+          ).replace("_", "-")
         : null,
     work_mode: remote_derived === true ? "Remote" : "On-site",
     display_location:
