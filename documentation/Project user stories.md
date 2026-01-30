@@ -8,11 +8,13 @@
 
 **Acceptance Criteria:**
 
-* There should be [CTA & notifications](#cta--notifications)  
-* There should be [Demo-Guest mode](#demo-guest-mode)  
-* There should be [Creators' Info, Policies](#creators-info-policies)
+- There should be [CTA & notifications](#cta--notifications)
+- There should be [Demo-Guest mode](#demo-guest-mode)
+- There should be [Creators' Info, Policies](#creators-info-policies)
 
 **Priority:** High
+
+<a id="cta--notifications"></a>
 
 1. ### CTA & notifications
 
@@ -22,15 +24,15 @@
 
 **Acceptance Criteria:**
 
-* Every component containing an action, whether a button or a clickable link, must have a call to action (CTA).  
-* If placing a CTA directly within a component containing an action is impossible or impractical, the CTA should be placed within its parent component.  
-* CTA should be concise and to the point, yet sufficiently descriptive of its action(s).  
-* Every component containing an action should inform the user of a pending or unsatisfactory state of the action path.  
-* The message about an unsatisfactory path should include the suggestion of correction steps.
+- Every component containing an action, whether a button or a clickable link, must have a call to action (CTA).
+- If placing a CTA directly within a component containing an action is impossible or impractical, the CTA should be placed within its parent component.
+- CTA should be concise and to the point, yet sufficiently descriptive of its action(s).
+- Every component containing an action should inform the user of a pending or unsatisfactory state of the action path.
+- The message about an unsatisfactory path should include the suggestion of correction steps.
 
 **Priority:** High
 
-2. ### Demo-Guest mode {#demo-guest-mode}
+<a id="demo-guest-mode"></a> 2. ### Demo-Guest mode
 
 **As a Jobless Jack**  
  **I want** to learn how to use the app by doing, and use the app features for demo purposes  
@@ -38,18 +40,18 @@
 
 **Acceptance Criteria:**
 
-* The app should provide demo functionality without registration.  
-* In demo mode, the user’s current session :  
-  * Changing [Favorited Status](#favorited-status).  
-  * Use the Apply button in [Job Post](#job-post).  
-  * Save settings on [ProfilePage](#profilepage).  
-* The Guest user mode has **default user demo settings** automatically applied:  
-  * address → default value  
-  * skills → pre-filled for demo (e.g., for “IT Specialist”)
+- The app should provide demo functionality without registration.
+- In demo mode, the user’s current session :
+  - Changing [Favorited Status](#favorited-status).
+  - Use the Apply button in [Job Post](#job-post).
+  - Save settings on [ProfilePage](#profilepage).
+- The Guest user mode has **default user demo settings** automatically applied:
+  - address → default value
+  - skills → pre-filled for demo (e.g., for “IT Specialist”)
 
 **Priority:** High
 
-3. ### Creators' Info, Policies {#creators'-info,-policies}
+<a id="creators-info-policies"></a> 3. ### Creators' Info, Policies
 
 **As a Jobless Jack**  
  **I want** to quickly build trust in the app  
@@ -57,9 +59,9 @@
 
 **Acceptance Criteria:**
 
-* There is the page ‘About’ with the credentials of the app development team.  
-* There is an explanation on how the user’s email, home address will be used.  
-* These are links to the GDPR policies that were incorporated into the [User Info Access Restriction](#user-info-access-restriction) features.
+- There is the page ‘About’ with the credentials of the app development team.
+- There is an explanation on how the user’s email, home address will be used.
+- These are links to the GDPR policies that were incorporated into the [User Info Access Restriction](#user-info-access-restriction) features.
 
 **Priority:** High
 
@@ -71,13 +73,15 @@
 
 **Acceptance Criteria:**
 
-* The headline/slogan of the page is short and exciting.  
-* The JobSearchPage has the [JobTitles Search Form](#jobtitles-search-form).  
-* The [ProfilePage](#profilepage) has skills, location, and travel settings.
+- The headline/slogan of the page is short and exciting.
+- The JobSearchPage has the [JobTitles Search Form](#jobtitles-search-form).
+- The [ProfilePage](#profilepage) has skills, location, and travel settings.
 
 **Priority:** High
 
-1. ### JobTitles Search Form {#jobtitles-search-form}
+<a id="jobtitles-search-form"></a>
+
+1. ### JobTitles Search Form
 
 **As a Jobless Jack**  
  **I want** to use an input field to type a job title and initiate the search  
@@ -85,13 +89,13 @@
 
 **Acceptance Criteria:**
 
-* The search form (bar) has an input field to type a job title in.  
-* The search bar has a button ‘Search’  
-* When clicked, the user is redirected to the [OpenPositionsPage](#openpositionspage).
+- The search form (bar) has an input field to type a job title in.
+- The search bar has a button ‘Search’
+- When clicked, the user is redirected to the [OpenPositionsPage](#openpositionspage).
 
 **Priority:** High
 
-3. ## ProfilePage {#profilepage}
+<a id="profilepage"></a> 3. ## ProfilePage
 
 **As a Jobless Jack**  
  **I want** to set his skill set, the address to use as home address, the search area, and the maximum acceptable travel time.  
@@ -99,17 +103,19 @@
 
 **Acceptance Criteria:**
 
-* There are the [Skill Set Form](#skill-set-form), [Address Settings](#address-settings), and travel settings.  
-* There is a CTA: “Set your CV skill set and location preferences to find the most relevant jobs close to you’  
-* There is the avatar setter.  
-* There is the “Security” section with the functionality to update name, email, and password.  
-* There is a button “Save”  
-* There is a message area about the user actions' results close to the ‘Save’ button.  
-* There is the text “Do you want to delete your info? With the button “Delete profile” below. There is a message area associated with the ‘Delete’ button.
+- There are the [Skill Set Form](#skill-set-form), [Address Settings](#address-settings), and travel settings.
+- There is a CTA: “Set your CV skill set and location preferences to find the most relevant jobs close to you’
+- There is the avatar setter.
+- There is the “Security” section with the functionality to update name, email, and password.
+- There is a button “Save”
+- There is a message area about the user actions' results close to the ‘Save’ button.
+- There is the text “Do you want to delete your info? With the button “Delete profile” below. There is a message area associated with the ‘Delete’ button.
 
 **Priority:** High
 
-1. ### Skill Set Form {#skill-set-form}
+<a id="skill-set-form"></a>
+
+1. ### Skill Set Form
 
 **As a Jobless Jack**  
  **I want to** add, view, and remove my professional skills  
@@ -117,15 +123,15 @@
 
 **Acceptance Criteria:**
 
-* The form includes an input field to type a skill.  
-* The form includes a button labeled **“Add Skill”** to add a new skill to the list.  
-* The list of added skills is displayed below, and each skill has a **“Remove”(X)** button next to it.  
-* When a skill is added, it appears immediately in the list displayed below.  
-* If the skill list is empty, the message below must be displayed: “Using shorter words increases the chance to find a match, e.g., ‘Node’ is better than ‘Node.js’”
+- The form includes an input field to type a skill.
+- The form includes a button labeled **“Add Skill”** to add a new skill to the list.
+- The list of added skills is displayed below, and each skill has a **“Remove”(X)** button next to it.
+- When a skill is added, it appears immediately in the list displayed below.
+- If the skill list is empty, the message below must be displayed: “Using shorter words increases the chance to find a match, e.g., ‘Node’ is better than ‘Node.js’”
 
 **Priority:** High
 
-2. ### Address Settings {#address-settings}
+<a id="address-settings"></a> 2. ### Address Settings
 
 **As a Jobless Jack**  
  **I want to** specify my location  
@@ -133,12 +139,12 @@
 
 **Acceptance Criteria:**
 
-* The form includes input fields for **Province, City**, **Street**, and **House Number**.  
-* If the travel form is empty, the following message must appear: “The more specific the location and travel options are, the more suitable travel routes can be provided by the app.”
+- The form includes input fields for **Province, City**, **Street**, and **House Number**.
+- If the travel form is empty, the following message must appear: “The more specific the location and travel options are, the more suitable travel routes can be provided by the app.”
 
 **Priority:** High
 
-4. ## OpenPositionsPage {#openpositionspage}
+<a id="openpositionspage"></a> 4. ## OpenPositionsPage
 
 **As a Jobless Jack**  
  **I want to** view a list of available job postings after performing a search  
@@ -146,12 +152,14 @@
 
 **Acceptance Criteria:**
 
-* Job results are displayed as a list of [Job Post](#job-post)s.  
-* Search must show results corresponding to user settings in the [ProfilePage](#profilepage).  
-* There should be a bar with [Filters and Sorting](#multi-criteria-filters-and-cascade-sort).  
+- Job results are displayed as a list of [Job Post](#job-post)s.
+- Search must show results corresponding to user settings in the [ProfilePage](#profilepage).
+- There should be a bar with [Filters and Sorting](#multi-criteria-filters-and-cascade-sort).  
   **Priority:** High
 
-  1. ### Multi-Criteria Filters and Cascade Sort {#multi-criteria-filters-and-cascade-sort}
+<a id="multi-criteria-filters-and-cascade-sort"></a>
+
+1. ### Multi-Criteria Filters and Cascade Sort
 
 **As a Jobless Jack**  
  **I want to** apply multiple filters and sorting  
@@ -159,14 +167,14 @@
 
 **Acceptance Criteria:**
 
-* Filters can be used simultaneously.  
-* Results update instantly when filters are selected or removed.  
-* Selected filters are displayed clearly and can be reset by the “Clear All Filters” button.  
-* There are filters for all tags, listed in [Job Post](#job-post), except for skill matches, the number of applicants, the date of posting, and the travel time which are the part of Cascade Sort.
+- Filters can be used simultaneously.
+- Results update instantly when filters are selected or removed.
+- Selected filters are displayed clearly and can be reset by the “Clear All Filters” button.
+- There are filters for all tags, listed in [Job Post](#job-post), except for skill matches, the number of applicants, the date of posting, and the travel time which are the part of Cascade Sort.
 
 **Priority:** High
 
-5. ## Job Post {#job-post}
+<a id="job-post"></a> 5. ## Job Post
 
 **As a Jobless Jack**  
  **I want to** see job posts on [OpenPositionsPage](#openpositionspage) and [MyFavoritesPage](#myfavoritespage) with all details  
@@ -174,14 +182,16 @@
 
 **Acceptance Criteria:**
 
-* Each job post shows the company logo, name, company website link, job posting info, and a [Favorited Status](#favorited-status)/’heart” button to add to [MyFavoritesPage](#myfavoritespage).  
-* Clicking a job title or Apply/More button opens the detailed job page with a full description and requirements on LinkedIn.  
-* Each Job post has tags with Experience(Seniority) level, Work arrangement type (mode), Date of posting, Number of Applicants, Location, Travel Time, and Number of Transport Transfers  
-* Each Job post has the Skill Match Tags bar and a truncated description (raw HTML).
+- Each job post shows the company logo, name, company website link, job posting info, and a [Favorited Status](#favorited-status)/’heart” button to add to [MyFavoritesPage](#myfavoritespage).
+- Clicking a job title or Apply/More button opens the detailed job page with a full description and requirements on LinkedIn.
+- Each Job post has tags with Experience(Seniority) level, Work arrangement type (mode), Date of posting, Number of Applicants, Location, Travel Time, and Number of Transport Transfers
+- Each Job post has the Skill Match Tags bar and a truncated description (raw HTML).
 
 **Priority:** High
 
-1. ### Favorited Status {#favorited-status}
+<a id="favorited-status"></a>
+
+1. ### Favorited Status
 
 **As a Jobless Jack**  
  **I want to** see job posts that I have previously marked as favorites  
@@ -189,16 +199,16 @@
 
 **Acceptance Criteria:**
 
-* Each job has a heart icon that indicates its favourite status (empty or filled).  
-* Clicking an empty heart adds the job to the user’s favourites list.  
-* Clicking a filled heart removes the job from the favourites list.  
-* There should be a message to show the user if the job is not saved to the DB successfully  
-* Saved job posts persist after logout and can be viewed on the [MyFavoritesPage](#myfavoritespage).  
-* A tooltip or label indicates the function of the icon (e.g., “Save job to favourites” / “Remove from favourites”).
+- Each job has a heart icon that indicates its favourite status (empty or filled).
+- Clicking an empty heart adds the job to the user’s favourites list.
+- Clicking a filled heart removes the job from the favourites list.
+- There should be a message to show the user if the job is not saved to the DB successfully
+- Saved job posts persist after logout and can be viewed on the [MyFavoritesPage](#myfavoritespage).
+- A tooltip or label indicates the function of the icon (e.g., “Save job to favourites” / “Remove from favourites”).
 
 **Priority:** High
 
-6. ## MyFavoritesPage {#myfavoritespage}
+<a id="myfavoritespage"></a> 6. ## MyFavoritesPage
 
 **As a Jobless Jack**  
 **I want to** view all the jobs I have previously saved to favorites (marked as favorites)  
@@ -206,10 +216,10 @@
 
 **Acceptance Criteria:**
 
-* The page displays jobs with [Favorited Status](#favorited-status) in an unordered list.  
-* All the jobs that have a filled heart icon should be displayed on this page  
-* Users can remove jobs from favourites directly on this page.  
-* If there are no saved jobs, a message such as “You haven’t saved any jobs yet” is displayed.
+- The page displays jobs with [Favorited Status](#favorited-status) in an unordered list.
+- All the jobs that have a filled heart icon should be displayed on this page
+- Users can remove jobs from favourites directly on this page.
+- If there are no saved jobs, a message such as “You haven’t saved any jobs yet” is displayed.
 
 **Priority:** High
 
@@ -221,9 +231,9 @@
 
 **Acceptance Criteria:**
 
-* The header is the same for all pages.  
-* Includes links to all app pages.  
-* The active page is visually highlighted.
+- The header is the same for all pages.
+- Includes links to all app pages.
+- The active page is visually highlighted.
 
 **Priority:** High
 
@@ -235,12 +245,14 @@
 
 **Acceptance Criteria:**
 
-* There is a [User Info Access Restriction](#user-info-access-restriction).  
-* The app provides [Personalization](#personalization) features.
+- There is a [User Info Access Restriction](#user-info-access-restriction).
+- The app provides [Personalization](#personalization) features.
 
 **Priority:** High
 
-1. ### User Info Access Restriction {#user-info-access-restriction}
+<a id="user-info-access-restriction"></a>
+
+1. ### User Info Access Restriction
 
 **As a Jobless Jack**  
 **I want to** exclude other users from access to the information that I save in the app  
@@ -248,12 +260,12 @@
 
 **Acceptance Criteria:**
 
-* The app follows common web standards for users’ authorization and authentication \- email, password, and JWT.  
-* The AuthPage has Registration(SignUp) and Secure Login and Logout components.
+- The app follows common web standards for users’ authorization and authentication \- email, password, and JWT.
+- The AuthPage has Registration(SignUp) and Secure Login and Logout components.
 
 **Priority:** High
 
-2. ### Personalization {#personalization}
+<a id="personalization"></a> 2. ### Personalization
 
 **As a Jobless Jack**  
 **I want to** create an account with my basic information,  
@@ -261,11 +273,11 @@
 
 **Acceptance Criteria:**
 
-* The registration form includes required fields:  
-  * Name  
-  * Email address  
-  * Password  
-* There is the [ProfilePage](#profilepage) to set personalized settings
+- The registration form includes required fields:
+  - Name
+  - Email address
+  - Password
+- There is the [ProfilePage](#profilepage) to set personalized settings
 
 **Priority:** High
 
@@ -277,13 +289,13 @@
 
 **Acceptance Criteria:**
 
-* The footer is visible on all pages  
-* The footer contains:  
-  * App copyright.  
-  * Privacy link that redirects to the external Privacy Policy page.  
-  * Contact link that redirects to the About page.  
-* The footer design is consistent with the header (colors, font, layout).  
-* The footer stays at the bottom of the page, even on short content pages.
+- The footer is visible on all pages
+- The footer contains:
+  - App copyright.
+  - Privacy link that redirects to the external Privacy Policy page.
+  - Contact link that redirects to the About page.
+- The footer design is consistent with the header (colors, font, layout).
+- The footer stays at the bottom of the page, even on short content pages.
 
 **Priority:** High
 
@@ -297,9 +309,9 @@
 
 **Acceptance Criteria:**
 
-* Adding the API \- LinkedIn Jobs Scraper \- PPR to the existing fetching process.  
-* Making multiple requests from the front end and assembling them.  
-* Changing the UI to inform the user about the fetching process (spinners and/or messages)
+- Adding the API \- LinkedIn Jobs Scraper \- PPR to the existing fetching process.
+- Making multiple requests from the front end and assembling them.
+- Changing the UI to inform the user about the fetching process (spinners and/or messages)
 
 **Priority:** Medium
 
@@ -311,7 +323,7 @@
 
 **Acceptance Criteria:**
 
-* Not only are the settings of the [ProfilePage](#profilepage) persistent across sessions, but also the adjustments made to Filters and Sorting on the [OpenPositionsPage](#openpositionspage).
+- Not only are the settings of the [ProfilePage](#profilepage) persistent across sessions, but also the adjustments made to Filters and Sorting on the [OpenPositionsPage](#openpositionspage).
 
 **Priority:** Medium
 
@@ -323,9 +335,9 @@
 
 **Acceptance Criteria:**
 
-* Users can select from available languages.  
-* The interface updates to the chosen language.  
-* The language preference is saved for future visits.
+- Users can select from available languages.
+- The interface updates to the chosen language.
+- The language preference is saved for future visits.
 
 **Priority:** Medium
 
@@ -337,8 +349,8 @@
 
 **Acceptance Criteria:**
 
-* Users can choose a transportation mode (car, walk, bike).  
-* The system prioritizes nearby or accessible jobs.
+- Users can choose a transportation mode (car, walk, bike).
+- The system prioritizes nearby or accessible jobs.
 
 **Priority:** Low
 
@@ -350,9 +362,9 @@
 
 **Acceptance Criteria:**
 
-* Closed jobs display a “Closed” or “Expired” label.  
-* Saved closed jobs remain visible but not actionable.  
-* The system auto-updates job status.
+- Closed jobs display a “Closed” or “Expired” label.
+- Saved closed jobs remain visible but not actionable.
+- The system auto-updates job status.
 
 **Priority:** Medium
 
@@ -364,7 +376,7 @@
 
 **Acceptance Criteria:**
 
-* A simple way to make users stay and visit again.
+- A simple way to make users stay and visit again.
 
 **Priority:** Medium
 
@@ -376,7 +388,7 @@
 
 **Acceptance Criteria:**
 
-* Make things more useful and clearer in a workplace with many languages.
+- Make things more useful and clearer in a workplace with many languages.
 
 **Priority:** Medium
 
@@ -388,7 +400,7 @@
 
 **Acceptance Criteria:**
 
-* Opens the Google Maps window with the plotted route.
+- Opens the Google Maps window with the plotted route.
 
 **Priority:** Medium
 
@@ -396,14 +408,14 @@
 
 **As a Jobless Jack**
 
- I want to change or restore my credentials using email.   
+I want to change or restore my credentials using email.  
  So that I can restore my forgotten password.
 
 **Acceptance Criteria:**
 
-* User enters email  
-* Receives reset link via email  
-* Sets a new password
+- User enters email
+- Receives reset link via email
+- Sets a new password
 
 **Priority:** Medium
 
@@ -411,12 +423,12 @@
 
 **As a Jobless Jack**
 
- I want to use Google Authentication,   
+I want to use Google Authentication,  
  So that I will not bother to save credentials for this app.
 
 **Acceptance Criteria:**
 
-* Google Auth
+- Google Auth
 
 **Priority:** Medium
 
@@ -424,13 +436,13 @@
 
 **As a Jobless Jack**
 
- I want to type my address in one input field and see an autocompletion suggestion.  
+I want to type my address in one input field and see an autocompletion suggestion.  
  So that I will not spend too much time filling in individual fields in the address section of the user profile
 
 **Acceptance Criteria:**
 
-* There are five text strings with address autocomplete suggestions below the input field. When one of them is clicked, it gets added to the input.   
-* There is a button “Use address” to save the address in the profile and parse it into individual address fields for province, city, street, and house number.
+- There are five text strings with address autocomplete suggestions below the input field. When one of them is clicked, it gets added to the input.
+- There is a button “Use address” to save the address in the profile and parse it into individual address fields for province, city, street, and house number.
 
 **Priority:** Medium
 
@@ -438,15 +450,15 @@
 
 **As a Jobless Jack**
 
- I would like suggestions on how to fill the skills area, including the AI-generated skill set, that I can easily update.  
+I would like suggestions on how to fill the skills area, including the AI-generated skill set, that I can easily update.  
  So that I will not spend too much time thinking about filling in those in the profile settings section
 
 **Acceptance Criteria:**
 
-* There is a form with the suggestion to generate a skill set, using AI  
-* The user can enter the job title in the text input field and use the button ‘Suggest Skills’  
-* The skills are displayed below; each skill has a ‘remove’ or ‘X’ button.  
-* The button ‘Add skill(s)’ can add both one individual skill from the text input field and several skills generated by AI in this feature.
+- There is a form with the suggestion to generate a skill set, using AI
+- The user can enter the job title in the text input field and use the button ‘Suggest Skills’
+- The skills are displayed below; each skill has a ‘remove’ or ‘X’ button.
+- The button ‘Add skill(s)’ can add both one individual skill from the text input field and several skills generated by AI in this feature.
 
 **Priority:** Medium
 
@@ -454,14 +466,14 @@
 
 **As a Jobless Jack**
 
- I would like the app to extract the skill set from my CV  
+I would like the app to extract the skill set from my CV  
 So that I will save some time on thinking and extracting these myself
 
 **Acceptance Criteria:**
 
-* There is a text input form to put the CV text in, with the button “Extract Skills”  
-* The skills are displayed below; each skill has a ‘remove’ or ‘X’ button.  
-* The button ‘Add skill(s)’ can add both an individual skill from the text input field and several skills extracted by AI in this feature.
+- There is a text input form to put the CV text in, with the button “Extract Skills”
+- The skills are displayed below; each skill has a ‘remove’ or ‘X’ button.
+- The button ‘Add skill(s)’ can add both an individual skill from the text input field and several skills extracted by AI in this feature.
 
 **Priority:** Medium
 
@@ -473,7 +485,7 @@ So that I will save some time on thinking and extracting these myself
 
 **Acceptance Criteria:**
 
-* Saving the route name for a newcomer in the context.
+- Saving the route name for a newcomer in the context.
 
 **Priority:** Medium
 
@@ -485,8 +497,8 @@ So that I will save some time on thinking and extracting these myself
 
 **Acceptance Criteria:**
 
-* Adding the input field for the new email on the Profile Page  
-* Deciding on whether some verification is needed before doing the change.
+- Adding the input field for the new email on the Profile Page
+- Deciding on whether some verification is needed before doing the change.
 
 **Priority:** Medium
 
@@ -498,8 +510,8 @@ So that I will save some time on thinking and extracting these myself
 
 **Acceptance Criteria:**
 
-* Add the userTravels array to the DB  
-* This array includes the travel details (travel\_time, number\_transfers) to each city that the user has ever fetched in their job search
+- Add the userTravels array to the DB
+- This array includes the travel details (travel_time, number_transfers) to each city that the user has ever fetched in their job search
 
 **Priority:** Medium
 
@@ -511,6 +523,6 @@ So that I will save some time on thinking and extracting these myself
 
 **Acceptance Criteria:**
 
-*  Save results (e.g., localStorage) to keep them after reload.
+- Save results (e.g., localStorage) to keep them after reload.
 
 **Priority:** Medium
