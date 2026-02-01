@@ -10,13 +10,23 @@ export default function processScraperJob(job) {
     postedAt: date_posted,
     employmentType: employment_type,
     location,
-    seniorityLevel: normalizedSeniority,
+    seniorityLevel,
     descriptionText = "",
     descriptionHtml: description_text = "",
     companyName: organization,
     companyWebsite: organization_url,
     companyLogo: organization_logo,
   } = job || {};
+
+  // normalize seniority values coming from the job source
+  let normalizedSeniority;
+  switch (seniorityLevel) {
+    case "Not Applicable":
+      normalizedSeniority = "Not applicable";
+      break;
+    default:
+      normalizedSeniority = seniorityLevel;
+  }
 
   const processedJob = {
     id,
