@@ -51,11 +51,11 @@ function JobsProvider({ children }) {
       );
       setAllJobs((prevJobs) =>
         prevJobs.map((job) => {
-          const city = job.display_location;
+          const workCity = job.display_location;
           return {
             ...job,
-            travel_time: travelDetailsMap[city]?.travel_time,
-            least_transfers: travelDetailsMap[city]?.least_transfers,
+            travel_time: travelDetailsMap[workCity]?.travel_time,
+            least_transfers: travelDetailsMap[workCity]?.least_transfers,
           };
         }),
       );
