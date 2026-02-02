@@ -10,14 +10,12 @@ function UseJobs() {
 function JobsProvider({ children }) {
   const { user } = UseUser();
   const [allJobs, setAllJobs] = useState([]);
-  const [travelDetails, setTravelDetails] = useState({});
   const [searchString, setSearchString] = useState(""); //  global search term
   const [serverMessage, setServerMessage] = useState("");
 
   // Clear jobs when user logs in/out
   useEffect(() => {
     setAllJobs([]);
-    setTravelDetails({});
   }, [user.id]);
 
   function handleJobFetchResults(data) {
@@ -52,18 +50,29 @@ function JobsProvider({ children }) {
   }
 
   async function handleTravelFetchResults(data) {
-    const detailsMap = { ...travelDetails };
     if (data.result && Array.isArray(data.result.travelDetails)) {
+      const travelDetailsMap = {};
       data.result.travelDetails.forEach(
         ({ workCity, travel_time, least_transfers }) => {
-          detailsMap[workCity] = {
+          travelDetailsMap[workCity] = {
             travel_time,
             least_transfers,
           };
         },
       );
+
+      // Update allJobs directly with travel details
+      setAllJobs((prevJobs) =>
+        prevJobs.map((job) => {
+          const city = job.display_location;
+          return {
+            ...job,
+            travel_time: travelDetailsMap[city]?.travel_time,
+            least_transfers: travelDetailsMap[city]?.least_transfers,
+          };
+        }),
+      );
     }
-    setTravelDetails(detailsMap);
   }
 
   const {
@@ -91,22 +100,10 @@ function JobsProvider({ children }) {
     });
   }
 
-  function getJobsWithTravel() {
-    return allJobs.map((job) => {
-      const city = job.display_location;
-
-      return {
-        ...job,
-        travel_time: travelDetails[city]?.travel_time,
-        least_transfers: travelDetails[city]?.least_transfers,
-      };
-    });
-  }
-
   return (
     <JobsContext.Provider
       value={{
-        allJobs: getJobsWithTravel(),
+        allJobs,
         setAllJobs,
         isJobsLoading,
         jobFetchError,
