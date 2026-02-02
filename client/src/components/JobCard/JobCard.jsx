@@ -190,7 +190,9 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                   <img src={gif.spinner} alt="Loading..." className="spinner" />
                 ) : (
                   job.travel_time !== null &&
-                  job.least_transfers !== null && (
+                  job.travel_time !== undefined &&
+                  job.least_transfers !== null &&
+                  job.least_transfers !== undefined && (
                     <>
                       <Bus className="job-icon" />
                       <span className="job-commute">
@@ -203,7 +205,9 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 )}
               </div>
             </div>
-
+            {job.display_location === "Apeldoorn, Gelderland, Netherlands" &&
+              (console.log("travel time:", job.travel_time),
+              console.log("number of transfers:", job.least_transfers))}
             <p
               className="job-description"
               dangerouslySetInnerHTML={{
