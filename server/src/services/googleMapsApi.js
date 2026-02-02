@@ -1,7 +1,3 @@
-import dotenv from "dotenv";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
-
 /*
 Google Maps Integration Details:
 - Commute Calculations: Travel time and transfer information for public transit
@@ -13,25 +9,16 @@ Google Maps Integration Details:
 - Performance: Optimized for transit mode with duration and transfer metrics
 */
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+if (!process.env.GOOGLE_MAPS_API_KEY) {
+  throw new Error(
+    "GOOGLE_MAPS_API_KEY is not defined in environment variables. Please check your .env file.",
+  );
+}
 
-dotenv.config({ path: resolve(__dirname, "../../.env") });
-
-export default async function getTransitRouteSummary(
-  origin,
-  destination,
-  apiKey,
-) {
-  if (!process.env.GOOGLE_MAPS_API_KEY) {
-    throw new Error(
-      "GOOGLE_MAPS_API_KEY is not defined in environment variables. Please check your .env file.",
-    );
-  }
-
+export default async function getTransitRouteSummary(origin, destination) {
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(
     origin,
-  )}&destination=${encodeURIComponent(destination)}&mode=transit&key=${apiKey}`;
+  )}&destination=${encodeURIComponent(destination)}&mode=transit&key=${process.env.GOOGLE_MAPS_API_KEY}`;
 
   const response = await fetch(url);
   if (!response.ok) throw new Error("Failed to fetch from Google Maps API");
