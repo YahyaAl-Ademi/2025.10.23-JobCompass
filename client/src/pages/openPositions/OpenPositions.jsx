@@ -1,5 +1,7 @@
 // React hooks
 import { useMemo, useState, useEffect } from "react";
+// Lucide React icons
+import { GraduationCap, Briefcase, Monitor, MapPin } from "lucide-react";
 // Components
 import AlertMessage from "../../components/AlertMessage/AlertMessage";
 import DropdownFilter from "../../components/DropdownFilter/DropdownFilter";
@@ -155,6 +157,7 @@ export default function OpenPositions() {
                 options={filterOptions.experienceOptions}
                 activeValues={activeFilters.seniorityLevel}
                 onFilterChange={handleFilterChange}
+                icon={<GraduationCap />}
               />
               <DropdownFilter
                 filterKey="employmentType"
@@ -162,6 +165,7 @@ export default function OpenPositions() {
                 options={filterOptions.jobTypeOptions}
                 activeValues={activeFilters.employmentType}
                 onFilterChange={handleFilterChange}
+                icon={<Briefcase />}
               />
               <DropdownFilter
                 filterKey="work_mode"
@@ -169,6 +173,7 @@ export default function OpenPositions() {
                 options={filterOptions.workModeOptions}
                 activeValues={activeFilters.work_mode}
                 onFilterChange={handleFilterChange}
+                icon={<Monitor />}
               />
               <DropdownFilter
                 filterKey="locationPrecision"
@@ -176,6 +181,7 @@ export default function OpenPositions() {
                 options={filterOptions.locationPrecisionOptions}
                 activeValues={activeFilters.locationPrecision}
                 onFilterChange={handleFilterChange}
+                icon={<MapPin />}
               />
               <button
                 onClick={handleClearFilters}
