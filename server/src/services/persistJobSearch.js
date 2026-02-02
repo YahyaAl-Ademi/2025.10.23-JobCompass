@@ -93,9 +93,13 @@ export default async function persistJobSearch(
           work_mode, seniority, description_text, normalized_description
         ) VALUES ${placeholders}
         ON CONFLICT (id) DO UPDATE SET
-          work_mode = CASE 
-            WHEN EXCLUDED.work_mode IS NOT NULL THEN EXCLUDED.work_mode 
+          work_mode = CASE
+            WHEN EXCLUDED.work_mode IS NOT NULL THEN EXCLUDED.work_mode
             ELSE jobs.work_mode
+          END,
+          description_text = CASE
+            WHEN EXCLUDED.description_text ~ '<[^>]+>' THEN EXCLUDED.description_text
+            ELSE jobs.description_text
           END
       `;
 
