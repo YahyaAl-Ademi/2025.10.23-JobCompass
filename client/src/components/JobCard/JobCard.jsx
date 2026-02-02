@@ -48,8 +48,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     },
   );
 
-  function handleFavoriteClick(e) {
-    e.stopPropagation();
+  function handleFavoriteClick() {
     if (user.id) {
       performFetch({
         method: "POST",
@@ -61,14 +60,10 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     }
   }
 
-  function handleApplyClick(e) {
-    e.stopPropagation();
+  function handleApplyClick() {
     if (user.id) {
       if (onApplyClick) {
-        window.open(
-          job.url?.startsWith("http") ? job.url : `https://${job.url}`,
-          "_blank",
-        );
+        window.open(job.url, "_blank");
       }
       return;
     }

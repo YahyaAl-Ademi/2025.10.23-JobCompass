@@ -1,5 +1,6 @@
 import normalizeDescription from "./normalizeDescription.js";
 import validateJob from "./validateJob.js";
+import normalizeUrl from "./normalizeUrl.js";
 
 export default function processScraperJob(job) {
   const {
@@ -14,7 +15,7 @@ export default function processScraperJob(job) {
     descriptionText = "",
     descriptionHtml: description_text = "",
     companyName: organization,
-    companyWebsite: organization_url,
+    companyWebsite,
     companyLogo: organization_logo,
   } = job || {};
 
@@ -30,7 +31,7 @@ export default function processScraperJob(job) {
 
   const processedJob = {
     id,
-    url: url1 || url2,
+    url: normalizeUrl(url1) || normalizeUrl(url2),
     title,
     date_posted,
     employment_type: employment_type || null,
@@ -43,7 +44,7 @@ export default function processScraperJob(job) {
     travel_time: null,
     least_transfers: null,
     organization,
-    organization_url,
+    organization_url: normalizeUrl(companyWebsite),
     organization_logo,
   };
 

@@ -1,11 +1,12 @@
 import normalizeDescription from "./normalizeDescription.js";
 import validateJob from "./validateJob.js";
+import normalizeUrl from "./normalizeUrl.js";
 
 export default function processRapidAPIjob(job) {
   const {
     id,
-    url: url1,
-    external_apply_url: url2,
+    external_apply_url: url1,
+    url: url2,
     title,
     date_posted,
     employment_type = [],
@@ -14,7 +15,7 @@ export default function processRapidAPIjob(job) {
     seniority,
     description_text = "",
     organization,
-    linkedin_org_url: organization_url,
+    linkedin_org_url,
     organization_logo,
   } = job || {};
   // normalize seniority values coming from the job source
@@ -48,7 +49,7 @@ export default function processRapidAPIjob(job) {
 
   const processedJob = {
     id,
-    url: url2 || url1,
+    url: normalizeUrl(url1) || normalizeUrl(url2),
     title,
     date_posted,
     employment_type:
@@ -70,7 +71,7 @@ export default function processRapidAPIjob(job) {
     travel_time: null,
     least_transfers: null,
     organization,
-    organization_url,
+    organization_url: normalizeUrl(linkedin_org_url),
     organization_logo,
   };
 
