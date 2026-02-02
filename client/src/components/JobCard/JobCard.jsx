@@ -145,14 +145,6 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                   <span className="job-tag-separator">|</span>
                 </div>
               )}
-              {/* location tag */}
-              {job.display_location && (
-                <div className="job-commute-info">
-                  <MapPin className="job-icon" />
-                  <span className="job-commute">{job.display_location}</span>
-                  <span className="job-tag-separator">|</span>
-                </div>
-              )}
               {/* posting date tag */}
               {job.date_posted &&
                 (() => {
@@ -184,7 +176,14 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                     </div>
                   );
                 })()}
-
+              {/* location tag */}
+              {job.display_location && (
+                <div className="job-commute-info">
+                  <MapPin className="job-icon" />
+                  <span className="job-commute">{job.display_location}</span>
+                  <span className="job-tag-separator">|</span>
+                </div>
+              )}
               {/* commute info block*/}
               <div className="job-commute-info">
                 {isTravelLoading ? (
