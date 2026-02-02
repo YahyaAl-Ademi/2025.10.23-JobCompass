@@ -181,19 +181,26 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 <div className="job-commute-info">
                   <MapPin className="job-icon" />
                   <span className="job-commute">{job.display_location}</span>
-                  <span className="job-tag-separator">|</span>
                 </div>
               )}
               {/* commute info block*/}
               <div className="job-commute-info">
                 {isTravelLoading ? (
-                  <img src={gif.spinner} alt="Loading..." className="spinner" />
+                  <>
+                    <span className="job-tag-separator">|</span>
+                    <img
+                      src={gif.spinner}
+                      alt="Loading..."
+                      className="spinner"
+                    />
+                  </>
                 ) : (
                   job.travel_time !== null &&
                   job.travel_time !== undefined &&
                   job.least_transfers !== null &&
                   job.least_transfers !== undefined && (
                     <>
+                      <span className="job-tag-separator">|</span>
                       <Bus className="job-icon" />
                       <span className="job-commute">
                         {formatTravelTime(job.travel_time)},{" "}
