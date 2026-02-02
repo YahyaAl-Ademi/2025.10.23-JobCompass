@@ -43,6 +43,7 @@ export default function OpenPositions() {
     seniorityLevel: new Set(),
     employmentType: new Set(),
     work_mode: new Set(),
+    locationPrecision: new Set(),
   });
 
   const [selectedSort, setSelectedSort] = useState([
@@ -108,6 +109,7 @@ export default function OpenPositions() {
       seniorityLevel: new Set(),
       employmentType: new Set(),
       work_mode: new Set(),
+      locationPrecision: new Set(),
     });
     setCurrentPage(1);
   }
@@ -166,6 +168,13 @@ export default function OpenPositions() {
                 label="Work mode"
                 options={filterOptions.workModeOptions}
                 activeValues={activeFilters.work_mode}
+                onFilterChange={handleFilterChange}
+              />
+              <DropdownFilter
+                filterKey="locationPrecision"
+                label="Location precision"
+                options={filterOptions.locationPrecisionOptions}
+                activeValues={activeFilters.locationPrecision}
                 onFilterChange={handleFilterChange}
               />
               <button

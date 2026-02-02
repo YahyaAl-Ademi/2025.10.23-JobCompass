@@ -17,11 +17,13 @@ export function findFilterOptions(allJobs) {
     experienceOptions: Array.from(experienceSet),
     jobTypeOptions: Array.from(jobTypeSet),
     workModeOptions: Array.from(workModeSet),
+    locationPrecisionOptions: ["precise", "approximate"],
   };
 }
 
 export function filterJobs(allJobs, activeFilters) {
-  const { seniorityLevel, employmentType, work_mode } = activeFilters;
+  const { seniorityLevel, employmentType, work_mode, locationPrecision } =
+    activeFilters;
   let filtered = allJobs.filter((job) => {
     const matchesSeniority =
       seniorityLevel.size === 0 || seniorityLevel.has(job.seniority);
@@ -29,7 +31,16 @@ export function filterJobs(allJobs, activeFilters) {
       employmentType.size === 0 || employmentType.has(job.employment_type);
     const matcheswork_mode =
       work_mode.size === 0 || work_mode.has(job.work_mode);
-    return matchesSeniority && matchesJobType && matcheswork_mode;
+    const matchesLocationPrecision =
+      locationPrecision.size === 0 ||
+      (locationPrecision.has("approximate") && job.travel_time === null) ||
+      (locationPrecision.has("precise") && job.travel_time !== null);
+    return (
+      matchesSeniority &&
+      matchesJobType &&
+      matcheswork_mode &&
+      matchesLocationPrecision
+    );
   });
   return filtered;
 }

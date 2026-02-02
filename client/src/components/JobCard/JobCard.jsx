@@ -189,8 +189,8 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 {isTravelLoading ? (
                   <img src={gif.spinner} alt="Loading..." className="spinner" />
                 ) : (
-                  job.travel_time != null &&
-                  job.least_transfers != null && (
+                  job.travel_time !== null &&
+                  job.least_transfers !== null && (
                     <>
                       <Bus className="job-icon" />
                       <span className="job-commute">
