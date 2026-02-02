@@ -1,6 +1,7 @@
 import normalizeDescription from "./normalizeDescription.js";
 import validateJob from "./validateJob.js";
 import normalizeUrl from "./normalizeUrl.js";
+import checkExperienceLevel from "./checkExperienceLevel.js";
 
 export default function processRapidAPIjob(job) {
   const {
@@ -25,7 +26,6 @@ export default function processRapidAPIjob(job) {
       normalizedSeniority = "Internship";
       break;
     case "Instapniveau":
-    case "Berufseinstieg":
       normalizedSeniority = "Entry level";
       break;
     case "Medewerker":
@@ -41,7 +41,7 @@ export default function processRapidAPIjob(job) {
       normalizedSeniority = "Executive";
       break;
     case "Niet van toepassing":
-      normalizedSeniority = "Not applicable";
+      normalizedSeniority = checkExperienceLevel(title);
       break;
     default:
       normalizedSeniority = seniority;

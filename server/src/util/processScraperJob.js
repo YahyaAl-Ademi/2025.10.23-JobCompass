@@ -1,6 +1,7 @@
 import normalizeDescription from "./normalizeDescription.js";
 import validateJob from "./validateJob.js";
 import normalizeUrl from "./normalizeUrl.js";
+import checkExperienceLevel from "./checkExperienceLevel.js";
 
 export default function processScraperJob(job) {
   const {
@@ -23,7 +24,7 @@ export default function processScraperJob(job) {
   let normalizedSeniority;
   switch (seniorityLevel) {
     case "Not Applicable":
-      normalizedSeniority = "Not applicable";
+      normalizedSeniority = checkExperienceLevel(title);
       break;
     default:
       normalizedSeniority = seniorityLevel;
