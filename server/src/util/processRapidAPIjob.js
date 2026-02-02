@@ -5,7 +5,6 @@ import checkExperienceLevel from "./checkExperienceLevel.js";
 
 export default function processRapidAPIjob(job) {
   const {
-    id,
     external_apply_url: url1,
     url: url2,
     title,
@@ -47,9 +46,11 @@ export default function processRapidAPIjob(job) {
       normalizedSeniority = seniority;
   }
 
+  const url = normalizeUrl(url1) || normalizeUrl(url2);
+
   const processedJob = {
-    id,
-    url: normalizeUrl(url1) || normalizeUrl(url2),
+    id: url,
+    url,
     title,
     date_posted,
     employment_type:

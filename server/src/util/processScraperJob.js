@@ -5,7 +5,6 @@ import checkExperienceLevel from "./checkExperienceLevel.js";
 
 export default function processScraperJob(job) {
   const {
-    id,
     applyUrl: url1,
     link: url2,
     title,
@@ -30,9 +29,11 @@ export default function processScraperJob(job) {
       normalizedSeniority = seniorityLevel;
   }
 
+  const url = normalizeUrl(url1) || normalizeUrl(url2);
+
   const processedJob = {
-    id,
-    url: normalizeUrl(url1) || normalizeUrl(url2),
+    id: url,
+    url,
     title,
     date_posted,
     employment_type: employment_type || null,
