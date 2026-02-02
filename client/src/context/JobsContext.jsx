@@ -112,7 +112,6 @@ function JobsProvider({ children }) {
         searchString,
         setSearchString,
         performJobFetch,
-        fetchBatchTravelDetails,
         serverMessage,
         setServerMessage,
       }}
