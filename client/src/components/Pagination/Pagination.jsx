@@ -46,7 +46,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
       aria-label="Pagination Navigation"
     >
       <button
-        onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+        onClick={() => {
+          onPageChange(Math.max(currentPage - 1, 1));
+          window.scrollTo(0, 0);
+        }}
         disabled={currentPage === 1}
         className="pagination-btn"
         aria-label="Go to previous page"
@@ -90,7 +93,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
       </div>
 
       <button
-        onClick={() => onPageChange(Math.min(currentPage + 1, safeTotal))}
+        onClick={() => {
+          onPageChange(Math.min(currentPage + 1, safeTotal));
+          window.scrollTo(0, 0);
+        }}
         disabled={currentPage === safeTotal}
         className="pagination-btn"
         aria-label="Go to next page"
