@@ -1,18 +1,24 @@
+// React hooks
 import { useMemo, useState, useEffect } from "react";
-import { gif } from "../../assets/index.js";
+// Components
+import AlertMessage from "../../components/AlertMessage/AlertMessage";
 import DropdownFilter from "../../components/DropdownFilter/DropdownFilter";
-import JobCard from "../../components/JobCard/JobCard";
 import DropdownSort from "../../components/DropdownSort/DropdownSort";
+import JobCard from "../../components/JobCard/JobCard";
 import Pagination from "../../components/Pagination/Pagination";
+import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
+// Context
+import { UseJobs } from "../../context/JobsContext";
 import { UseUser } from "../../context/UserContext";
-import "./OpenPositions.css";
+// Utils
+import createSortComparator from "../../util/createSortComparator";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { findFilterOptions, filterJobs } from "../../util/filterJobs";
 import getSkillsInDescription from "../../util/getSkillsInDescription";
-import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
-import { UseJobs } from "../../context/JobsContext";
-import createSortComparator from "../../util/createSortComparator";
-import AlertMessage from "../../components/AlertMessage/AlertMessage";
-import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
+// Assets
+import { gif } from "../../assets/index.js";
+// Styles
+import "./OpenPositions.css";
 
 export default function OpenPositions() {
   const { user } = UseUser();
