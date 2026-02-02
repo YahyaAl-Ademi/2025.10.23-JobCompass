@@ -7,6 +7,10 @@
  *                     or 'Not applicable' if neither is found
  */
 export default function checkExperienceLevel(text) {
+  if (!text || typeof text !== "string") {
+    return "Not applicable";
+  }
+
   const lowerText = text.toLowerCase();
 
   if (lowerText.includes("junior")) {
