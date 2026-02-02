@@ -22,7 +22,7 @@ export default function DropdownFilter({
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="dropdown-button-content">
           {icon && <span>{cloneElement(icon, { size: 16 })}</span>}
           <span>{label}</span>
         </div>

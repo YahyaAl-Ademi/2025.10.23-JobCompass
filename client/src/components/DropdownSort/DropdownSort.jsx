@@ -62,7 +62,7 @@ export default function DropdownSort({ selectedSort, setSelectedSort }) {
         aria-expanded={isOpen}
         type="button"
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="dropdown-button-content">
           <span className="job-icon">
             <Handshake size={16} />
           </span>
