@@ -18,35 +18,24 @@ function JobsProvider({ children }) {
     setAllJobs([]);
   }, [user.id]);
 
-  function handleJobFetchResults(data) {
+  // jobs fetch
+  const {
+    isLoading: isJobsLoading,
+    error: jobFetchError,
+    performFetch: performJobFetch,
+  } = useFetch("/jobs/search", (data) => {
     setAllJobs(data.result);
     if (data.msg) {
       setServerMessage(data.msg);
     }
     fetchBatchTravelDetails(data.result);
-  }
+  });
 
-  const {
-    isLoading: isJobsLoading,
-    error: jobFetchError,
-    performFetch: performJobFetch,
-  } = useFetch("/jobs/search", handleJobFetchResults);
-
+  // travel details fetch
   function getCitiesToFetch(jobsArray) {
-    const uniqueCities = [
-      ...new Set(
-        jobsArray
-          .map((job) => {
-            const workCity = job.display_location;
-
-            return typeof workCity === "string" && workCity.trim() !== ""
-              ? workCity
-              : null;
-          })
-          .filter(Boolean),
-      ),
+    return [
+      ...new Set(jobsArray.map((job) => job.display_location).filter(Boolean)),
     ];
-    return uniqueCities;
   }
 
   async function handleTravelFetchResults(data) {
@@ -60,8 +49,6 @@ function JobsProvider({ children }) {
           };
         },
       );
-
-      // Update allJobs directly with travel details
       setAllJobs((prevJobs) =>
         prevJobs.map((job) => {
           const city = job.display_location;
