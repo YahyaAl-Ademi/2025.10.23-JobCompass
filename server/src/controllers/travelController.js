@@ -70,8 +70,8 @@ export default async function calculateBatchTravelTime(req, res) {
       if (workPlacesSet.has(workCity)) {
         return Promise.resolve({
           workCity,
-          travel_time: 0,
-          least_transfers: 0,
+          travel_time: null,
+          least_transfers: null,
         });
       }
       return getTransitRouteSummary(formattedHomeAddress, workCity)
