@@ -18,13 +18,14 @@ function formatAddress(address) {
 }
 
 const workPlacesSet = new Set([
-  "Netherlands",
+  "Brabantine City Row",
   "Drenthe, Netherlands",
   "Flevoland, Netherlands",
   "Friesland, Netherlands",
   "Gelderland, Netherlands",
   "Groningen, Netherlands",
   "Limburg, Netherlands",
+  "Netherlands",
   "Noord-Brabant, Netherlands",
   "Noord-Holland, Netherlands",
   "Overijssel, Netherlands",
