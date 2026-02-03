@@ -1,18 +1,26 @@
+// React hooks
 import { useMemo, useState, useEffect } from "react";
-import { gif } from "../../assets/index.js";
+// Lucide React icons
+import { GraduationCap, Briefcase, Monitor, MapPin } from "lucide-react";
+// Components
+import AlertMessage from "../../components/AlertMessage/AlertMessage";
 import DropdownFilter from "../../components/DropdownFilter/DropdownFilter";
-import JobCard from "../../components/JobCard/JobCard";
 import DropdownSort from "../../components/DropdownSort/DropdownSort";
+import JobCard from "../../components/JobCard/JobCard";
 import Pagination from "../../components/Pagination/Pagination";
+import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
+// Context
+import { UseJobs } from "../../context/JobsContext";
 import { UseUser } from "../../context/UserContext";
-import "./OpenPositions.css";
+// Utils
+import createSortComparator from "../../util/createSortComparator";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { findFilterOptions, filterJobs } from "../../util/filterJobs";
 import getSkillsInDescription from "../../util/getSkillsInDescription";
-import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
-import { UseJobs } from "../../context/JobsContext";
-import createSortComparator from "../../util/createSortComparator";
-import AlertMessage from "../../components/AlertMessage/AlertMessage";
-import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
+// Assets
+import { gif } from "../../assets/index.js";
+// Styles
+import "./OpenPositions.css";
 
 export default function OpenPositions() {
   const { user } = UseUser();
@@ -37,6 +45,7 @@ export default function OpenPositions() {
     seniorityLevel: new Set(),
     employmentType: new Set(),
     work_mode: new Set(),
+    locationPrecision: new Set(),
   });
 
   const [selectedSort, setSelectedSort] = useState([
@@ -102,6 +111,7 @@ export default function OpenPositions() {
       seniorityLevel: new Set(),
       employmentType: new Set(),
       work_mode: new Set(),
+      locationPrecision: new Set(),
     });
     setCurrentPage(1);
   }
@@ -143,10 +153,11 @@ export default function OpenPositions() {
             <div className="filter-dropdowns">
               <DropdownFilter
                 filterKey="seniorityLevel"
-                label="Experience level"
+                label="Experience"
                 options={filterOptions.experienceOptions}
                 activeValues={activeFilters.seniorityLevel}
                 onFilterChange={handleFilterChange}
+                icon={<GraduationCap />}
               />
               <DropdownFilter
                 filterKey="employmentType"
@@ -154,6 +165,7 @@ export default function OpenPositions() {
                 options={filterOptions.jobTypeOptions}
                 activeValues={activeFilters.employmentType}
                 onFilterChange={handleFilterChange}
+                icon={<Briefcase />}
               />
               <DropdownFilter
                 filterKey="work_mode"
@@ -161,6 +173,15 @@ export default function OpenPositions() {
                 options={filterOptions.workModeOptions}
                 activeValues={activeFilters.work_mode}
                 onFilterChange={handleFilterChange}
+                icon={<Monitor />}
+              />
+              <DropdownFilter
+                filterKey="locationPrecision"
+                label="Location"
+                options={filterOptions.locationPrecisionOptions}
+                activeValues={activeFilters.locationPrecision}
+                onFilterChange={handleFilterChange}
+                icon={<MapPin />}
               />
               <button
                 onClick={handleClearFilters}

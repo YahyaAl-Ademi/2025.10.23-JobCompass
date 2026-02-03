@@ -48,8 +48,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     },
   );
 
-  function handleFavoriteClick(e) {
-    e.stopPropagation();
+  function handleFavoriteClick() {
     if (user.id) {
       performFetch({
         method: "POST",
@@ -61,14 +60,10 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     }
   }
 
-  function handleApplyClick(e) {
-    e.stopPropagation();
+  function handleApplyClick() {
     if (user.id) {
       if (onApplyClick) {
-        window.open(
-          job.url?.startsWith("http") ? job.url : `https://${job.url}`,
-          "_blank",
-        );
+        window.open(job.url, "_blank");
       }
       return;
     }
@@ -87,11 +82,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
         <div className="job-card-content">
           <div className="company-logo-container">
             <a
-              href={
-                job.organization_url?.startsWith("http")
-                  ? job.organization_url
-                  : `https://${job.organization_url}`
-              }
+              href={job.organization_url}
               target="_blank"
               rel="noopener noreferrer"
               className="company-link"
@@ -154,14 +145,6 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                   <span className="job-tag-separator">|</span>
                 </div>
               )}
-              {/* location tag */}
-              {job.display_location && (
-                <div className="job-commute-info">
-                  <MapPin className="job-icon" />
-                  <span className="job-commute">{job.display_location}</span>
-                  <span className="job-tag-separator">|</span>
-                </div>
-              )}
               {/* posting date tag */}
               {job.date_posted &&
                 (() => {
@@ -193,15 +176,31 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                     </div>
                   );
                 })()}
-
+              {/* location tag */}
+              {job.display_location && (
+                <div className="job-commute-info">
+                  <MapPin className="job-icon" />
+                  <span className="job-commute">{job.display_location}</span>
+                </div>
+              )}
               {/* commute info block*/}
               <div className="job-commute-info">
                 {isTravelLoading ? (
-                  <img src={gif.spinner} alt="Loading..." className="spinner" />
+                  <>
+                    <span className="job-tag-separator">|</span>
+                    <img
+                      src={gif.spinner}
+                      alt="Loading..."
+                      className="spinner"
+                    />
+                  </>
                 ) : (
-                  job.travel_time != null &&
-                  job.least_transfers != null && (
+                  job.travel_time !== null &&
+                  job.travel_time !== undefined &&
+                  job.least_transfers !== null &&
+                  job.least_transfers !== undefined && (
                     <>
+                      <span className="job-tag-separator">|</span>
                       <Bus className="job-icon" />
                       <span className="job-commute">
                         {formatTravelTime(job.travel_time)},{" "}
@@ -213,7 +212,6 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 )}
               </div>
             </div>
-
             <p
               className="job-description"
               dangerouslySetInnerHTML={{

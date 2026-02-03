@@ -1,26 +1,39 @@
 import normalizeDescription from "./normalizeDescription.js";
 import validateJob from "./validateJob.js";
+import normalizeUrl from "./normalizeUrl.js";
+import checkExperienceLevel from "./checkExperienceLevel.js";
 
 export default function processScraperJob(job) {
   const {
-    id,
     applyUrl: url1,
     link: url2,
     title,
     postedAt: date_posted,
     employmentType: employment_type,
     location,
-    seniorityLevel: normalizedSeniority,
+    seniorityLevel,
     descriptionText = "",
     descriptionHtml: description_text = "",
     companyName: organization,
-    companyWebsite: organization_url,
+    companyWebsite,
     companyLogo: organization_logo,
   } = job || {};
 
+  // normalize seniority values coming from the job source
+  let normalizedSeniority;
+  switch (seniorityLevel) {
+    case "Not Applicable":
+      normalizedSeniority = checkExperienceLevel(title);
+      break;
+    default:
+      normalizedSeniority = seniorityLevel;
+  }
+
+  const url = normalizeUrl(url1) || normalizeUrl(url2);
+
   const processedJob = {
-    id,
-    url: url1 || url2,
+    id: url,
+    url,
     title,
     date_posted,
     employment_type: employment_type || null,
@@ -33,7 +46,7 @@ export default function processScraperJob(job) {
     travel_time: null,
     least_transfers: null,
     organization,
-    organization_url,
+    organization_url: normalizeUrl(companyWebsite),
     organization_logo,
   };
 

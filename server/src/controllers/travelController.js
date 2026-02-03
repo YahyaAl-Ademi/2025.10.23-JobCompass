@@ -18,13 +18,14 @@ function formatAddress(address) {
 }
 
 const workPlacesSet = new Set([
-  "Netherlands",
+  "Brabantine City Row",
   "Drenthe, Netherlands",
   "Flevoland, Netherlands",
   "Friesland, Netherlands",
   "Gelderland, Netherlands",
   "Groningen, Netherlands",
   "Limburg, Netherlands",
+  "Netherlands",
   "Noord-Brabant, Netherlands",
   "Noord-Holland, Netherlands",
   "Overijssel, Netherlands",
@@ -59,21 +60,21 @@ export default async function calculateBatchTravelTime(req, res) {
 
     const promises = validWorkCities.map((workCity) => {
       const normalizedWorkCity = workCity.replace(",", " ");
-      if (
-        (re && re.test(" " + normalizedWorkCity + " ")) ||
-        workPlacesSet.has(workCity)
-      ) {
+      if (re && re.test(" " + normalizedWorkCity + " ")) {
         return Promise.resolve({
           workCity,
           travel_time: 0,
           least_transfers: 0,
         });
       }
-      return getTransitRouteSummary(
-        formattedHomeAddress,
-        workCity,
-        process.env.GOOGLE_MAPS_API_KEY,
-      )
+      if (workPlacesSet.has(workCity)) {
+        return Promise.resolve({
+          workCity,
+          travel_time: null,
+          least_transfers: null,
+        });
+      }
+      return getTransitRouteSummary(formattedHomeAddress, workCity)
         .then((travelData) => {
           return {
             workCity,

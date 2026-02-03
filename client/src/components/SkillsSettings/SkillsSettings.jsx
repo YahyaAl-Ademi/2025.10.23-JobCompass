@@ -85,7 +85,7 @@ export default function SkillsSettings() {
     const newSkill = cleanUpText(skillInput.value || "");
     const validationError = validateSkillInput({ text: newSkill, skills });
     if (validationError) {
-      setAlert({ type: "error", message: String(validationError) });
+      setAlert(validationError);
       delayedClearAlert();
       return;
     }
