@@ -153,7 +153,7 @@ export default function OpenPositions() {
             <div className="filter-dropdowns">
               <DropdownFilter
                 filterKey="seniorityLevel"
-                label="Experience level"
+                label="Experience"
                 options={filterOptions.experienceOptions}
                 activeValues={activeFilters.seniorityLevel}
                 onFilterChange={handleFilterChange}
@@ -177,7 +177,7 @@ export default function OpenPositions() {
               />
               <DropdownFilter
                 filterKey="locationPrecision"
-                label="Location precision"
+                label="Location"
                 options={filterOptions.locationPrecisionOptions}
                 activeValues={activeFilters.locationPrecision}
                 onFilterChange={handleFilterChange}
