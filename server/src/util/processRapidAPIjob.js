@@ -21,7 +21,6 @@ export default function processRapidAPIjob(job) {
   // normalize seniority values coming from the job source
   let normalizedSeniority;
   switch (seniority) {
-    case "Intern":
     case "Stagiair":
       normalizedSeniority = "Internship";
       break;
@@ -49,6 +48,13 @@ export default function processRapidAPIjob(job) {
 
   const url = normalizeUrl(url1) || normalizeUrl(url2);
 
+  function normalizeEmploymentType(type) {
+    if (type === "Intern") {
+      return "Internship";
+    }
+    return type;
+  }
+
   const processedJob = {
     id: url,
     url,
@@ -56,10 +62,10 @@ export default function processRapidAPIjob(job) {
     date_posted,
     employment_type:
       Array.isArray(employment_type) && employment_type.length > 0
-        ? (
-            employment_type[0].charAt(0).toUpperCase() +
-            employment_type[0].slice(1).toLowerCase()
-          ).replace("_", "-")
+        ? normalizeEmploymentType(
+            (employment_type[0].charAt(0).toUpperCase() + employment_type,
+            [0].slice(1).toLowerCase()).replace("_", "-"),
+          )
         : null,
     work_mode: remote_derived === true ? "Remote" : "On-site",
     display_location:
