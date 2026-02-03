@@ -212,9 +212,6 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 )}
               </div>
             </div>
-            {job.display_location === "Apeldoorn, Gelderland, Netherlands" &&
-              (console.log("travel time:", job.travel_time),
-              console.log("number of transfers:", job.least_transfers))}
             <p
               className="job-description"
               dangerouslySetInnerHTML={{
