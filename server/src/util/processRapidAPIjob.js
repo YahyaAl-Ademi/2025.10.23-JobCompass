@@ -21,6 +21,7 @@ export default function processRapidAPIjob(job) {
   // normalize seniority values coming from the job source
   let normalizedSeniority;
   switch (seniority) {
+    case "Intern":
     case "Stagiair":
       normalizedSeniority = "Internship";
       break;
