@@ -20,7 +20,7 @@ export default function SkillsTipPopup({ onClose }) {
             separator. As a result, "data analysis" will match "Data / Analysis" 
             and "RESTful" will not be marked as corresponding to "REST". Thus,
             choose your skills carefully, perhaps adding a few to cover a variety
-            of forms.`}
+            of word forms.`}
           </li>
           <li>
             {`As a rule, use short, separate words for each skill, thereby
