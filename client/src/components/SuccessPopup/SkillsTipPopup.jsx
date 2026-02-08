@@ -36,8 +36,8 @@ export default function SkillsTipPopup({ onClose }) {
             making the first decision in the HR department.`}
           </li>
           <li>
-            {`Incorrect matches are possible, for example, the word "React"
-            (framework) may be mistaken for the verb "react". The number of such
+            {`Incorrect matches are possible, for example, the verb "react" may be
+            mistaken for the "React" (framework). The number of such
             misidentified skills is considered insignificant.`}
           </li>
         </ul>
