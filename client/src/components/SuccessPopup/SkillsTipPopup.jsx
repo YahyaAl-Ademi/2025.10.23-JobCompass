@@ -2,7 +2,12 @@ import "./SkillsTipPopup.css";
 
 export default function SkillsTipPopup({ onClose }) {
   return (
-    <div className="skills-tip-overlay" role="dialog" aria-modal="true">
+    <div
+      className="skills-tip-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="skills-tip-title"
+    >
       <div className="skills-tip-card">
         <button
           className="skills-tip-close"
@@ -12,7 +17,9 @@ export default function SkillsTipPopup({ onClose }) {
         >
           X
         </button>
-        <h4 className="skills-tip-title">Skill matching tips</h4>
+        <h4 className="skills-tip-title" id="skills-tip-title">
+          Skill matching tips
+        </h4>
         <ul className="skills-tip-list">
           <li>
             {`Our algorithm is case-insensitive and treats letters and symbols as 
