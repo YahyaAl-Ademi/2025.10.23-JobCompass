@@ -25,7 +25,7 @@ export default function SkillsTipPopup({ onClose }) {
             {`Our algorithm is case-insensitive and treats letters and symbols as 
             meaningful, punctuation marks and spaces between words as a single 
             separator. As a result, "data analysis" will match "Data / Analysis" 
-            and "RESTful" will not be marked as corresponding to "REST". Thus,
+            and "REST" will not be marked as corresponding to "RESTful". Thus,
             choose your skills carefully, perhaps adding a few to cover a variety
             of word forms.`}
           </li>
