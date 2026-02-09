@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DOMPurify from "dompurify";
 import {
   Bus,
   Briefcase,
@@ -215,10 +214,9 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
             <p
               className="job-description"
               dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(
+                __html:
                   (job?.description_text?.slice(0, 400) ||
                     "No description available") + "...",
-                ),
               }}
             />
 

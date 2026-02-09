@@ -13,12 +13,38 @@
 }
 
 .skills-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: #374151;
   line-height: 1.6;
   font-size: 1.1rem;
   font-weight: 600;
   padding-top: 0;
   margin-top: 0;
+}
+
+.skills-tip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #16a34a;
+  border: 1px solid #15803d;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.1;
+  color: #ffffff;
+  cursor: pointer;
+  outline: none;
+  height: 18px;
+  align-self: flex-start;
+  margin-top: 2px;
+  transform: translateY(-6px);
+}
+
+.skills-tip-btn:hover {
+  background-color: #15803d;
 }
 
 .spinner {

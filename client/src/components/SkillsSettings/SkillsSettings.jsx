@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { UseUser } from "../../context/UserContext";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import PopupForSave from "../SuccessPopup/PopupForSave";
+import SkillsTipPopup from "../SuccessPopup/SkillsTipPopup";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
 import cleanUpText from "../../util/cleanUpText";
@@ -20,6 +21,7 @@ export default function SkillsSettings() {
   const skillInputRef = useRef(null);
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [showAll, setShowAll] = useState(false);
+  const [showTipPopup, setShowTipPopup] = useState(false);
   const maxVisible = 4;
   const { user, dispatch } = UseUser();
   const { skills } = user;
@@ -146,7 +148,18 @@ export default function SkillsSettings() {
   return (
     <div className="skills-container">
       <div className="skills-section">
-        <h3 className="skills-heading">Skills</h3>
+        <h3 className="skills-heading">
+          Skills
+          <button
+            className="skills-tip-btn"
+            type="button"
+            onClick={() => setShowTipPopup(true)}
+            aria-label="Open skill matching tips"
+            aria-haspopup="dialog"
+          >
+            Tips
+          </button>
+        </h3>
         {/* Skills management */}
         <div className="skills-controls">
           <input
@@ -231,6 +244,10 @@ export default function SkillsSettings() {
           )}
         </div>
       </div>
+
+      {showTipPopup && (
+        <SkillsTipPopup onClose={() => setShowTipPopup(false)} />
+      )}
 
       {alert.message && (
         <AlertMessage type={alert.type} message={alert.message} />
