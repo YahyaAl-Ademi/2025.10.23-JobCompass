@@ -154,8 +154,10 @@ export default function SkillsSettings() {
             className="skills-tip-btn"
             type="button"
             onClick={() => setShowTipPopup(true)}
+            aria-label="Open skill matching tips"
+            aria-haspopup="dialog"
           >
-            Tip
+            Tips
           </button>
         </h3>
         {/* Skills management */}
