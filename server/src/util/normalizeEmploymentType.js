@@ -8,7 +8,7 @@ export default function normalizeEmploymentType(typeList) {
       } else {
         result = (
           type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
-        ).replace("_", "-");
+        ).replaceAll("_", "-");
       }
     }
   }
