@@ -16,6 +16,7 @@ export default async function persistJobSearch(
   if (!connectionError) {
     const jobsToInsert = [];
     const searchStringJobsToInsert = [];
+    const idSet = new Set();
 
     await connectedClient.query("BEGIN");
     try {
@@ -47,16 +48,13 @@ export default async function persistJobSearch(
             .some(([, value]) => value === null) &&
           new Date(job.date_posted) >= oneMonthAgo
         ) {
-          try {
+          if (!idSet.has(job.id)) {
+            idSet.add(job.id);
             jobsToInsert.push(job);
-
-            // Collect search_strings_jobs relationships
             searchStringJobsToInsert.push({
               search_string,
               jobId: job.id,
             });
-          } catch (jobErr) {
-            logError(`Error processing job ${job.id}: ${jobErr}`);
           }
         }
       }
