@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Handshake, Bus, Clock } from "lucide-react";
+import { Handshake, Bus, Calendar } from "lucide-react";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import "./DropdownSort.css";
 
@@ -70,7 +70,7 @@ export default function DropdownSort({ selectedSort, setSelectedSort }) {
             <Bus size={16} />
           </span>
           <span className="job-icon">
-            <Clock size={16} />
+            <Calendar size={16} />
           </span>
           <span>Custom sort</span>
         </div>

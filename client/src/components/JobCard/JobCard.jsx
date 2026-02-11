@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Bus,
   Briefcase,
-  Clock,
+  Calendar,
   GraduationCap,
   MapPin,
   Monitor,
@@ -169,7 +169,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                   const formatted = `${dd} ${mm} ${yyyy}`;
                   return (
                     <div className="job-commute-info">
-                      <Clock className="job-icon" />
+                      <Calendar className="job-icon" />
                       <span className="job-commute">{formatted}</span>
                       <span className="job-tag-separator">|</span>
                     </div>

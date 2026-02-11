@@ -2,6 +2,7 @@ import normalizeDescription from "./normalizeDescription.js";
 import validateJob from "./validateJob.js";
 import normalizeUrl from "./normalizeUrl.js";
 import checkExperienceLevel from "./checkExperienceLevel.js";
+import normalizeEmploymentType from "./normalizeEmploymentType.js";
 
 export default function processRapidAPIjob(job) {
   const {
@@ -48,25 +49,12 @@ export default function processRapidAPIjob(job) {
 
   const url = normalizeUrl(url1) || normalizeUrl(url2);
 
-  function normalizeEmploymentType(type) {
-    if (type === "Intern") {
-      return "Internship";
-    }
-    return type;
-  }
-
   const processedJob = {
     id: url,
     url,
     title,
     date_posted,
-    employment_type:
-      Array.isArray(employment_type) && employment_type.length > 0
-        ? normalizeEmploymentType(
-            (employment_type[0].charAt(0).toUpperCase() + employment_type,
-            [0].slice(1).toLowerCase()).replace("_", "-"),
-          )
-        : null,
+    employment_type: normalizeEmploymentType(employment_type),
     work_mode: remote_derived === true ? "Remote" : "On-site",
     display_location:
       Array.isArray(locations_derived) && locations_derived.length > 0
