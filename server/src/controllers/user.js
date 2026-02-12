@@ -83,10 +83,10 @@ export async function createUser(req, res) {
     const result = await connectedClient.query(
       `INSERT INTO users (
         id, first_name, last_name, email, password,
-        avatar, street, house_number, city, country, skills, number_of_logins
+        avatar, street, house_number, city, country, skills
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 1)
-      RETURNING id, email, first_name, last_name, avatar, street, house_number, city, country, skills, number_of_logins`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      RETURNING id, email, first_name, last_name, avatar, street, house_number, city, country, skills`,
       [
         newUserId,
         user.first_name,
