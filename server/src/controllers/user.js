@@ -194,6 +194,7 @@ export async function loginUser(req, res) {
         ? userDataRow.skills.split(",").map((skill) => skill.trim())
         : [],
       favorites: [],
+      number_of_logins: userDataRow.number_of_logins,
     };
 
     rows.forEach((row) => {
