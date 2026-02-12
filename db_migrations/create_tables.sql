@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
     skills text,
     reset_token uuid,
     reset_token_expires timestamp without time zone,
+    number_of_logins smallint DEFAULT 0,
     CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
