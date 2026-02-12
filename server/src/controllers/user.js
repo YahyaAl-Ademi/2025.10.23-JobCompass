@@ -86,7 +86,7 @@ export async function createUser(req, res) {
         avatar, street, house_number, city, country, skills
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING id, email, first_name, last_name, avatar, street, house_number, city, country, skills`,
+      RETURNING id, email, first_name, last_name, avatar, street, house_number, city, country, skills, number_of_logins`,
       [
         newUserId,
         user.first_name,
