@@ -6,6 +6,7 @@ import { UseUser } from "../../context/UserContext";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import PopupForSave from "../SuccessPopup/PopupForSave";
 import SkillsTipPopup from "../SuccessPopup/SkillsTipPopup";
+import AIPopup from "./AIPopup";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
 import cleanUpText from "../../util/cleanUpText";
@@ -26,6 +27,7 @@ export default function SkillsSettings() {
   const { user, dispatch } = UseUser();
   const { skills } = user;
   const [showSavePopup, setShowSavePopup] = useState(false);
+  const [showAIPopup, setShowAIPopup] = useState(false);
   const handleSkillsResultsRef = useRef(() => {});
 
   function handleClearAlert() {
@@ -242,6 +244,13 @@ export default function SkillsSettings() {
               {showAll ? "Show less" : `+${skills.length - maxVisible} more`}
             </button>
           )}
+          <button
+            className="ai-assistance-btn"
+            onClick={() => setShowAIPopup(true)}
+            type="button"
+          >
+            AI assistance
+          </button>
         </div>
       </div>
 
@@ -263,6 +272,7 @@ export default function SkillsSettings() {
           setShowSavePopup={setShowSavePopup}
         />
       )}
+      {showAIPopup && <AIPopup onClose={() => setShowAIPopup(false)} />}
     </div>
   );
 }
