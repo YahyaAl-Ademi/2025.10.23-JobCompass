@@ -27,6 +27,10 @@ if (!process.env.JWT_EXPIRES_IN) {
   throw new Error("JWT_EXPIRES_IN environment variable is not set");
 }
 
+if (!process.env.DONATION_URL) {
+  throw new Error("DONATION_URL environment variable is not set");
+}
+
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const USER_FULL_INFO_QUERY = `
@@ -200,7 +204,10 @@ export async function loginUser(req, res) {
         ? userDataRow.skills.split(",").map((skill) => skill.trim())
         : [],
       favorites: [],
-      number_of_logins: userDataRow.number_of_logins + 1,
+      time_to_donate:
+        userDataRow.number_of_logins + 1 === 5
+          ? process.env.DONATION_URL
+          : false,
     };
 
     rows.forEach((row) => {

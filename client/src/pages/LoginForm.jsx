@@ -52,7 +52,7 @@ export default function LoginForm({
         favorites: favoriteJobs,
       },
     });
-    if (data.user.number_of_logins === 3) {
+    if (data.user.time_to_donate) {
       setDonationPopup(true);
     } else {
       setLoginSuccessPopup(true);

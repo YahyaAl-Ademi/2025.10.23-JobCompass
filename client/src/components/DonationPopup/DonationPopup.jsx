@@ -2,9 +2,11 @@ import { useNavigate } from "react-router-dom";
 import "./DonationPopup.css";
 import { ExternalLink, HelpingHand } from "lucide-react";
 import handleKeyDown from "../../util/handleKeyDown";
+import { UseUser } from "../../context/UserContext.jsx";
 
 export default function DonationPopup({ onClose }) {
-  const donationUrl = import.meta.env.VITE_DONATION_URL;
+  const { user } = UseUser();
+  const donationUrl = user.time_to_donate;
   const navigate = useNavigate();
 
   function handleUnderstood() {
