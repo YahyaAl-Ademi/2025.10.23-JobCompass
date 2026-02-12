@@ -25,24 +25,6 @@
   }
 }
 
-.donation-icon-container {
-  font-size: 3rem;
-  margin-bottom: 20px;
-  animation: pulseHeart 2s infinite;
-}
-
-@keyframes pulseHeart {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 .donation-popup-card h2 {
   margin-bottom: 16px;
   font-size: 1.8rem;
@@ -71,6 +53,7 @@
   font-size: 1rem;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   margin: 0 auto;
   transition:
