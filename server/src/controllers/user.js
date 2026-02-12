@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import validationErrorMessage from "../util/validationErrorMessage.js";
 import { logError } from "../util/logging.js";
 import { blacklistedTokens } from "../middleware/authVerify.js";
-import validateCreactUser from "../util/validateCreactUser.js";
+import validateUserRegistration from "../util/validateUserRegistration.js";
 import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
 
@@ -55,7 +55,7 @@ export async function createUser(req, res) {
 
   try {
     const user = req.body?.user || {};
-    const { valid, errors } = validateCreactUser(user);
+    const { valid, errors } = validateUserRegistration(user);
 
     if (!valid) {
       return res
