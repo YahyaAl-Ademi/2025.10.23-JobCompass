@@ -23,7 +23,7 @@ erDiagram
         skills text
         reset_token uuid
         reset_token_expires timestamp
-        number_of_logins smallint
+        number_of_logins smallint "DEFAULT 0"
     }
 
     jobs {
@@ -83,7 +83,7 @@ Stores user authentication and profile data:
 - **Profile**: Name, avatar, location details
 - **Skills**: Text field for user skills and qualifications
 - **Password Reset**: Token-based password recovery system
-- **Activity Tracking**: Track the number of user logins
+- Activity Tracking: Track the number of user logins (defaults to 0)
 
 ### jobs Table
 

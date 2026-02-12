@@ -186,7 +186,6 @@ export async function loginUser(req, res) {
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
       avatar: userDataRow.avatar,
-      // Return address fields at top-level
       street: userDataRow.street,
       house_number: userDataRow.house_number,
       city: userDataRow.city,
