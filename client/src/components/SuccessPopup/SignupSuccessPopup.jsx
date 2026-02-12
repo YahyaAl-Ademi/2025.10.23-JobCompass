@@ -15,6 +15,7 @@ export default function SignupSuccessPopup({ goToProfile }) {
         <div className="popup-buttons">
           <button
             className="btn-primary"
+            autoFocus
             onClick={goToProfile}
             onKeyDown={(e) => handleKeyDown(e, goToProfile)}
           >
