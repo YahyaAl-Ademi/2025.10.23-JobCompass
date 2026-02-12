@@ -1,6 +1,4 @@
 import admin from "firebase-admin";
-import dotenv from "dotenv";
-dotenv.config();
 
 if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
   throw new Error(
