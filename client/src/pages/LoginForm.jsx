@@ -5,6 +5,7 @@ import AlertMessage from "../components/AlertMessage/AlertMessage";
 import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
 import fixUserSkills from "../util/fixUserSkills";
+import DonationPopup from "../components/DonationPopup/DonationPopup";
 
 export default function LoginForm({
   setLoginSuccessPopup,
@@ -14,6 +15,7 @@ export default function LoginForm({
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [alert, setAlert] = useState({ type: "", message: "" });
+  const [donationPopup, setDonationPopup] = useState(false);
   const { dispatch } = UseUser();
 
   function handleClearAlert() {
@@ -50,7 +52,11 @@ export default function LoginForm({
         favorites: favoriteJobs,
       },
     });
-    setLoginSuccessPopup(true);
+    if (data.user.number_of_logins === 3) {
+      setDonationPopup(true);
+    } else {
+      setLoginSuccessPopup(true);
+    }
   }
 
   const { isLoading, error, performFetch } = useFetch(
@@ -62,6 +68,7 @@ export default function LoginForm({
     if (error) {
       setAlert({ type: "error", message: String(error) });
       setLoginSuccessPopup(false);
+      setDonationPopup(false);
     }
   }, [error]);
 
@@ -187,6 +194,9 @@ export default function LoginForm({
         . We handle your data according to GDPR rules. Your information is
         secure and will be deleted if you remove your account.
       </p>
+      {donationPopup && (
+        <DonationPopup onClose={() => setDonationPopup(false)} />
+      )}
     </div>
   );
 }
