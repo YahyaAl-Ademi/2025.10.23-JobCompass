@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFetch from "../../hooks/useFetch";
 
 export default function AIPopup({ onClose, onSkillsExtracted }) {
   const [aiInputText, setAiInputText] = useState("");
 
-  const { isLoading, performFetch } = useFetch(
+  const { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
     (result) => {
       if (onSkillsExtracted) {
@@ -12,6 +12,12 @@ export default function AIPopup({ onClose, onSkillsExtracted }) {
       }
     },
   );
+
+  useEffect(() => {
+    if (error) {
+      console.error("Skills extraction error:", error);
+    }
+  }, [error]);
 
   const handleGetSkills = () => {
     performFetch({

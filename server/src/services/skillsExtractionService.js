@@ -11,7 +11,7 @@ import { zodTextFormat } from "../util/zodTextFormat.js";
  */
 export async function extractCVskills(userPrompt) {
   const response = await openai.responses.create({
-    model: "gpt-4o-mini",
+    model: "gpt-4.1-mini",
     input: [
       {
         role: "developer",
