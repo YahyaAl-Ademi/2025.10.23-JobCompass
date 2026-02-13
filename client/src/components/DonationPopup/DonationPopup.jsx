@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "../common/PopupCommon.css";
 import "./DonationPopup.css";
 import { ExternalLink, HelpingHand } from "lucide-react";
 import handleKeyDown from "../../util/handleKeyDown";
