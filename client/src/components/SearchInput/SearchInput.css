@@ -9,11 +9,12 @@
   --color-text-placeholder: #9ca3af;
 }
 
-/* --- Search Input Container --- */
+/* --- Search Input Container - mobile-first --- */
 .search-input {
   width: 100%;
-  max-width: 600px;
+  max-width: min(95vw, 600px);
   margin: 0 auto;
+  padding: 0 0.25rem;
 }
 
 /* --- Label --- */
@@ -87,20 +88,29 @@
   text-align: left;
 }
 
-/* --- RESPONSIVE --- */
-@media (max-width: 600px) {
-  .search-input {
-    width: 100%;
-    padding: 0 1rem;
-  }
+/* --- Mobile-first: stacked layout by default --- */
+.input-group {
+  flex-direction: column;
+  gap: 0.75rem;
+}
 
+.input-group input,
+.input-group button {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 600px) {
   .input-group {
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-direction: row;
   }
 
-  .input-group input,
+  .input-group input {
+    flex: 1;
+    width: auto;
+  }
+
   .input-group button {
-    width: 100%;
+    width: auto;
   }
 }

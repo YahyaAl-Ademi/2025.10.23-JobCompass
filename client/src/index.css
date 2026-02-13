@@ -134,11 +134,26 @@ footer {
   flex: 0 0 auto;
 }
 
+/* Mobile-first: full width with padding, scale up on larger screens */
 .content-container {
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 1rem;
   width: 100%;
-  max-width: clamp(700px, 85%, 1200px);
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .content-container {
+    padding: 0 1.25rem;
+    max-width: min(95vw, 700px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .content-container {
+    padding: 0 20px;
+    max-width: 1200px;
+  }
 }
 
 @media (min-width: 1600px) {
@@ -191,8 +206,18 @@ footer {
 .grid {
   display: grid;
 }
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
 .grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .overflow-hidden {
   overflow: hidden;
@@ -532,5 +557,41 @@ footer {
 @media (min-width: 768px) {
   .md\:w-auto {
     width: auto;
+  }
+}
+
+/* Overflow prevention for media and tables */
+video,
+iframe,
+table {
+  max-width: 100%;
+}
+
+/* Long text / URLs */
+.break-words {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Shared popup overlay - mobile-friendly viewport fit */
+/* Shared popup overlay - responsive for small screens */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  padding: 0.75rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 375px) {
+  .popup-overlay {
+    padding: 1rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }

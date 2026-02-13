@@ -14,14 +14,28 @@
 
 .job-card-content {
   display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .job-card-content {
+    flex-direction: row;
+    gap: 0;
+  }
 }
 
 .company-logo-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1.5rem;
   flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .company-logo-container {
+    margin-right: 1.5rem;
+  }
 }
 
 .company-link {
@@ -49,7 +63,7 @@
   color: #494d51;
   opacity: 0.9;
   transition: opacity 0.15s ease;
-  max-width: 130px;
+  max-width: min(130px, 35vw);
   white-space: normal;
   word-break: break-word;
   text-align: center;
@@ -155,8 +169,17 @@
 
 .job-card-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .job-card-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 .skill-match-container {
@@ -186,27 +209,15 @@
   background-color: #3272d2;
 }
 
-/* Responsive tweaks */
-@media (max-width: 640px) {
-  .job-card-content {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
+/* Mobile responsive overrides */
+@media (max-width: 639px) {
   .company-logo-container {
     width: 4.5rem;
     height: 4.5rem;
-    margin-right: 0;
   }
 
   .job-card-header {
     align-items: center;
     gap: 0.5rem;
-  }
-
-  .job-card-footer {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: stretch;
   }
 }
