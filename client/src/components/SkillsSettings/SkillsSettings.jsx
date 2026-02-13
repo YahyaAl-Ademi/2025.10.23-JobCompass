@@ -272,7 +272,12 @@ export default function SkillsSettings() {
           setShowSavePopup={setShowSavePopup}
         />
       )}
-      {showAIPopup && <AIPopup onClose={() => setShowAIPopup(false)} />}
+      {showAIPopup && (
+        <AIPopup
+          onClose={() => setShowAIPopup(false)}
+          onSkillsExtracted={console.log}
+        />
+      )}
     </div>
   );
 }

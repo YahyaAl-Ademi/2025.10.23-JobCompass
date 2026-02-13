@@ -1,7 +1,24 @@
 import { useState } from "react";
+import useFetch from "../../hooks/useFetch";
 
-export default function AIPopup({ onClose }) {
+export default function AIPopup({ onClose, onSkillsExtracted }) {
   const [aiInputText, setAiInputText] = useState("");
+
+  const { isLoading, performFetch } = useFetch(
+    "/ai/assist-skills",
+    (result) => {
+      if (onSkillsExtracted) {
+        onSkillsExtracted(result.skills);
+      }
+    },
+  );
+
+  const handleGetSkills = () => {
+    performFetch({
+      method: "POST",
+      body: JSON.stringify({ prompt: aiInputText }),
+    });
+  };
 
   return (
     <div className="ai-popup-overlay">
@@ -43,12 +60,10 @@ export default function AIPopup({ onClose }) {
           <div className="ai-popup-buttons">
             <button
               className="ai-popup-btn primary"
-              onClick={() => {
-                // TODO: Implement Get CV skills functionality
-                console.log("Get CV skills clicked");
-              }}
+              onClick={handleGetSkills}
+              disabled={isLoading || !aiInputText.trim()}
             >
-              Get CV skills
+              {isLoading ? "Extracting..." : "Get CV skills"}
             </button>
             <button
               className="ai-popup-btn secondary"

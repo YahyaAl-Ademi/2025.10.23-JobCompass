@@ -8,18 +8,18 @@ import { logError } from "../util/logging.js";
  */
 export default async function aiAssistSkills(req, res) {
   try {
-    const { resume } = req.body;
+    const { prompt } = req.body;
 
     // Validate input
-    if (!resume || typeof resume !== "string" || !resume.trim()) {
+    if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
       return res.status(400).json({
         success: false,
-        msg: "You need to provide 'resume' (non-empty string) in the request body.",
+        msg: "You need to provide 'prompt' (non-empty string) in the request body.",
       });
     }
 
     // Extract skills using OpenAI
-    const skills = await extractCVskills(resume);
+    const skills = await extractCVskills(prompt);
 
     // Return the extracted skills
     return res.status(200).json({

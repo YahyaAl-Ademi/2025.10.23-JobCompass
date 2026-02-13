@@ -11,7 +11,7 @@ import { zodTextFormat } from "../util/zodTextFormat.js";
  */
 export async function extractCVskills(userPrompt) {
   const response = await openai.responses.create({
-    model: "GPT-5 mini",
+    model: "gpt-4o-mini",
     input: [
       {
         role: "developer",
@@ -22,7 +22,9 @@ export async function extractCVskills(userPrompt) {
         content: userPrompt,
       },
     ],
-    response_format: zodTextFormat(generatedSkillsSchema, "skills_output"),
+    text: {
+      format: zodTextFormat(generatedSkillsSchema, "skills_output"),
+    },
     temperature: 0.2,
     max_output_tokens: 5000,
   });
