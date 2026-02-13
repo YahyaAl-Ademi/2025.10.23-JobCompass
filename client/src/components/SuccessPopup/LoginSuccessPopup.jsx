@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import "../common/PopupCommon.css";
 import handleKeyDown from "../../util/handleKeyDown";
 
 export default function LoginSuccessPopup({ onClose }) {

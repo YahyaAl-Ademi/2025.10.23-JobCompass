@@ -1,4 +1,3 @@
-import "../common/PopupCommon.css";
 import handleKeyDown from "../../util/handleKeyDown";
 
 export default function PopupForFavorites({

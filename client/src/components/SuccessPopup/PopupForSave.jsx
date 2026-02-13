@@ -1,4 +1,3 @@
-import "../common/PopupCommon.css";
 import "../JobCard/JobCard.css";
 import handleKeyDown from "../../util/handleKeyDown";
 

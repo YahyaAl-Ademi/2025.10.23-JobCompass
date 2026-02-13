@@ -1,4 +1,4 @@
-import "../common/PopupCommon.css";
+import "./SuccessPopup.css";
 import { UseUser } from "../../context/UserContext";
 import handleKeyDown from "../../util/handleKeyDown";
 
