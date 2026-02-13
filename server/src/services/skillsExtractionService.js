@@ -10,9 +10,9 @@ import { zodTextFormat } from "../util/zodTextFormat.js";
  * @throws {Error} If skill extraction fails
  */
 export async function extractCVskills(userPrompt) {
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
+  const response = await openai.responses.create({
+    model: "GPT-5 mini",
+    input: [
       {
         role: "developer",
         content: skillsExtractionPrompt,
@@ -24,13 +24,15 @@ export async function extractCVskills(userPrompt) {
     ],
     response_format: zodTextFormat(generatedSkillsSchema, "skills_output"),
     temperature: 0.2,
-    max_tokens: 5000,
+    max_output_tokens: 5000,
   });
 
-  if (response.choices[0].finish_reason !== "stop") {
+  const outputText = response.output_text;
+
+  if (!outputText) {
     throw new Error("We were unable to generate the skills");
   }
 
-  const parsedResult = JSON.parse(response.choices[0].message.content);
+  const parsedResult = JSON.parse(outputText);
   return parsedResult.skills || [];
 }
