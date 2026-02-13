@@ -109,7 +109,7 @@ Connect talented professionals with opportunities that match their skills, prefe
 │   │   ├── config/             # Configuration files (1 item)
 │   │   ├── util/               # Utility functions (10)
 │   │   │   ├── logging.js      # Error and info logging
-│   │   │   └── [9 more]        # cleanupInProgress, normalizeDescription, processRapidAPIjob, processScraperJob, validateAllowedFields, validateCreactUser, validateJob, validatePassword, validationErrorMessage
+│   │   │   └── [9 more]        # cleanupInProgress, normalizeDescription, processRapidAPIjob, processScraperJob, validateAllowedFields, validateUserRegistration, validateJob, validatePassword, validationErrorMessage
 │   │   ├── app.js              # Express app configuration
 │   │   └── index.js            # Server entry point with cron jobs
 │   ├── .env.example            # Environment variables template

@@ -23,6 +23,7 @@ erDiagram
         skills text
         reset_token uuid
         reset_token_expires timestamp
+        number_of_logins smallint "DEFAULT 1"
     }
 
     jobs {
@@ -82,6 +83,7 @@ Stores user authentication and profile data:
 - **Profile**: Name, avatar, location details
 - **Skills**: Text field for user skills and qualifications
 - **Password Reset**: Token-based password recovery system
+- Activity Tracking: Track the number of user logins (defaults to 1)
 
 ### jobs Table
 
@@ -108,8 +110,7 @@ Tracks all search queries for caching and analytics:
 - **Search Context**: The actual search string used
 - **Authentication Context**: UUID of user who made the search (null for guests)
 - **Timestamp**: When the search was performed
-- **Whole String Flag**: Boolean indicating if search should match whole string only (defaults to false)
-- **Cache Key**: Used for efficient result retrieval
+- **Whole String Flag**: Boolean indicating if the string matches the whole search string (defaults to false)
 
 ### search_strings_jobs Table
 

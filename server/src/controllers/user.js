@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import validationErrorMessage from "../util/validationErrorMessage.js";
 import { logError } from "../util/logging.js";
 import { blacklistedTokens } from "../middleware/authVerify.js";
-import validateCreactUser from "../util/validateCreactUser.js";
+import validateUserRegistration from "../util/validateUserRegistration.js";
 import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
 
@@ -27,12 +27,16 @@ if (!process.env.JWT_EXPIRES_IN) {
   throw new Error("JWT_EXPIRES_IN environment variable is not set");
 }
 
+if (!process.env.DONATION_URL) {
+  throw new Error("DONATION_URL environment variable is not set");
+}
+
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const USER_FULL_INFO_QUERY = `
   SELECT
     u.id AS user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
-    u.street, u.house_number, u.city, u.country, u.skills,
+    u.street, u.house_number, u.city, u.country, u.skills, u.number_of_logins,
     uf.travel_time, uf.least_transfers,
     j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
     j.employment_type, j.url, j.organization_logo, j.display_location,
@@ -55,7 +59,7 @@ export async function createUser(req, res) {
 
   try {
     const user = req.body?.user || {};
-    const { valid, errors } = validateCreactUser(user);
+    const { valid, errors } = validateUserRegistration(user);
 
     if (!valid) {
       return res
@@ -86,7 +90,7 @@ export async function createUser(req, res) {
         avatar, street, house_number, city, country, skills
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING id, email, first_name, last_name, avatar, street, house_number, city, country, skills`,
+      RETURNING id, email, first_name, last_name, avatar, street, house_number, city, country, skills, number_of_logins`,
       [
         newUserId,
         user.first_name,
@@ -177,6 +181,12 @@ export async function loginUser(req, res) {
         .json({ success: false, msg: "Invalid credentials" });
     }
 
+    // Increment number of logins
+    await connectedClient.query(
+      "UPDATE users SET number_of_logins = number_of_logins + 1 WHERE id = $1",
+      [result.rows[0].user_id],
+    );
+
     const rows = result.rows;
     const userDataRow = rows[0];
 
@@ -186,7 +196,6 @@ export async function loginUser(req, res) {
       first_name: userDataRow.first_name,
       last_name: userDataRow.last_name,
       avatar: userDataRow.avatar,
-      // Return address fields at top-level
       street: userDataRow.street,
       house_number: userDataRow.house_number,
       city: userDataRow.city,
@@ -195,6 +204,10 @@ export async function loginUser(req, res) {
         ? userDataRow.skills.split(",").map((skill) => skill.trim())
         : [],
       favorites: [],
+      time_to_donate:
+        userDataRow.number_of_logins + 1 === 5
+          ? process.env.DONATION_URL
+          : false,
     };
 
     rows.forEach((row) => {
@@ -312,6 +325,7 @@ export async function getMe(req, res) {
         ? userDataRow.skills.split(",").map((skill) => skill.trim())
         : [],
       favorites: [],
+      number_of_logins: userDataRow.number_of_logins,
     };
     rows.forEach((row) => {
       if (row.job_id) {
