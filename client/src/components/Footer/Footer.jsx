@@ -18,6 +18,16 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} Job Compass</p>
         </div>
 
+        <div className="support-footer">
+          <span className="support-label">Support:</span>
+          <a
+            href="mailto:jobcompass2025@gmail.com?subject=Question about JobCompass"
+            className="support-link"
+          >
+            jobcompass2025@gmail.com
+          </a>
+        </div>
+
         {/* back to top button */}
         <button
           type="button"
