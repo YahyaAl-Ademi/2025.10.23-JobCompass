@@ -1,3 +1,18 @@
+/* Mobile: 1 col; 768px+: 2 cols */
+.address-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .address-fields-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
 .address-input {
   width: 100%;
   padding: 12px 16px;

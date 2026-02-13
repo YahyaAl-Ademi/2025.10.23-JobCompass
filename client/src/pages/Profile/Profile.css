@@ -1,8 +1,22 @@
+/* Mobile-first profile container */
 .profile-container {
-  max-width: 870px;
-  margin: 0 auto;
   width: 100%;
-  padding: 0 20px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .profile-container {
+    padding: 0 1.25rem;
+    max-width: min(95vw, 870px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .profile-container {
+    padding: 0 20px;
+  }
 }
 
 .profile-title {
@@ -47,15 +61,21 @@
   font-size: 14px;
 }
 
-/* Basic Information Section */
+/* Basic Information Section - mobile-first padding */
 .flex-grow {
   display: flex;
   flex-direction: column;
-  padding: 32px;
+  padding: 1.25rem;
   margin-bottom: 24px;
   border-radius: 7px;
   background: #fff;
   border: 1px solid #d6ddeb;
+}
+
+@media (min-width: 768px) {
+  .flex-grow {
+    padding: 32px;
+  }
 }
 
 .basic-info-title {
@@ -65,21 +85,34 @@
   margin: 0 0 24px 0;
 }
 
+/* Mobile: 1 col; Desktop: 2 cols */
 .profile-fields {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 16px;
   margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .profile-fields {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* ========== Address & Change Password Sections ========== */
 
 .profile-section {
-  padding: 32px;
+  padding: 1.25rem;
   margin-bottom: 24px;
   border-radius: 7px;
   background: #fff;
   border: 1px solid #d6ddeb;
+}
+
+@media (min-width: 768px) {
+  .profile-section {
+    padding: 32px;
+  }
 }
 
 .profile-section-title {
@@ -94,11 +127,17 @@
   margin-bottom: 16px;
 }
 
-/* Grid for two inputs in a row */
+/* Grid for two inputs - mobile: 1 col; desktop: 2 cols */
 .profile-fields-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .profile-fields-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* ========== Form Inputs ========== */
@@ -225,13 +264,8 @@
   color: #e97373;
 }
 
-/* ========== Responsive ========== */
-@media (max-width: 768px) {
-  .profile-fields,
-  .profile-fields-grid {
-    grid-template-columns: 1fr;
-  }
-
+/* ========== Responsive (mobile-first overrides) ========== */
+@media (max-width: 767px) {
   .profile-avatar-row {
     flex-direction: column;
     text-align: center;

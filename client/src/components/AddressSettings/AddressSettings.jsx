@@ -23,7 +23,7 @@ export default function AddressSettings({
   }
   return (
     <div className="mb-6">
-      <div className="grid grid-cols-2 gap-4 mb-3">
+      <div className="address-fields-grid">
         <div>
           <label className="address-label">Street</label>
           <input

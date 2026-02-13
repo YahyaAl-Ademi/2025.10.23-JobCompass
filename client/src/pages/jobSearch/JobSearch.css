@@ -1,4 +1,4 @@
-/* --- Global Container --- */
+/* --- Mobile-First Global Container --- */
 .job-search-container {
   flex: 1;
   display: flex;
@@ -9,48 +9,94 @@
   font-family: "Inter", Arial, sans-serif;
   background: #f9f9f9;
   color: #333;
-  padding: 20px;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .job-search-container {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .job-search-container {
+    padding: 20px;
+  }
 }
 
 .mission-section {
   width: 100%;
-  max-width: 800px;
-  margin-bottom: 50px;
+  max-width: min(90vw, 800px);
+  margin-bottom: 2rem;
   text-align: center;
 }
 
-/* Main headline */
+@media (min-width: 768px) {
+  .mission-section {
+    margin-bottom: 50px;
+  }
+}
+
+/* Main headline - mobile first */
 .mission-section h1 {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #111;
   line-height: 1.3;
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
+  word-wrap: break-word;
+}
+
+@media (min-width: 640px) {
+  .mission-section h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .mission-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
 }
 
 .mission-section span {
   color: #4a87e1;
 }
 
-/* Subtitle below headline */
+/* Subtitle - fluid width */
 .mission-section .subtitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #555;
   line-height: 1.6;
-  max-width: 650px;
+  max-width: 100%;
   margin: 0 auto;
   font-style: italic;
   text-align: center;
 }
 
-/* Section title: Search for Jobs */
+@media (min-width: 640px) {
+  .mission-section .subtitle {
+    font-size: 1.1rem;
+    max-width: min(90%, 650px);
+  }
+}
+
+@media (min-width: 768px) {
+  .mission-section .subtitle {
+    font-size: 1.2rem;
+  }
+}
+
+/* Guest notice - full width on mobile */
 .guest-notice {
   margin-top: 0.75rem;
   padding: 0.75rem;
   background-color: #eff6ff;
   border-radius: 3px;
   border: 1px solid #bfdbfe;
-  width: 600px;
+  width: 100%;
+  max-width: min(90vw, 650px);
   color: #374151;
   text-align: left;
   flex-direction: column;
@@ -75,21 +121,7 @@
   font-weight: 500;
 }
 
-/* --- Responsive adjustments (Mobile/Tablet) --- */
 @media (max-width: 768px) {
-  .job-search-container {
-    padding: 40px 15px;
-  }
-
-  .mission-section h1 {
-    font-size: 2rem;
-  }
-
-  .mission-section .subtitle {
-    font-size: 1rem;
-    padding: 0;
-  }
-
   h2 {
     font-size: 1.4rem;
   }
