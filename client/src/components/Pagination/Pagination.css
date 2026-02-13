@@ -92,7 +92,8 @@
 }
 /* Page Input Styling */
 .page-number-input {
-  width: 50px;
+  width: 2.5rem;
+  min-width: 2.5rem;
   height: 38px;
   text-align: center;
   border: 2px solid #4a87e1;

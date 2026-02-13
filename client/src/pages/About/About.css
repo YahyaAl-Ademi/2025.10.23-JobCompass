@@ -74,11 +74,18 @@
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 7px;
-  padding: 1.7rem;
+  padding: 1.25rem;
   transition: box-shadow 0.2s;
   align-items: start;
-  max-width: 380px;
+  width: 100%;
+  max-width: min(95vw, 380px);
   margin: 0 auto 1rem;
+}
+
+@media (min-width: 768px) {
+  .feature-card {
+    padding: 1.7rem;
+  }
 }
 
 .feature-card:hover .icon-wrapper {
@@ -90,8 +97,8 @@
 }
 
 .icon-wrapper {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 3px;
@@ -100,6 +107,13 @@
   justify-content: center;
   margin-bottom: 1rem;
   color: #4a87e1;
+}
+
+@media (min-width: 640px) {
+  .icon-wrapper {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .feature-card p {
@@ -141,19 +155,34 @@
   background-color: white;
   border: 1px solid #e2e6e9;
   border-radius: 7px;
-  padding: 1.7rem;
+  padding: 1.25rem;
   transition: box-shadow 0.2s;
   align-items: start;
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.03),
     0 2px 4px -2px rgba(0, 0, 0, 0.07);
-  max-width: 380px;
+  width: 100%;
+  max-width: min(95vw, 380px);
   margin: 0 auto 1rem;
+}
+
+@media (min-width: 768px) {
+  .contributor-card {
+    padding: 1.7rem;
+  }
 }
 
 .contributor-heading {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@media (min-width: 480px) {
+  .contributor-heading {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
 .contributor-content {
@@ -164,11 +193,18 @@
 }
 
 .contributor-avatar {
-  width: 100px;
-  height: 100px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .contributor-avatar {
+    width: 100px;
+    height: 100px;
+  }
 }
 
 .name-and-role {
@@ -261,13 +297,21 @@
 }
 
 .contact-section {
-  margin: 3rem auto;
+  margin: 2rem auto;
   border: 1px solid #e2e6e9;
   border-radius: 7px;
-  padding: 3rem;
+  padding: 1.5rem;
   text-align: center;
   background: #f9fafb;
-  max-width: 900px;
+  width: 100%;
+  max-width: min(95vw, 900px);
+}
+
+@media (min-width: 768px) {
+  .contact-section {
+    margin: 3rem auto;
+    padding: 3rem;
+  }
 }
 
 .contact-text-primary {

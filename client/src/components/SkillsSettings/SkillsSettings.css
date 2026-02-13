@@ -1,9 +1,15 @@
 .skills-container {
   margin-top: 1rem;
-  padding: 32px;
+  padding: 1.25rem;
   border: 1px solid #dcdfe5;
   border-radius: 7px;
   background: #fff;
+}
+
+@media (min-width: 768px) {
+  .skills-container {
+    padding: 32px;
+  }
 }
 
 .skills-section {
@@ -58,10 +64,18 @@
 
 .skills-controls {
   display: flex;
+  flex-direction: column;
   gap: 10px;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
-  justify-content: space-between;
+}
+
+@media (min-width: 640px) {
+  .skills-controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .skill-input {
