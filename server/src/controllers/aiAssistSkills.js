@@ -2,11 +2,11 @@ import { extractCVskills } from "../services/skillsExtractionService.js";
 import { logError } from "../util/logging.js";
 
 /**
- * Controller for extracting skills from a resume using AI
+ * Controller for assisting with AI-based skill extraction from a resume
  * @param {object} req - Express request object
  * @param {object} res - Express response object
  */
-export default async function extractSkills(req, res) {
+export default async function aiAssistSkills(req, res) {
   try {
     const { resume } = req.body;
 
