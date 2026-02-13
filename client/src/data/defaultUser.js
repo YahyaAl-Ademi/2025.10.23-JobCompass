@@ -45,7 +45,6 @@ export const defaultUser = {
   first_name: "Guest",
   last_name: "User",
   avatar: images.defaultAvatar,
-  email: "guest@example.com",
 
   street: "Keizersgracht",
   house_number: 123,
