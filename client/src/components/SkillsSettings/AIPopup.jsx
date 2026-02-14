@@ -6,7 +6,7 @@ import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { UseUser } from "../../context/UserContext";
 import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill.js";
 
-export default function AIPopup({ onClose, setAISkills }) {
+export default function AIPopup({ onClose, setAiSkills }) {
   const { user } = UseUser();
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
@@ -24,7 +24,6 @@ export default function AIPopup({ onClose, setAISkills }) {
   const { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
     (result) => {
-      console.log("AI response:", result);
       if (
         result.skills &&
         Array.isArray(result.skills) &&
@@ -39,9 +38,7 @@ export default function AIPopup({ onClose, setAISkills }) {
           .filter((s) => !existingSkills.has(s.normalizedSkill))
           .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
 
-        setAISkills(filtered);
-        console.log("Processed AI skills:", result.skills);
-        console.log("Existing user skills:", existingSkills);
+        setAiSkills(filtered);
       } else {
         setAlert({
           type: "error",
