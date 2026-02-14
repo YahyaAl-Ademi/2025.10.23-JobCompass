@@ -254,6 +254,7 @@ export default function SkillsSettings() {
           </button>
         </div>
         {/* AI Suggested Skills List */}
+        {console.log("aiSkills state", aiSkills)}
         {aiSkills.length > 0 && (
           <div className="ai-skills-section">
             <h4 className="ai-skills-heading">AI Suggested Skills</h4>

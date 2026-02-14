@@ -24,6 +24,7 @@ export default function AIPopup({ onClose, setAISkills }) {
   const { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
     (result) => {
+      console.log("AI response:", result);
       if (
         result.skills &&
         Array.isArray(result.skills) &&
@@ -33,15 +34,14 @@ export default function AIPopup({ onClose, setAISkills }) {
           (user?.skills ?? []).map((s) => s.normalizedSkill),
         );
 
-        setAISkills(
-          result.skills
-            .map((skill) => {
-              const normalized = regexEndNormalizeSkill(skill).normalizedSkill;
-              return existingSkills.has(normalized) ? null : skill;
-            })
-            .filter(Boolean)
-            .sort(),
-        );
+        const filtered = result.skills
+          .map((skill) => regexEndNormalizeSkill(skill))
+          .filter((s) => !existingSkills.has(s.normalizedSkill))
+          .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
+
+        setAISkills(filtered);
+        console.log("Processed AI skills:", result.skills);
+        console.log("Existing user skills:", existingSkills);
       } else {
         setAlert({
           type: "error",
