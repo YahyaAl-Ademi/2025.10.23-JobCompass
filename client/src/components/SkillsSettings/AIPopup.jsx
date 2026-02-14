@@ -7,6 +7,7 @@ import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 export default function AIPopup({ onClose, onSkillsReceived }) {
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
+  const [isCV, setIsCV] = useState(false);
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
@@ -98,32 +99,29 @@ export default function AIPopup({ onClose, onSkillsReceived }) {
           <div className="ai-popup-buttons">
             <button
               className="ai-popup-btn primary"
-              onClick={() => handleGetSkills(true)}
+              onClick={() => {
+                setIsCV(true);
+                handleGetSkills(true);
+              }}
               disabled={isLoading || !aiInputText.trim()}
             >
-              {isLoading ? "Extracting..." : "Get CV skills"}
-              {isLoading && (
+              {isLoading && isCV ? "Extracting..." : "Get skills from CV"}
+              {isLoading && isCV && (
                 <img src={gif.spinner} alt="Loading..." className="spinner" />
               )}
             </button>
             <button
               className="ai-popup-btn secondary"
               onClick={() => {
-                // TODO: Implement Get vacancy skills functionality
-                console.log("Get vacancy skills clicked");
+                setIsCV(false);
+                handleGetSkills(false);
               }}
+              disabled={isLoading || !aiInputText.trim()}
             >
-              Get vacancy skills
-            </button>
-            <button
-              className="ai-popup-btn proceed"
-              onClick={() => {
-                // TODO: Implement Proceed functionality
-                console.log("Proceed clicked");
-                onClose();
-              }}
-            >
-              Proceed
+              {isLoading && !isCV ? "Identifying..." : "Get typical job skills"}
+              {isLoading && !isCV && (
+                <img src={gif.spinner} alt="Loading..." className="spinner" />
+              )}
             </button>
           </div>
         </div>
