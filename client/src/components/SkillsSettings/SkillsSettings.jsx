@@ -275,7 +275,7 @@ export default function SkillsSettings() {
       {showAIPopup && (
         <AIPopup
           onClose={() => setShowAIPopup(false)}
-          onSkillsExtracted={console.log}
+          onSkillsReceived={console.log}
         />
       )}
     </div>

@@ -4,7 +4,7 @@ import { gif } from "../../assets/index.js";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 
-export default function AIPopup({ onClose, onSkillsExtracted }) {
+export default function AIPopup({ onClose, onSkillsReceived }) {
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
 
@@ -20,17 +20,18 @@ export default function AIPopup({ onClose, onSkillsExtracted }) {
   let { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
     (result) => {
-      if (onSkillsExtracted) {
+      if (onSkillsReceived) {
         if (
           result.skills &&
           Array.isArray(result.skills) &&
           result.skills.length > 0
         ) {
-          onSkillsExtracted(result.skills);
+          onSkillsReceived(result.skills);
         } else {
           setAlert({
             type: "error",
-            message: "AI failed to extract skills from the provided prompt.",
+            message:
+              "AI failed to generate skills based on the provided prompt.",
           });
           delayedClearAlert();
         }
