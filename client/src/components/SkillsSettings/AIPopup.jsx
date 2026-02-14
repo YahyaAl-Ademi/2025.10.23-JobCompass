@@ -8,11 +8,32 @@ export default function AIPopup({ onClose, onSkillsExtracted }) {
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
 
-  const { isLoading, error, performFetch } = useFetch(
+  function handleClearAlert() {
+    setAlert({ type: "", message: "" });
+  }
+  function delayedClearAlert() {
+    setTimeout(() => {
+      handleClearAlert();
+    }, DELAYED_CLEAR_INTERVAL);
+  }
+
+  let { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
     (result) => {
       if (onSkillsExtracted) {
-        onSkillsExtracted(result.skills);
+        if (
+          result.skills &&
+          Array.isArray(result.skills) &&
+          result.skills.length > 0
+        ) {
+          onSkillsExtracted(result.skills);
+        } else {
+          setAlert({
+            type: "error",
+            message: "AI failed to extract skills from the provided prompt.",
+          });
+          delayedClearAlert();
+        }
       }
     },
   );
@@ -23,15 +44,6 @@ export default function AIPopup({ onClose, onSkillsExtracted }) {
       message: error?.message || "Skills extraction failed.",
     });
     delayedClearAlert();
-  }
-
-  function handleClearAlert() {
-    setAlert({ type: "", message: "" });
-  }
-  function delayedClearAlert() {
-    setTimeout(() => {
-      handleClearAlert();
-    }, DELAYED_CLEAR_INTERVAL);
   }
 
   async function handleGetSkills() {
