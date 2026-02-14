@@ -41,7 +41,7 @@ export default function AIPopup({ onClose, onSkillsExtracted }) {
   if (error) {
     setAlert({
       type: "error",
-      message: error?.message || "Skills extraction failed.",
+      message: error?.message || "AI service returned an error.",
     });
     delayedClearAlert();
   }
