@@ -5,18 +5,18 @@ import { zodTextFormat } from "../util/zodTextFormat.js";
 
 /**
  * Extracts a list of skills from the user's resume using OpenAI
- * @param {string} type - The type of skills to extract (e.g., "technical", "soft")
+ * @param {boolean} isCV - Whether the user is providing a CV or a job name
  * @param {string} userPrompt - The user's resume text
  * @returns {Promise<string[]>} Array of extracted skills
  * @throws {Error} If skill extraction fails
  */
-export default async function aiGenerateSkills(type, userPrompt) {
+export default async function aiGenerateSkills(isCV, userPrompt) {
   const response = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: [
       {
         role: "developer",
-        content: getDeveloperPrompt(type),
+        content: getDeveloperPrompt(isCV),
       },
       {
         role: "user",

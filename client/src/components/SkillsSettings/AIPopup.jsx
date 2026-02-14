@@ -47,11 +47,11 @@ export default function AIPopup({ onClose, onSkillsReceived }) {
     delayedClearAlert();
   }
 
-  async function handleGetSkills(type) {
+  async function handleGetSkills(isCV) {
     handleClearAlert();
     performFetch({
       method: "POST",
-      body: JSON.stringify({ type, prompt: aiInputText }),
+      body: JSON.stringify({ isCV, prompt: aiInputText }),
     });
   }
 
@@ -98,7 +98,7 @@ export default function AIPopup({ onClose, onSkillsReceived }) {
           <div className="ai-popup-buttons">
             <button
               className="ai-popup-btn primary"
-              onClick={() => handleGetSkills("CV")}
+              onClick={() => handleGetSkills(true)}
               disabled={isLoading || !aiInputText.trim()}
             >
               {isLoading ? "Extracting..." : "Get CV skills"}

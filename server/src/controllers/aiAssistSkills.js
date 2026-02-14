@@ -11,21 +11,20 @@ export default async function aiAssistSkills(req, res) {
   let responseData = { success: true, skills: [], msg: "" };
 
   try {
-    const { type, prompt } = req.body;
+    const { isCV, prompt } = req.body;
     if (
-      !type ||
       !prompt ||
-      typeof type !== "string" ||
+      typeof isCV !== "boolean" ||
       typeof prompt !== "string" ||
       !prompt.trim()
     ) {
       responseStatus = 400;
       responseData = {
         success: false,
-        msg: "You need to provide 'prompt' (non-empty string) and 'type' (non-empty string) in the request body.",
+        msg: "You need to provide 'prompt' (non-empty string) and 'isCV' (boolean) in the request body.",
       };
     } else {
-      const skills = await aiGenerateSkills(type, prompt);
+      const skills = await aiGenerateSkills(isCV, prompt);
       responseData = { ...responseData, skills };
     }
   } catch (error) {
