@@ -1,8 +1,8 @@
-import { extractCVskills } from "../services/skillsExtractionService.js";
+import aiGenerateSkills from "../services/aiGenerateSkills.js";
 import { logError } from "../util/logging.js";
 
 /**
- * Controller for assisting with AI-based skill extraction from a resume
+ * Controller for assisting with AI-based skill generation based on user input
  * @param {object} req - Express request object
  * @param {object} res - Express response object
  */
@@ -12,8 +12,6 @@ export default async function aiAssistSkills(req, res) {
 
   try {
     const { prompt } = req.body;
-
-    // Validate input
     if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
       responseStatus = 400;
       responseData = {
@@ -21,8 +19,7 @@ export default async function aiAssistSkills(req, res) {
         msg: "You need to provide 'prompt' (non-empty string) in the request body.",
       };
     } else {
-      // Extract skills using OpenAI
-      const skills = await extractCVskills(prompt);
+      const skills = await aiGenerateSkills(prompt);
       responseData = { ...responseData, skills };
     }
   } catch (error) {

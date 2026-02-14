@@ -9,7 +9,7 @@ import { zodTextFormat } from "../util/zodTextFormat.js";
  * @returns {Promise<string[]>} Array of extracted skills
  * @throws {Error} If skill extraction fails
  */
-export async function extractCVskills(userPrompt) {
+export default async function aiGenerateSkills(userPrompt) {
   const response = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: [
