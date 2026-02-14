@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import { gif } from "../../assets/index.js";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
+import { UseUser } from "../../context/UserContext";
+import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill.js";
 
-export default function AIPopup({ onClose, onSkillsReceived }) {
+export default function AIPopup({ onClose, setAISkills }) {
+  const { user } = UseUser();
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [isCV, setIsCV] = useState(false);
@@ -21,32 +24,43 @@ export default function AIPopup({ onClose, onSkillsReceived }) {
   const { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
     (result) => {
-      if (onSkillsReceived) {
-        if (
-          result.skills &&
-          Array.isArray(result.skills) &&
-          result.skills.length > 0
-        ) {
-          onSkillsReceived(result.skills);
-        } else {
-          setAlert({
-            type: "error",
-            message:
-              "AI failed to generate skills based on the provided prompt.",
-          });
-          delayedClearAlert();
-        }
+      if (
+        result.skills &&
+        Array.isArray(result.skills) &&
+        result.skills.length > 0
+      ) {
+        const existingSkills = new Set(
+          (user?.skills ?? []).map((s) => s.normalizedSkill),
+        );
+
+        setAISkills(
+          result.skills
+            .map((skill) => {
+              const normalized = regexEndNormalizeSkill(skill).normalizedSkill;
+              return existingSkills.has(normalized) ? null : skill;
+            })
+            .filter(Boolean)
+            .sort(),
+        );
+      } else {
+        setAlert({
+          type: "error",
+          message: "AI failed to return any skills. Please try again.",
+        });
+        delayedClearAlert();
       }
     },
   );
 
-  if (error) {
-    setAlert({
-      type: "error",
-      message: error?.message || "AI service returned an error.",
-    });
-    delayedClearAlert();
-  }
+  useEffect(() => {
+    if (error) {
+      setAlert({
+        type: "error",
+        message: error?.message || "AI service returned an error.",
+      });
+      delayedClearAlert();
+    }
+  }, [error]);
 
   async function handleGetSkills(isCV) {
     handleClearAlert();

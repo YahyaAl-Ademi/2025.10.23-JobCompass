@@ -29,6 +29,7 @@ export default function SkillsSettings() {
   const [showSavePopup, setShowSavePopup] = useState(false);
   const [showAIPopup, setShowAIPopup] = useState(false);
   const handleSkillsResultsRef = useRef(() => {});
+  const [aiSkills, setAiSkills] = useState([]);
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
@@ -252,6 +253,51 @@ export default function SkillsSettings() {
             AI assistance
           </button>
         </div>
+        {/* AI Suggested Skills List */}
+        {aiSkills.length > 0 && (
+          <div className="ai-skills-section">
+            <h4 className="ai-skills-heading">AI Suggested Skills</h4>
+            <div className="skills-list">
+              {aiSkills.map((s, idx) => (
+                <div key={`ai-${s.skill}-${idx}`} className="skill-item">
+                  <span className="skill-name">{s.skill}</span>
+                  <button
+                    className="skill-add-btn"
+                    onClick={() => {
+                      skillInputRef.current.value = s.skill;
+                      addSkill();
+                    }}
+                    aria-label={`Add ${s.skill}`}
+                    type="button"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <img
+                        src={gif.spinner}
+                        alt="Loading..."
+                        className="spinner"
+                      />
+                    ) : (
+                      <svg
+                        className="skill-add-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {showTipPopup && (
@@ -275,7 +321,7 @@ export default function SkillsSettings() {
       {showAIPopup && (
         <AIPopup
           onClose={() => setShowAIPopup(false)}
-          onSkillsReceived={console.log}
+          setAiSkills={setAiSkills}
         />
       )}
     </div>
