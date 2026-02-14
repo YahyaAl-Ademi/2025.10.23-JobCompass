@@ -29,12 +29,6 @@ export async function extractCVskills(userPrompt) {
     max_output_tokens: 5000,
   });
 
-  const outputText = response.output_text;
-
-  if (!outputText) {
-    throw new Error("AI was unable to generate the skills");
-  }
-
-  const parsedResult = JSON.parse(outputText);
+  const parsedResult = JSON.parse(response.output_text);
   return parsedResult.skills || [];
 }
