@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useFetch from "../../hooks/useFetch";
+import { gif } from "../../assets/index.js";
+import AlertMessage from "../AlertMessage/AlertMessage";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 
 export default function AIPopup({ onClose, onSkillsExtracted }) {
   const [aiInputText, setAiInputText] = useState("");
+  const [alert, setAlert] = useState({ type: "", message: "" });
 
   const { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
@@ -13,18 +17,30 @@ export default function AIPopup({ onClose, onSkillsExtracted }) {
     },
   );
 
-  useEffect(() => {
-    if (error) {
-      console.error("Skills extraction error:", error);
-    }
-  }, [error]);
+  if (error) {
+    setAlert({
+      type: "error",
+      message: error?.message || "Skills extraction failed.",
+    });
+    delayedClearAlert();
+  }
 
-  const handleGetSkills = () => {
+  function handleClearAlert() {
+    setAlert({ type: "", message: "" });
+  }
+  function delayedClearAlert() {
+    setTimeout(() => {
+      handleClearAlert();
+    }, DELAYED_CLEAR_INTERVAL);
+  }
+
+  async function handleGetSkills() {
+    handleClearAlert();
     performFetch({
       method: "POST",
       body: JSON.stringify({ prompt: aiInputText }),
     });
-  };
+  }
 
   return (
     <div className="ai-popup-overlay">
@@ -63,6 +79,9 @@ export default function AIPopup({ onClose, onSkillsExtracted }) {
             placeholder="Enter your CV text or job title here..."
             rows="8"
           />
+          {alert.message && (
+            <AlertMessage type={alert.type} message={alert.message} />
+          )}
           <div className="ai-popup-buttons">
             <button
               className="ai-popup-btn primary"
@@ -70,6 +89,9 @@ export default function AIPopup({ onClose, onSkillsExtracted }) {
               disabled={isLoading || !aiInputText.trim()}
             >
               {isLoading ? "Extracting..." : "Get CV skills"}
+              {isLoading && (
+                <img src={gif.spinner} alt="Loading..." className="spinner" />
+              )}
             </button>
             <button
               className="ai-popup-btn secondary"
