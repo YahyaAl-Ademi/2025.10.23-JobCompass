@@ -7,30 +7,32 @@ import { logError } from "../util/logging.js";
  * @param {object} res - Express response object
  */
 export default async function aiAssistSkills(req, res) {
+  let responseStatus = 200;
+  let responseData = { success: true, skills: [], msg: "" };
+
   try {
     const { prompt } = req.body;
 
     // Validate input
     if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
-      return res.status(400).json({
+      responseStatus = 400;
+      responseData = {
         success: false,
         msg: "You need to provide 'prompt' (non-empty string) in the request body.",
-      });
+      };
+    } else {
+      // Extract skills using OpenAI
+      const skills = await extractCVskills(prompt);
+      responseData = { ...responseData, skills };
     }
-
-    // Extract skills using OpenAI
-    const skills = await extractCVskills(prompt);
-
-    return res.status(200).json({
-      success: true,
-      skills,
-    });
   } catch (error) {
     logError(error);
-
-    return res.status(500).json({
+    responseStatus = 500;
+    responseData = {
       success: false,
       msg: "An error occurred while generating skills based on the provided prompt. Please try again later.",
-    });
+    };
   }
+
+  res.status(responseStatus).json(responseData);
 }

@@ -1,8 +1,20 @@
+/**
+ * Validates skill input text for format, content, and duplication.
+ *
+ * @param {Object} options - The validation options object.
+ * @param {string} options.text - The skill text to validate.
+ * @param {Array<{normalizedSkill: string}>} [options.skills=[]] - Array of existing skills with normalized versions.
+ *
+ * @returns {Object|null} Validation result object with type and message, or null if valid.
+ * @returns {string} returns.type - The validation result type: "error" or "warning".
+ * @returns {string} returns.message - The validation message describing the issue.
+ */
 export default function validateSkillInput({ text, skills = [] }) {
-  if (text === "") {
+  if (text.length < 2) {
     return {
       type: "error",
-      message: "You entered an empty string. Please enter a skill name",
+      message:
+        "The skill name is too short. Please enter a skill name with at least 2 characters.",
     };
   }
 

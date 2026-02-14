@@ -32,7 +32,7 @@ export async function extractCVskills(userPrompt) {
   const outputText = response.output_text;
 
   if (!outputText) {
-    throw new Error("We were unable to generate the skills");
+    throw new Error("AI was unable to generate the skills");
   }
 
   const parsedResult = JSON.parse(outputText);
