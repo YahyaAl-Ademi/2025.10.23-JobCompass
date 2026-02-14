@@ -21,27 +21,16 @@ export default async function aiAssistSkills(req, res) {
     // Extract skills using OpenAI
     const skills = await extractCVskills(prompt);
 
-    // Return the extracted skills
     return res.status(200).json({
       success: true,
       skills,
-      msg: "Skills extracted successfully",
     });
   } catch (error) {
     logError(error);
 
-    // Handle specific error cases
-    if (error.message === "We were unable to generate the skills") {
-      return res.status(500).json({
-        success: false,
-        msg: error.message,
-      });
-    }
-
-    // Generic error response
     return res.status(500).json({
       success: false,
-      msg: "An error occurred while extracting skills from the resume",
+      msg: "An error occurred while generating skills based on the provided prompt. Please try again later.",
     });
   }
 }
