@@ -18,7 +18,7 @@ export default function AIPopup({ onClose, onSkillsReceived }) {
     }, DELAYED_CLEAR_INTERVAL);
   }
 
-  let { isLoading, error, performFetch } = useFetch(
+  const { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
     (result) => {
       if (onSkillsReceived) {
