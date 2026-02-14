@@ -11,15 +11,21 @@ export default async function aiAssistSkills(req, res) {
   let responseData = { success: true, skills: [], msg: "" };
 
   try {
-    const { prompt } = req.body;
-    if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
+    const { type, prompt } = req.body;
+    if (
+      !type ||
+      !prompt ||
+      typeof type !== "string" ||
+      typeof prompt !== "string" ||
+      !prompt.trim()
+    ) {
       responseStatus = 400;
       responseData = {
         success: false,
-        msg: "You need to provide 'prompt' (non-empty string) in the request body.",
+        msg: "You need to provide 'prompt' (non-empty string) and 'type' (non-empty string) in the request body.",
       };
     } else {
-      const skills = await aiGenerateSkills(prompt);
+      const skills = await aiGenerateSkills(type, prompt);
       responseData = { ...responseData, skills };
     }
   } catch (error) {

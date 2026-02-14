@@ -1,21 +1,22 @@
 import openai from "../config/openaiClient.js";
-import { skillsGenerationPrompt } from "../config/skillsGenerationPrompt.js";
+import getDeveloperPrompt from "../config/getDeveloperPrompt.js";
 import { generatedSkillsSchema } from "../config/generatedSkillsSchema.js";
 import { zodTextFormat } from "../util/zodTextFormat.js";
 
 /**
  * Extracts a list of skills from the user's resume using OpenAI
+ * @param {string} type - The type of skills to extract (e.g., "technical", "soft")
  * @param {string} userPrompt - The user's resume text
  * @returns {Promise<string[]>} Array of extracted skills
  * @throws {Error} If skill extraction fails
  */
-export default async function aiGenerateSkills(userPrompt) {
+export default async function aiGenerateSkills(type, userPrompt) {
   const response = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: [
       {
         role: "developer",
-        content: skillsGenerationPrompt,
+        content: getDeveloperPrompt(type),
       },
       {
         role: "user",
