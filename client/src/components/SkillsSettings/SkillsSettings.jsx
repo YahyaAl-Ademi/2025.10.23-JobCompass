@@ -262,7 +262,7 @@ export default function SkillsSettings() {
                 <div key={`ai-${s.skill}-${idx}`} className="skill-item">
                   <span className="skill-name">{s.skill}</span>
                   <button
-                    className="skill-add-btn"
+                    className="skill-remove-btn"
                     onClick={() => {
                       skillInputRef.current.value = s.skill;
                       addSkill();
@@ -279,7 +279,7 @@ export default function SkillsSettings() {
                       />
                     ) : (
                       <svg
-                        className="skill-add-icon"
+                        className="skill-remove-icon"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -288,7 +288,7 @@ export default function SkillsSettings() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
-                          d="M12 4v16m8-8H4"
+                          d="M12 5v14M5 12h14"
                         />
                       </svg>
                     )}

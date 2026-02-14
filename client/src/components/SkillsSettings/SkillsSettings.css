@@ -18,7 +18,25 @@
   gap: 10px;
 }
 
+.ai-skills-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .skills-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #374151;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.ai-skills-heading {
   display: inline-flex;
   align-items: center;
   gap: 6px;
