@@ -1,4 +1,4 @@
-export const skillsExtractionPrompt = `
+export const skillsGenerationPrompt = `
 You are an assistant who analyzes the user's prompt (their resume) and extracts professional skills from it.
 
 — Your output should always be an array of text strings (skills).

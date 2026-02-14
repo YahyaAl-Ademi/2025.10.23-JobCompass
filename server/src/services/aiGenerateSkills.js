@@ -1,5 +1,5 @@
 import openai from "../config/openaiClient.js";
-import { skillsExtractionPrompt } from "../config/skillsExtractionPrompt.js";
+import { skillsGenerationPrompt } from "../config/skillsGenerationPrompt.js";
 import { generatedSkillsSchema } from "../config/generatedSkillsSchema.js";
 import { zodTextFormat } from "../util/zodTextFormat.js";
 
@@ -15,7 +15,7 @@ export default async function aiGenerateSkills(userPrompt) {
     input: [
       {
         role: "developer",
-        content: skillsExtractionPrompt,
+        content: skillsGenerationPrompt,
       },
       {
         role: "user",
