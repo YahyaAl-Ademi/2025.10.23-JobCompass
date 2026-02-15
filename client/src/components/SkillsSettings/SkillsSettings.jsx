@@ -200,16 +200,6 @@ export default function SkillsSettings() {
             AI assistance
           </button>
 
-          {skills.length > maxVisible && (
-            <button
-              className="show-all-btn"
-              onClick={() => setShowAll(!showAll)}
-              type="button"
-            >
-              {showAll ? "Show less" : `+${skills.length - maxVisible} more`}
-            </button>
-          )}
-
           <button
             id="removeAllSkillsBtn"
             onClick={removeAllSkills}
@@ -224,37 +214,52 @@ export default function SkillsSettings() {
         </div>
 
         {/* Skills List */}
-        <div id="skillsList" className="skills-list">
-          {visibleSkills.map((s, idx) => (
-            <div key={`${s.skill}-${idx}`} className="skill-item">
-              <span className="skill-name">{s.skill}</span>
-              <button
-                className="skill-remove-btn"
-                onClick={() => removeSkill(s)}
-                aria-label={`Remove ${s.skill}`}
-                type="button"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <img src={gif.spinner} alt="Loading..." className="spinner" />
-                ) : (
-                  <svg
-                    className="skill-remove-icon"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
+        <div className="skills-list-row">
+          <div id="skillsList" className="skills-list">
+            {visibleSkills.map((s, idx) => (
+              <div key={`${s.skill}-${idx}`} className="skill-item">
+                <span className="skill-name">{s.skill}</span>
+                <button
+                  className="skill-remove-btn"
+                  onClick={() => removeSkill(s)}
+                  aria-label={`Remove ${s.skill}`}
+                  type="button"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <img
+                      src={gif.spinner}
+                      alt="Loading..."
+                      className="spinner"
                     />
-                  </svg>
-                )}
-              </button>
-            </div>
-          ))}
+                  ) : (
+                    <svg
+                      className="skill-remove-icon"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+          {skills.length > maxVisible && (
+            <button
+              className="show-all-btn"
+              onClick={() => setShowAll(!showAll)}
+              type="button"
+            >
+              {showAll ? "Show less" : `+${skills.length - maxVisible} more`}
+            </button>
+          )}
         </div>
         {/* AI Suggested Skills List */}
         {showAll && aiSkills.length > 0 && (
