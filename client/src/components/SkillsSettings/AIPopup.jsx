@@ -108,7 +108,7 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
         </div>
         <div className="ai-popup-content">
           <p className="ai-popup-cta">
-            Paste your CV here, or type a job title of your preferred vacancy
+            Paste your CV here or enter the title of your aimed position.
           </p>
           <textarea
             className="ai-popup-textarea"

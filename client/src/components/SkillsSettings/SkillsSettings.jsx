@@ -282,6 +282,10 @@ export default function SkillsSettings() {
           </button>
         </div>
 
+        {alert.message && (
+          <AlertMessage type={alert.type} message={alert.message} />
+        )}
+
         {/* Skills List */}
         <div className="skills-list-row">
           <div id="skillsList" className="skills-list">
@@ -419,9 +423,6 @@ export default function SkillsSettings() {
         <SkillsTipPopup onClose={() => setShowTipPopup(false)} />
       )}
 
-      {alert.message && (
-        <AlertMessage type={alert.type} message={alert.message} />
-      )}
       {showSavePopup && (
         <PopupForSave
           title="You are not logged in"
