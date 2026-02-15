@@ -1,5 +1,4 @@
 import "./Footer.css";
-import { Link } from "react-router-dom";
 
 export default function Footer() {
   function handleBackToTop() {
@@ -9,13 +8,9 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-inner content-container">
         <div className="logo">
-          <Link to="/" className="logo-link">
-            <span className="logo-text-footer">Job Compass</span>
-          </Link>
-        </div>
-
-        <div className="copyright">
-          <p>© {new Date().getFullYear()} Job Compass</p>
+          <div className="copyright">
+            <p>© {new Date().getFullYear()} Job Compass</p>
+          </div>
         </div>
 
         <div className="support-footer">
