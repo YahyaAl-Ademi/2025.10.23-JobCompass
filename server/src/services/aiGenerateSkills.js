@@ -15,7 +15,7 @@ export default async function aiGenerateSkills(isCV, userPrompt) {
     model: "gpt-4.1-mini",
     input: [
       {
-        role: "developer",
+        role: "system",
         content: getDeveloperPrompt(isCV),
       },
       {
