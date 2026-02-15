@@ -320,7 +320,7 @@ export default function SkillsSettings() {
               </div>
             ))}
           </div>
-          {(skills.length > 0 || aiSkills.length > 0) && (
+          {(skills.length > maxVisible || aiSkills.length > 0) && (
             <button
               className="show-all-btn"
               onClick={() => {
