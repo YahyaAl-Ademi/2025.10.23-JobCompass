@@ -85,11 +85,11 @@ export default function SkillsSettings() {
 
   // -------------------- ADD SKILL --------------------
   async function addSkill(skill) {
-    const newAiSkills = [...aiSkills];
     if (!user?.id) {
       setShowSavePopup(true);
       return;
     }
+    let newAiSkills = [...aiSkills];
     const newSkill = cleanUpText(skill || "");
     const validationError = validateSkillInput({ text: newSkill, skills });
     if (validationError) {
@@ -105,9 +105,10 @@ export default function SkillsSettings() {
         String(b?.normalizedSkill ?? ""),
       ),
     );
-    newAiSkills.filter(
+    newAiSkills = newAiSkills.filter(
       (aiSkill) => aiSkill.normalizedSkill !== newSkillObj?.normalizedSkill,
     );
+    setAiSkills(newAiSkills);
 
     prepareSkillsUpdate(
       combined,
@@ -127,7 +128,7 @@ export default function SkillsSettings() {
     const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
     const combined = [...prevSkills];
     const failedSkills = [];
-    const newAiSkills = [...aiSkills];
+    let newAiSkills = [...aiSkills];
 
     for (let i = 0; i < aiSkills.length; i++) {
       const newSkill = aiSkills[i]?.skill;
@@ -140,7 +141,7 @@ export default function SkillsSettings() {
         failedSkills.push(newSkill);
       } else {
         combined.push(regexEndNormalizeSkill(newSkill));
-        newAiSkills.filter(
+        newAiSkills = newAiSkills.filter(
           (aiSkill) => aiSkill.normalizedSkill !== aiSkills[i]?.normalizedSkill,
         );
       }
