@@ -136,18 +136,19 @@ export default function SkillsSettings() {
   }
   // -------------------- REMOVE ALL SKILLS --------------------
   async function removeAllSkills() {
+    setAiSkills([]);
     if (!user?.id) {
       setShowSavePopup(true);
-      return;
+    } else {
+      prepareSkillsUpdate(
+        [],
+        "All skills have been removed from the user's profile!",
+      );
+      await changeSkillsHelper([]);
+      delayedClearAlert();
     }
-
-    prepareSkillsUpdate(
-      [],
-      "All skills have been removed from the user's profile!",
-    );
-    await changeSkillsHelper([]);
-    delayedClearAlert();
   }
+
   const visibleSkills = showAll ? skills : skills.slice(0, maxVisible);
 
   return (
@@ -256,7 +257,7 @@ export default function SkillsSettings() {
           ))}
         </div>
         {/* AI Suggested Skills List */}
-        {aiSkills.length > 0 && (
+        {showAll && aiSkills.length > 0 && (
           <div className="ai-skills-section">
             <h4 className="ai-skills-heading">AI Suggested Skills</h4>
             <div className="skills-list">
