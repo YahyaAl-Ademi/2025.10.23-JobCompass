@@ -7,6 +7,7 @@ import { logError } from "../util/logging.js";
  * @param {object} res - Express response object
  */
 export default async function aiAssistSkills(req, res) {
+  const maxPromptLength = 10000;
   let responseStatus = 200;
   let responseData = { success: true, skills: [], msg: "" };
 
@@ -16,12 +17,13 @@ export default async function aiAssistSkills(req, res) {
       !prompt ||
       typeof isCV !== "boolean" ||
       typeof prompt !== "string" ||
-      !prompt.trim()
+      !prompt.trim() ||
+      prompt.length > maxPromptLength
     ) {
       responseStatus = 400;
       responseData = {
         success: false,
-        msg: "You need to provide 'prompt' (non-empty string) and 'isCV' (boolean) in the request body.",
+        msg: `You need to provide 'prompt' (non-empty string up to ${maxPromptLength} characters) and 'isCV' (boolean) in the request body.`,
       };
     } else {
       const skills = await aiGenerateSkills(isCV, prompt);
