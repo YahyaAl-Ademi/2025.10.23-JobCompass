@@ -320,23 +320,18 @@ export default function SkillsSettings() {
               </div>
             ))}
           </div>
-          {skills.length > maxVisible && (
+          {(skills.length > 0 || aiSkills.length > 0) && (
             <button
               className="show-all-btn"
-              onClick={() => setShowAll(!showAll)}
+              onClick={() => {
+                if (showAll) {
+                  setAiSkills([]);
+                }
+                setShowAll(!showAll);
+              }}
               type="button"
             >
-              {showAll ? "Show less" : `+${skills.length - maxVisible} more`}
-            </button>
-          )}
-          {aiSkills.length > 0 && (
-            <button
-              className="add-all-ai-btn"
-              onClick={addAllAIskills}
-              type="button"
-              disabled={isLoading}
-            >
-              Add all AI suggestions
+              {showAll ? "Collapse panel" : "Expand panel"}
             </button>
           )}
         </div>
@@ -382,6 +377,16 @@ export default function SkillsSettings() {
                   </button>
                 </div>
               ))}
+              {aiSkills.length > 0 && (
+                <button
+                  className="add-all-ai-btn"
+                  onClick={addAllAIskills}
+                  type="button"
+                  disabled={isLoading}
+                >
+                  Add all AI suggestions
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -407,6 +412,7 @@ export default function SkillsSettings() {
       )}
       {showAIPopup && (
         <AIPopup
+          setShowAll={setShowAll}
           onClose={() => setShowAIPopup(false)}
           setAiSkills={setAiSkills}
         />

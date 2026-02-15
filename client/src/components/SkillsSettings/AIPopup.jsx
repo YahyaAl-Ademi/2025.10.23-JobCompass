@@ -7,7 +7,7 @@ import { UseUser } from "../../context/UserContext";
 import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill.js";
 import cleanUpText from "../../util/cleanUpText.js";
 
-export default function AIPopup({ onClose, setAiSkills }) {
+export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
   const { user } = UseUser();
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
@@ -39,7 +39,17 @@ export default function AIPopup({ onClose, setAiSkills }) {
           .filter((s) => !existingSkills.has(s.normalizedSkill))
           .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
 
-        setAiSkills(filtered);
+        if (filtered.length === 0) {
+          setAlert({
+            type: "warning",
+            message: "AI returned skills, but they are already in your list.",
+          });
+          delayedClearAlert();
+          setAiSkills([]);
+        } else {
+          setAiSkills(filtered);
+        }
+        setShowAll(true);
         onClose();
       } else {
         setAlert({
