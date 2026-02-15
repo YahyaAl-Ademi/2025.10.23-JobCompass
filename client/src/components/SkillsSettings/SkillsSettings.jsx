@@ -109,6 +109,67 @@ export default function SkillsSettings() {
     delayedClearAlert();
   }
 
+  // -------------------- ADD ALL AI SKILLS --------------------
+  async function addAllAIskills() {
+    if (!user?.id) {
+      setShowSavePopup(true);
+      return;
+    }
+
+    const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
+    const combined = [...prevSkills];
+    const failedSkills = [];
+
+    for (let i = 0; i < aiSkills.length; i++) {
+      const rawSkill = aiSkills[i]?.skill;
+      const newSkill = cleanUpText(rawSkill || "");
+      const validationError = validateSkillInput({
+        text: newSkill,
+        skills: combined,
+      });
+
+      if (validationError) {
+        failedSkills.push(newSkill);
+        continue;
+      }
+
+      combined.push(regexEndNormalizeSkill(newSkill));
+    }
+
+    combined.sort((a, b) =>
+      String(a?.normalizedSkill ?? "").localeCompare(
+        String(b?.normalizedSkill ?? ""),
+      ),
+    );
+
+    if (combined.length !== prevSkills.length) {
+      handleSkillsResultsRef.current = async () => {
+        dispatch({
+          type: "SET_SKILLS",
+          payload: combined,
+        });
+      };
+      await changeSkillsHelper(combined);
+    }
+
+    if (failedSkills.length > 0) {
+      const failedList = failedSkills
+        .map((skill, index) => `${index + 1}) ${skill || "(empty)"}`)
+        .join(" ");
+      setAlert({
+        type: "warning",
+        message: `Some skills could not be added: ${failedList}`,
+      });
+    } else {
+      setAlert({
+        type: "success",
+        message: "All AI suggestions have been added to the user's profile!",
+      });
+    }
+
+    delayedClearAlert();
+  }
+
   async function handleInputSkill() {
     const skillInput = skillInputRef.current;
     if (skillInput) {
@@ -258,6 +319,16 @@ export default function SkillsSettings() {
               type="button"
             >
               {showAll ? "Show less" : `+${skills.length - maxVisible} more`}
+            </button>
+          )}
+          {aiSkills.length > 0 && (
+            <button
+              className="add-all-ai-btn"
+              onClick={addAllAIskills}
+              type="button"
+              disabled={isLoading}
+            >
+              Add all AI suggestions
             </button>
           )}
         </div>
