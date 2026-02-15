@@ -332,6 +332,30 @@ export default function SkillsSettings() {
               type="button"
             >
               {showAll ? "Collapse panel" : "Expand panel"}
+              {"   "}
+              {showAll ? (
+                <svg
+                  className="show-all-icon"
+                  viewBox="0 0 16 16"
+                  width="14"
+                  height="14"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M3 10l5-5 5 5H3z" />
+                </svg>
+              ) : (
+                <svg
+                  className="show-all-icon"
+                  viewBox="0 0 16 16"
+                  width="14"
+                  height="14"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M3 6l5 5 5-5H3z" />
+                </svg>
+              )}
             </button>
           )}
         </div>

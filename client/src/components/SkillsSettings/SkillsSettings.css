@@ -235,6 +235,12 @@
   height: 35px;
 }
 
+.show-all-icon {
+  margin-left: 6px;
+  display: inline-block;
+  fill: currentColor;
+}
+
 .add-all-ai-btn {
   display: inline-flex;
   align-items: center;
