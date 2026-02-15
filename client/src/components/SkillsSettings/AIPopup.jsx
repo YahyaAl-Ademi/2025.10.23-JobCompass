@@ -5,6 +5,7 @@ import AlertMessage from "../AlertMessage/AlertMessage";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { UseUser } from "../../context/UserContext";
 import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill.js";
+import cleanUpText from "../../util/cleanUpText.js";
 
 export default function AIPopup({ onClose, setAiSkills }) {
   const { user } = UseUser();
@@ -34,7 +35,7 @@ export default function AIPopup({ onClose, setAiSkills }) {
         );
 
         const filtered = result.skills
-          .map((skill) => regexEndNormalizeSkill(skill))
+          .map((skill) => regexEndNormalizeSkill(cleanUpText(skill)))
           .filter((s) => !existingSkills.has(s.normalizedSkill))
           .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
 

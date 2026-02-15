@@ -85,6 +85,7 @@ export default function SkillsSettings() {
 
   // -------------------- ADD SKILL --------------------
   async function addSkill(skill) {
+    const newAiSkills = [...aiSkills];
     if (!user?.id) {
       setShowSavePopup(true);
       return;
@@ -98,11 +99,14 @@ export default function SkillsSettings() {
     }
 
     const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const combined = [...prevSkills, regexEndNormalizeSkill(newSkill)].sort(
-      (a, b) =>
-        String(a?.normalizedSkill ?? "").localeCompare(
-          String(b?.normalizedSkill ?? ""),
-        ),
+    const newSkillObj = regexEndNormalizeSkill(newSkill);
+    const combined = [...prevSkills, newSkillObj].sort((a, b) =>
+      String(a?.normalizedSkill ?? "").localeCompare(
+        String(b?.normalizedSkill ?? ""),
+      ),
+    );
+    newAiSkills.filter(
+      (aiSkill) => aiSkill.normalizedSkill !== newSkillObj?.normalizedSkill,
     );
 
     prepareSkillsUpdate(
@@ -123,10 +127,10 @@ export default function SkillsSettings() {
     const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
     const combined = [...prevSkills];
     const failedSkills = [];
+    const newAiSkills = [...aiSkills];
 
     for (let i = 0; i < aiSkills.length; i++) {
-      const rawSkill = aiSkills[i]?.skill;
-      const newSkill = cleanUpText(rawSkill || "");
+      const newSkill = aiSkills[i]?.skill;
       const validationError = validateSkillInput({
         text: newSkill,
         skills: combined,
@@ -136,8 +140,13 @@ export default function SkillsSettings() {
         failedSkills.push(newSkill);
       } else {
         combined.push(regexEndNormalizeSkill(newSkill));
+        newAiSkills.filter(
+          (aiSkill) => aiSkill.normalizedSkill !== aiSkills[i]?.normalizedSkill,
+        );
       }
     }
+
+    setAiSkills(newAiSkills);
 
     combined.sort((a, b) =>
       String(a?.normalizedSkill ?? "").localeCompare(
