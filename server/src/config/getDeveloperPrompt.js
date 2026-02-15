@@ -3,7 +3,7 @@ export default function getDeveloperPrompt(isCV) {
     You are an assistant who analyzes the user's prompt (their resume) and extracts professional skills from it.
     `;
   const promptCore = `
-    — Your output should always be an array of text strings (skills).
+    — Your output should always be a JSON object with a single property "skills", which is an array of text strings (skills).
     — The schema defines the required structure.
     — Do not include explanations or comments, only structured data.
     — Skills must consist of at least 2 characters.
