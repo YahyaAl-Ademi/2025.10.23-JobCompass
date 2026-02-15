@@ -56,14 +56,18 @@ export default function SkillsSettings() {
     }
   }, [fetchError]);
 
-  function prepareSkillsUpdate(nextSkills, successMessage) {
+  function prepareSkillsUpdate(
+    nextSkills,
+    successMessage,
+    alertType = "success",
+  ) {
     handleSkillsResultsRef.current = async () => {
       dispatch({
         type: "SET_SKILLS",
         payload: nextSkills,
       });
       setAlert({
-        type: "success",
+        type: alertType,
         message: successMessage,
       });
     };
@@ -130,10 +134,9 @@ export default function SkillsSettings() {
 
       if (validationError) {
         failedSkills.push(newSkill);
-        continue;
+      } else {
+        combined.push(regexEndNormalizeSkill(newSkill));
       }
-
-      combined.push(regexEndNormalizeSkill(newSkill));
     }
 
     combined.sort((a, b) =>
@@ -142,31 +145,26 @@ export default function SkillsSettings() {
       ),
     );
 
-    if (combined.length !== prevSkills.length) {
-      handleSkillsResultsRef.current = async () => {
-        dispatch({
-          type: "SET_SKILLS",
-          payload: combined,
-        });
-      };
-      await changeSkillsHelper(combined);
+    if (combined.length === prevSkills.length) {
+      setAlert({
+        type: "error",
+        message:
+          "None of the AI suggested skills could be added due to validation errors.",
+      });
+      delayedClearAlert();
+      return;
     }
 
-    if (failedSkills.length > 0) {
-      const failedList = failedSkills
-        .map((skill, index) => `${index + 1}) ${skill || "(empty)"}`)
-        .join(" ");
-      setAlert({
-        type: "warning",
-        message: `Some skills could not be added: ${failedList}`,
-      });
-    } else {
-      setAlert({
-        type: "success",
-        message: "All AI suggestions have been added to the user's profile!",
-      });
-    }
+    const failedList = failedSkills.map((skill) => `${skill}`).join(" ");
+    const alertType = failedSkills.length > 0 ? "warning" : "success";
+    const alertMessage =
+      failedSkills.length > 0
+        ? `Some skills failed to be added: ${failedList}`
+        : "All AI suggestions have been added to the user's profile!";
 
+    prepareSkillsUpdate(combined, alertMessage, alertType);
+
+    await changeSkillsHelper(combined);
     delayedClearAlert();
   }
 
