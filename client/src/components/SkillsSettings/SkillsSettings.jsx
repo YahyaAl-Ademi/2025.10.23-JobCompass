@@ -332,7 +332,6 @@ export default function SkillsSettings() {
               type="button"
             >
               {showAll ? "Collapse panel" : "Expand panel"}
-              {"   "}
               {showAll ? (
                 <svg
                   className="show-all-icon"
