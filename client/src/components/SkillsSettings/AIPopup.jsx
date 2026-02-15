@@ -39,12 +39,14 @@ export default function AIPopup({ onClose, setAiSkills }) {
           .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
 
         setAiSkills(filtered);
+        onClose();
       } else {
         setAlert({
           type: "error",
           message: "AI failed to return any skills. Please try again.",
         });
         delayedClearAlert();
+        setAiSkills([]);
       }
     },
   );

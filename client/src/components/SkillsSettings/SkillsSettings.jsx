@@ -80,14 +80,12 @@ export default function SkillsSettings() {
   }
 
   // -------------------- ADD SKILL --------------------
-  async function addSkill() {
+  async function addSkill(skill) {
     if (!user?.id) {
       setShowSavePopup(true);
       return;
     }
-    const skillInput = skillInputRef.current;
-    if (!skillInput) return;
-    const newSkill = cleanUpText(skillInput.value || "");
+    const newSkill = cleanUpText(skill || "");
     const validationError = validateSkillInput({ text: newSkill, skills });
     if (validationError) {
       setAlert(validationError);
@@ -109,8 +107,12 @@ export default function SkillsSettings() {
     );
     await changeSkillsHelper(combined);
     delayedClearAlert();
+  }
 
+  async function handleInputSkill() {
+    const skillInput = skillInputRef.current;
     if (skillInput) {
+      await addSkill(skillInput.value);
       skillInput.value = "";
       skillInput.focus();
     }
@@ -172,14 +174,14 @@ export default function SkillsSettings() {
             placeholder="e.g. React, TypeScript, Docker"
             className="skill-input"
             onKeyDown={(e) => {
-              if (e.key === "Enter") addSkill();
+              if (e.key === "Enter") handleInputSkill();
             }}
             onChange={handleClearAlert}
           />
 
           <button
             id="addSkillBtn"
-            onClick={addSkill}
+            onClick={handleInputSkill}
             className="add-skill-btn"
             type="button"
           >
@@ -265,7 +267,7 @@ export default function SkillsSettings() {
                     className="skill-remove-btn"
                     onClick={() => {
                       skillInputRef.current.value = s.skill;
-                      addSkill();
+                      handleInputSkill();
                     }}
                     aria-label={`Add ${s.skill}`}
                     type="button"
