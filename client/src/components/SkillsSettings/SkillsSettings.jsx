@@ -192,6 +192,24 @@ export default function SkillsSettings() {
           </button>
 
           <button
+            className="ai-assistance-btn"
+            onClick={() => setShowAIPopup(true)}
+            type="button"
+          >
+            AI assistance
+          </button>
+
+          {skills.length > maxVisible && (
+            <button
+              className="show-all-btn"
+              onClick={() => setShowAll(!showAll)}
+              type="button"
+            >
+              {showAll ? "Show less" : `+${skills.length - maxVisible} more`}
+            </button>
+          )}
+
+          <button
             id="removeAllSkillsBtn"
             onClick={removeAllSkills}
             className="remove-all-btn"
@@ -236,24 +254,6 @@ export default function SkillsSettings() {
               </button>
             </div>
           ))}
-
-          {skills.length > maxVisible && (
-            <button
-              className="show-all-btn"
-              onClick={() => setShowAll(!showAll)}
-              type="button"
-            >
-              {" "}
-              {showAll ? "Show less" : `+${skills.length - maxVisible} more`}
-            </button>
-          )}
-          <button
-            className="ai-assistance-btn"
-            onClick={() => setShowAIPopup(true)}
-            type="button"
-          >
-            AI assistance
-          </button>
         </div>
         {/* AI Suggested Skills List */}
         {aiSkills.length > 0 && (

@@ -60,7 +60,7 @@
   font-size: 16px;
   background: none; /* Ensure no button background */
   border: none; /* Ensure no button border */
-  text-align: left; /* Aligns text left in the block */
+  text-align: center; /* Align text with global button alignment */
   max-width: 80rem;
   margin-left: auto;
   margin-right: auto;
