@@ -7,7 +7,7 @@ export default function getDeveloperPrompt(isCV) {
     — The schema defines the required structure.
     — Do not include explanations or comments, only structured data.
     — Skills must consist of at least 2 characters.
-    — Apply this regular expression to validate skills: [a-zA-Z0-9 -/#+]+$ . Replace the skill name with its simplified version if this rule is violated.
+    — Apply this regular expression to validate skills: ^[a-zA-Z0-9 -/#+]+$ . Replace the skill name with its simplified version if this rule is violated.
     — Include both full and abbreviated forms of skills if they are commonly used in the industry.
     `;
   let promptEnd = `
