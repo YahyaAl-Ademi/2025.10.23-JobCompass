@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import { gif } from "../../assets/index.js";
 import AlertMessage from "../AlertMessage/AlertMessage";
@@ -11,7 +11,8 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
   const { user } = UseUser();
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
-  const [isCV, setIsCV] = useState(false);
+  const isCVRef = useRef(true);
+  const isCvRequest = isCVRef.current;
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
@@ -74,6 +75,8 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
 
   async function handleGetSkills(isCV) {
     handleClearAlert();
+    isCVRef.current = isCV;
+
     performFetch({
       method: "POST",
       body: JSON.stringify({ isCV, prompt: aiInputText }),
@@ -123,27 +126,25 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
           <div className="ai-popup-buttons">
             <button
               className="ai-popup-btn primary"
-              onClick={() => {
-                setIsCV(true);
-                handleGetSkills(true);
-              }}
+              onClick={() => handleGetSkills(true)}
               disabled={isLoading || !aiInputText.trim()}
             >
-              {isLoading && isCV ? "Extracting..." : "Get skills from CV"}
-              {isLoading && isCV && (
+              {isLoading && isCvRequest
+                ? "Extracting..."
+                : "Get skills from CV"}
+              {isLoading && isCvRequest && (
                 <img src={gif.spinner} alt="Loading..." className="spinner" />
               )}
             </button>
             <button
               className="ai-popup-btn secondary"
-              onClick={() => {
-                setIsCV(false);
-                handleGetSkills(false);
-              }}
+              onClick={() => handleGetSkills(false)}
               disabled={isLoading || !aiInputText.trim()}
             >
-              {isLoading && !isCV ? "Identifying..." : "Get typical job skills"}
-              {isLoading && !isCV && (
+              {isLoading && !isCvRequest
+                ? "Identifying..."
+                : "Get typical job skills"}
+              {isLoading && !isCvRequest && (
                 <img src={gif.spinner} alt="Loading..." className="spinner" />
               )}
             </button>
