@@ -93,6 +93,13 @@ select {
   font-size: inherit;
 }
 
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  text-align: center;
+}
+
 /* Make sure textareas without a rows attribute are not tiny */
 textarea:not([rows]) {
   min-height: 10em;

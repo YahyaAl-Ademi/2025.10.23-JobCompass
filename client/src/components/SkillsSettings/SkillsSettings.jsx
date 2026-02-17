@@ -6,6 +6,7 @@ import { UseUser } from "../../context/UserContext";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import PopupForSave from "../SuccessPopup/PopupForSave";
 import SkillsTipPopup from "../SuccessPopup/SkillsTipPopup";
+import AIPopup from "./AIPopup";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
 import cleanUpText from "../../util/cleanUpText";
@@ -26,7 +27,9 @@ export default function SkillsSettings() {
   const { user, dispatch } = UseUser();
   const { skills } = user;
   const [showSavePopup, setShowSavePopup] = useState(false);
+  const [showAIPopup, setShowAIPopup] = useState(false);
   const handleSkillsResultsRef = useRef(() => {});
+  const [aiSkills, setAiSkills] = useState([]);
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
@@ -53,14 +56,18 @@ export default function SkillsSettings() {
     }
   }, [fetchError]);
 
-  function prepareSkillsUpdate(nextSkills, successMessage) {
+  function prepareSkillsUpdate(
+    nextSkills,
+    successMessage,
+    alertType = "success",
+  ) {
     handleSkillsResultsRef.current = async () => {
       dispatch({
         type: "SET_SKILLS",
         payload: nextSkills,
       });
       setAlert({
-        type: "success",
+        type: alertType,
         message: successMessage,
       });
     };
@@ -77,14 +84,13 @@ export default function SkillsSettings() {
   }
 
   // -------------------- ADD SKILL --------------------
-  async function addSkill() {
+  async function addSkill(skill) {
     if (!user?.id) {
       setShowSavePopup(true);
       return;
     }
-    const skillInput = skillInputRef.current;
-    if (!skillInput) return;
-    const newSkill = cleanUpText(skillInput.value || "");
+    let newAiSkills = [...aiSkills];
+    const newSkill = cleanUpText(skill || "");
     const validationError = validateSkillInput({ text: newSkill, skills });
     if (validationError) {
       setAlert(validationError);
@@ -93,12 +99,16 @@ export default function SkillsSettings() {
     }
 
     const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const combined = [...prevSkills, regexEndNormalizeSkill(newSkill)].sort(
-      (a, b) =>
-        String(a?.normalizedSkill ?? "").localeCompare(
-          String(b?.normalizedSkill ?? ""),
-        ),
+    const newSkillObj = regexEndNormalizeSkill(newSkill);
+    const combined = [...prevSkills, newSkillObj].sort((a, b) =>
+      String(a?.normalizedSkill ?? "").localeCompare(
+        String(b?.normalizedSkill ?? ""),
+      ),
     );
+    newAiSkills = newAiSkills.filter(
+      (aiSkill) => aiSkill.normalizedSkill !== newSkillObj?.normalizedSkill,
+    );
+    setAiSkills(newAiSkills);
 
     prepareSkillsUpdate(
       combined,
@@ -106,8 +116,72 @@ export default function SkillsSettings() {
     );
     await changeSkillsHelper(combined);
     delayedClearAlert();
+  }
 
+  // -------------------- ADD ALL AI SKILLS --------------------
+  async function addAllAIskills() {
+    if (!user?.id) {
+      setShowSavePopup(true);
+      return;
+    }
+
+    const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
+    const combined = [...prevSkills];
+    const failedSkills = [];
+    let newAiSkills = [...aiSkills];
+
+    for (let i = 0; i < aiSkills.length; i++) {
+      const newSkill = aiSkills[i]?.skill;
+      const validationError = validateSkillInput({
+        text: newSkill,
+        skills: combined,
+      });
+
+      if (validationError) {
+        failedSkills.push(newSkill);
+      } else {
+        combined.push(regexEndNormalizeSkill(newSkill));
+        newAiSkills = newAiSkills.filter(
+          (aiSkill) => aiSkill.normalizedSkill !== aiSkills[i]?.normalizedSkill,
+        );
+      }
+    }
+
+    setAiSkills(newAiSkills);
+
+    combined.sort((a, b) =>
+      String(a?.normalizedSkill ?? "").localeCompare(
+        String(b?.normalizedSkill ?? ""),
+      ),
+    );
+
+    if (combined.length === prevSkills.length) {
+      setAlert({
+        type: "error",
+        message:
+          "None of the AI suggested skills could be added due to validation errors.",
+      });
+      delayedClearAlert();
+      return;
+    }
+
+    const failedList = failedSkills.map((skill) => `${skill}`).join(" ");
+    const alertType = failedSkills.length > 0 ? "warning" : "success";
+    const alertMessage =
+      failedSkills.length > 0
+        ? `Some skills failed to be added: ${failedList}`
+        : "All AI suggestions have been added to the user's profile!";
+
+    prepareSkillsUpdate(combined, alertMessage, alertType);
+
+    await changeSkillsHelper(combined);
+    delayedClearAlert();
+  }
+
+  async function handleInputSkill() {
+    const skillInput = skillInputRef.current;
     if (skillInput) {
+      await addSkill(skillInput.value);
       skillInput.value = "";
       skillInput.focus();
     }
@@ -131,18 +205,19 @@ export default function SkillsSettings() {
   }
   // -------------------- REMOVE ALL SKILLS --------------------
   async function removeAllSkills() {
+    setAiSkills([]);
     if (!user?.id) {
       setShowSavePopup(true);
-      return;
+    } else {
+      prepareSkillsUpdate(
+        [],
+        "All skills have been removed from the user's profile!",
+      );
+      await changeSkillsHelper([]);
+      delayedClearAlert();
     }
-
-    prepareSkillsUpdate(
-      [],
-      "All skills have been removed from the user's profile!",
-    );
-    await changeSkillsHelper([]);
-    delayedClearAlert();
   }
+
   const visibleSkills = showAll ? skills : skills.slice(0, maxVisible);
 
   return (
@@ -169,14 +244,14 @@ export default function SkillsSettings() {
             placeholder="e.g. React, TypeScript, Docker"
             className="skill-input"
             onKeyDown={(e) => {
-              if (e.key === "Enter") addSkill();
+              if (e.key === "Enter") handleInputSkill();
             }}
             onChange={handleClearAlert}
           />
 
           <button
             id="addSkillBtn"
-            onClick={addSkill}
+            onClick={handleInputSkill}
             className="add-skill-btn"
             type="button"
           >
@@ -184,6 +259,14 @@ export default function SkillsSettings() {
             {isLoading && (
               <img src={gif.spinner} alt="Loading..." className="spinner" />
             )}
+          </button>
+
+          <button
+            className="ai-assistance-btn"
+            onClick={() => setShowAIPopup(true)}
+            type="button"
+          >
+            AI assistance
           </button>
 
           <button
@@ -199,59 +282,147 @@ export default function SkillsSettings() {
           </button>
         </div>
 
-        {/* Skills List */}
-        <div id="skillsList" className="skills-list">
-          {visibleSkills.map((s, idx) => (
-            <div key={`${s.skill}-${idx}`} className="skill-item">
-              <span className="skill-name">{s.skill}</span>
-              <button
-                className="skill-remove-btn"
-                onClick={() => removeSkill(s)}
-                aria-label={`Remove ${s.skill}`}
-                type="button"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <img src={gif.spinner} alt="Loading..." className="spinner" />
-                ) : (
-                  <svg
-                    className="skill-remove-icon"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
-          ))}
+        {alert.message && (
+          <AlertMessage type={alert.type} message={alert.message} />
+        )}
 
-          {skills.length > maxVisible && (
+        {/* Skills List */}
+        <div className="skills-list-row">
+          <div id="skillsList" className="skills-list">
+            {visibleSkills.map((s, idx) => (
+              <div key={`${s.skill}-${idx}`} className="skill-item">
+                <span className="skill-name">{s.skill}</span>
+                <button
+                  className="skill-remove-btn"
+                  onClick={() => removeSkill(s)}
+                  aria-label={`Remove ${s.skill}`}
+                  type="button"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <img
+                      src={gif.spinner}
+                      alt="Loading..."
+                      className="spinner"
+                    />
+                  ) : (
+                    <svg
+                      className="skill-remove-icon"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+          {(skills.length > maxVisible || aiSkills.length > 0) && (
             <button
               className="show-all-btn"
-              onClick={() => setShowAll(!showAll)}
+              onClick={() => {
+                if (showAll) {
+                  setAiSkills([]);
+                }
+                setShowAll(!showAll);
+              }}
               type="button"
             >
-              {" "}
-              {showAll ? "Show less" : `+${skills.length - maxVisible} more`}
+              {showAll ? "Collapse panel" : "Expand panel"}
+              {showAll ? (
+                <svg
+                  className="show-all-icon"
+                  viewBox="0 0 16 16"
+                  width="14"
+                  height="14"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M3 10l5-5 5 5H3z" />
+                </svg>
+              ) : (
+                <svg
+                  className="show-all-icon"
+                  viewBox="0 0 16 16"
+                  width="14"
+                  height="14"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M3 6l5 5 5-5H3z" />
+                </svg>
+              )}
             </button>
           )}
         </div>
+        {/* AI Suggested Skills List */}
+        {showAll && aiSkills.length > 0 && (
+          <div className="ai-skills-section">
+            <h4 className="ai-skills-heading">AI Suggested Skills</h4>
+            <div className="skills-list">
+              {aiSkills.map((s, idx) => (
+                <div key={`ai-${s.skill}-${idx}`} className="skill-item">
+                  <span className="skill-name">{s.skill}</span>
+                  <button
+                    className="skill-remove-btn"
+                    onClick={() => {
+                      skillInputRef.current.value = s.skill;
+                      handleInputSkill();
+                    }}
+                    aria-label={`Add ${s.skill}`}
+                    type="button"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <img
+                        src={gif.spinner}
+                        alt="Loading..."
+                        className="spinner"
+                      />
+                    ) : (
+                      <svg
+                        className="skill-remove-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 5v14M5 12h14"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              ))}
+              {aiSkills.length > 0 && (
+                <button
+                  className="add-all-ai-btn"
+                  onClick={addAllAIskills}
+                  type="button"
+                  disabled={isLoading}
+                >
+                  Add all AI suggestions
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {showTipPopup && (
         <SkillsTipPopup onClose={() => setShowTipPopup(false)} />
       )}
 
-      {alert.message && (
-        <AlertMessage type={alert.type} message={alert.message} />
-      )}
       {showSavePopup && (
         <PopupForSave
           title="You are not logged in"
@@ -261,6 +432,13 @@ export default function SkillsSettings() {
             setShowSavePopup(false);
           }}
           setShowSavePopup={setShowSavePopup}
+        />
+      )}
+      {showAIPopup && (
+        <AIPopup
+          setShowAll={setShowAll}
+          onClose={() => setShowAIPopup(false)}
+          setAiSkills={setAiSkills}
         />
       )}
     </div>

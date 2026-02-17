@@ -72,6 +72,27 @@ footer {
   margin: 0;
 }
 
+.support-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.support-label {
+  color: #665;
+}
+
+.support-link {
+  color: #164387;
+  text-decoration: none;
+}
+
+.support-link:hover {
+  text-decoration: underline;
+}
+
 .back-btn-footer {
   background-color: #e2e6e9;
   color: #333;

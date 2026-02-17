@@ -2,6 +2,7 @@ import express from "express";
 import userRouter from "./routes/user.js";
 import jobsRouter from "./routes/job.js";
 import travelRoutes from "./routes/travel.js";
+import aiRouter from "./routes/ai.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -15,5 +16,6 @@ app.use(cookieParser());
 app.use("/api/users", userRouter);
 app.use("/api/jobs", jobsRouter);
 app.use("/api/travel", travelRoutes);
+app.use("/api/ai", aiRouter);
 
 export default app;

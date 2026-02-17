@@ -1,1 +1,1 @@
-export const DELAYED_CLEAR_INTERVAL = 2500;
+export const DELAYED_CLEAR_INTERVAL = 3000;

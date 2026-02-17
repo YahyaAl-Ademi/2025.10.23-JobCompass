@@ -1,0 +1,156 @@
+import { useEffect, useRef, useState } from "react";
+import useFetch from "../../hooks/useFetch";
+import { gif } from "../../assets/index.js";
+import AlertMessage from "../AlertMessage/AlertMessage";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
+import { UseUser } from "../../context/UserContext";
+import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill.js";
+import cleanUpText from "../../util/cleanUpText.js";
+
+export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
+  const { user } = UseUser();
+  const [aiInputText, setAiInputText] = useState("");
+  const [alert, setAlert] = useState({ type: "", message: "" });
+  const isCVRef = useRef(true);
+  const isCvRequest = isCVRef.current;
+
+  function handleClearAlert() {
+    setAlert({ type: "", message: "" });
+  }
+  function delayedClearAlert() {
+    setTimeout(() => {
+      handleClearAlert();
+    }, DELAYED_CLEAR_INTERVAL);
+  }
+
+  const { isLoading, error, performFetch } = useFetch(
+    "/ai/assist-skills",
+    (result) => {
+      if (
+        result.skills &&
+        Array.isArray(result.skills) &&
+        result.skills.length > 0
+      ) {
+        const existingSkills = new Set(
+          (user?.skills ?? []).map((s) => s.normalizedSkill),
+        );
+
+        const filtered = result.skills
+          .map((skill) => regexEndNormalizeSkill(cleanUpText(skill)))
+          .filter((s) => !existingSkills.has(s.normalizedSkill))
+          .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
+
+        if (filtered.length === 0) {
+          setAlert({
+            type: "warning",
+            message: "AI returned skills, but they are already in your list.",
+          });
+          delayedClearAlert();
+          setAiSkills([]);
+        } else {
+          setAiSkills(filtered);
+        }
+        setShowAll(true);
+        onClose();
+      } else {
+        setAlert({
+          type: "error",
+          message: "AI failed to return any skills. Please try again.",
+        });
+        delayedClearAlert();
+        setAiSkills([]);
+      }
+    },
+  );
+
+  useEffect(() => {
+    if (error) {
+      setAlert({
+        type: "error",
+        message: error?.message || "AI service returned an error.",
+      });
+      delayedClearAlert();
+    }
+  }, [error]);
+
+  async function handleGetSkills(isCV) {
+    handleClearAlert();
+    isCVRef.current = isCV;
+
+    performFetch({
+      method: "POST",
+      body: JSON.stringify({ isCV, prompt: aiInputText }),
+    });
+  }
+
+  return (
+    <div className="ai-popup-overlay">
+      <div className="ai-popup">
+        <div className="ai-popup-header">
+          <h2>AI Assistance</h2>
+          <button
+            className="ai-popup-close"
+            onClick={onClose}
+            aria-label="Close AI assistance popup"
+          >
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <div className="ai-popup-content">
+          <p className="ai-popup-cta">
+            Paste your CV here or enter the title of your aimed position.
+          </p>
+          <textarea
+            className="ai-popup-textarea"
+            value={aiInputText}
+            onChange={(e) => setAiInputText(e.target.value)}
+            placeholder="Enter your CV text or job title here..."
+            rows="8"
+          />
+          {alert.message && (
+            <AlertMessage type={alert.type} message={alert.message} />
+          )}
+          <div className="ai-popup-buttons">
+            <button
+              className="ai-popup-btn primary"
+              onClick={() => handleGetSkills(true)}
+              disabled={isLoading || !aiInputText.trim()}
+            >
+              {isLoading && isCvRequest
+                ? "Extracting..."
+                : "Get skills from CV"}
+              {isLoading && isCvRequest && (
+                <img src={gif.spinner} alt="Loading..." className="spinner" />
+              )}
+            </button>
+            <button
+              className="ai-popup-btn secondary"
+              onClick={() => handleGetSkills(false)}
+              disabled={isLoading || !aiInputText.trim()}
+            >
+              {isLoading && !isCvRequest
+                ? "Identifying..."
+                : "Get typical job skills"}
+              {isLoading && !isCvRequest && (
+                <img src={gif.spinner} alt="Loading..." className="spinner" />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

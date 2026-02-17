@@ -45,7 +45,7 @@ export default function SkillsTipPopup({ onClose }) {
           <li>
             {`Incorrect matches are possible, for example, the verb "react" may be
             mistaken for the "React" (framework). The number of such
-            misidentified skills is considered insignificant.`}
+            misidentified skills is insignificant in most cases.`}
           </li>
         </ul>
       </div>
