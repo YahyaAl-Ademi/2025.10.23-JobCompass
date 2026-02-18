@@ -1,3 +1,4 @@
+import path from "path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -7,6 +8,11 @@ export default defineConfig(({ command, mode }) => {
   const backendProxyTarget = env.VITE_BACKEND_URL ?? "http://localhost:3000";
   return {
     plugins: [react()],
+    resolve: {
+      alias: {
+        shared: path.resolve(__dirname, "../shared"),
+      },
+    },
     server: {
       // Specify server port. Note if the port is already being used,
       // Vite will automatically try the next available port so this may not be the actual port

@@ -1,5 +1,9 @@
-import detectLanguage from "./detectLanguage.js";
+import detectLanguage from "shared/utils/detectLanguage.js";
 
+/**
+ * Returns job language: use stored value if set; otherwise detect from description.
+ * Empty string is treated as not set (fall back to detection).
+ */
 function getJobLanguage(job) {
   if (job.language != null && job.language !== "") return job.language;
   return detectLanguage(job.normalized_description ?? "");

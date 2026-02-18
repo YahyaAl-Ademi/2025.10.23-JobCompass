@@ -23,6 +23,7 @@ import createSortComparator from "../../util/createSortComparator";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { findFilterOptions, filterJobs } from "../../util/filterJobs";
 import getSkillsInDescription from "../../util/getSkillsInDescription";
+import detectLanguage from "shared/utils/detectLanguage.js";
 // Assets
 import { gif } from "../../assets/index.js";
 // Styles
@@ -92,8 +93,13 @@ export default function OpenPositions() {
         job.normalized_description || "",
         skills,
       );
+      const language =
+        job.language != null && job.language !== ""
+          ? job.language
+          : detectLanguage(job.normalized_description ?? "");
       return {
         ...job,
+        language,
         skillsInDescription,
         skillsMatch: String(skillsInDescription.length).padStart(2, "0"),
       };
@@ -101,8 +107,8 @@ export default function OpenPositions() {
   }, [allJobs, skills]);
 
   const filterOptions = useMemo(() => {
-    return findFilterOptions(allJobs);
-  }, [allJobs]);
+    return findFilterOptions(jobsWithSkills);
+  }, [jobsWithSkills]);
 
   function handleFilterChange(filterKey, value, isChecked) {
     setActiveFilters((prev) => {
