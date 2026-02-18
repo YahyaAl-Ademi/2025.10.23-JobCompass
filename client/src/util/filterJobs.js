@@ -1,8 +1,16 @@
+import detectLanguage from "./detectLanguage.js";
+
+function getJobLanguage(job) {
+  if (job.language != null && job.language !== "") return job.language;
+  return detectLanguage(job.normalized_description ?? "");
+}
+
 export function findFilterOptions(allJobs) {
   const experienceSet = new Set();
   const jobTypeSet = new Set();
   const workModeSet = new Set();
   const locationModeSet = new Set();
+  const languageSet = new Set();
   for (const job of allJobs) {
     if (job.seniority) {
       experienceSet.add(job.seniority);
@@ -18,12 +26,16 @@ export function findFilterOptions(allJobs) {
     } else {
       locationModeSet.add("precise");
     }
+    languageSet.add(getJobLanguage(job));
   }
+  const languageOptions = Array.from(languageSet).sort();
   return {
     experienceOptions: Array.from(experienceSet),
     jobTypeOptions: Array.from(jobTypeSet),
     workModeOptions: Array.from(workModeSet),
     locationPrecisionOptions: Array.from(locationModeSet),
+    languageOptions:
+      languageOptions.length > 0 ? languageOptions : ["English", "Dutch"],
   };
 }
 
@@ -32,8 +44,13 @@ function hasApproximateLocation(job) {
 }
 
 export function filterJobs(allJobs, activeFilters) {
-  const { seniorityLevel, employmentType, work_mode, locationPrecision } =
-    activeFilters;
+  const {
+    seniorityLevel,
+    employmentType,
+    work_mode,
+    locationPrecision,
+    language,
+  } = activeFilters;
 
   return allJobs.filter((job) => {
     const matchesSeniority =
@@ -46,12 +63,15 @@ export function filterJobs(allJobs, activeFilters) {
       locationPrecision.size === 0 ||
       (locationPrecision.has("approximate") && hasApproximateLocation(job)) ||
       (locationPrecision.has("precise") && !hasApproximateLocation(job));
+    const jobLang = getJobLanguage(job);
+    const matchesLanguage = language.size === 0 || language.has(jobLang);
 
     return (
       matchesSeniority &&
       matchesJobType &&
       matchesWorkMode &&
-      matchesLocationPrecision
+      matchesLocationPrecision &&
+      matchesLanguage
     );
   });
 }
