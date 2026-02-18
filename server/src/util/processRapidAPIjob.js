@@ -3,6 +3,7 @@ import validateJob from "./validateJob.js";
 import normalizeUrl from "./normalizeUrl.js";
 import checkExperienceLevel from "./checkExperienceLevel.js";
 import normalizeEmploymentType from "./normalizeEmploymentType.js";
+import detectLanguage from "./detectLanguage.js";
 
 export default function processRapidAPIjob(job) {
   const {
@@ -64,6 +65,9 @@ export default function processRapidAPIjob(job) {
     description_text,
     normalized_description:
       normalizeDescription(title) + normalizeDescription(description_text),
+    language: detectLanguage(
+      normalizeDescription(title) + normalizeDescription(description_text),
+    ),
     travel_time: null,
     least_transfers: null,
     organization,

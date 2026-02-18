@@ -63,8 +63,8 @@ export default async function persistJobSearch(
       if (jobsToInsert.length > 0) {
         const placeholders = jobsToInsert
           .map((_, i) => {
-            const offset = i * 13;
-            return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${offset + 8}, $${offset + 9}, $${offset + 10}, $${offset + 11}, $${offset + 12}, $${offset + 13})`;
+            const offset = i * 14;
+            return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${offset + 8}, $${offset + 9}, $${offset + 10}, $${offset + 11}, $${offset + 12}, $${offset + 13}, $${offset + 14})`;
           })
           .join(", ");
 
@@ -82,13 +82,14 @@ export default async function persistJobSearch(
           job.seniority,
           job.description_text,
           job.normalized_description,
+          job.language ?? null,
         ]);
 
         const insertJobsQuery = `
         INSERT INTO jobs (
           id, date_posted, title, organization, organization_url,
           employment_type, url, organization_logo, display_location,
-          work_mode, seniority, description_text, normalized_description
+          work_mode, seniority, description_text, normalized_description, language
         ) VALUES ${placeholders}
         ON CONFLICT (id) DO UPDATE SET
           work_mode = CASE
@@ -98,7 +99,8 @@ export default async function persistJobSearch(
           description_text = CASE
             WHEN EXCLUDED.description_text ~ '<[^>]+>' THEN EXCLUDED.description_text
             ELSE jobs.description_text
-          END
+          END,
+          language = COALESCE(EXCLUDED.language, jobs.language)
       `;
 
         await connectedClient.query(insertJobsQuery, values);
