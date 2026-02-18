@@ -1,5 +1,5 @@
 /**
- * Backfill jobs.language using normalized_description.
+ * Backfill jobs.language using normalized_description (batched updates).
  * Run from server directory: node scripts/backfillJobLanguage.js
  * Ensure DATABASE_URL is set (e.g. via .env).
  */
@@ -7,6 +7,8 @@ import "dotenv/config";
 import connectNeonDB from "../src/db/connectNeonDB.js";
 import detectLanguage from "../src/util/detectLanguage.js";
 import { logError, logInfo } from "../src/util/logging.js";
+
+const BATCH_SIZE = 500;
 
 async function backfillJobLanguage() {
   const { connectedClient, error, endConnection } = await connectNeonDB();
@@ -20,13 +22,23 @@ async function backfillJobLanguage() {
       "SELECT id, normalized_description FROM jobs WHERE normalized_description IS NOT NULL",
     );
     let updated = 0;
-    for (const row of res.rows) {
-      const language = detectLanguage(row.normalized_description);
+    for (let i = 0; i < res.rows.length; i += BATCH_SIZE) {
+      const batch = res.rows.slice(i, i + BATCH_SIZE);
+      const pairs = batch.map((row) => [
+        row.id,
+        detectLanguage(row.normalized_description),
+      ]);
+      const values = pairs.flat();
+      const placeholders = pairs
+        .map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`)
+        .join(", ");
       await connectedClient.query(
-        "UPDATE jobs SET language = $1 WHERE id = $2",
-        [language, row.id],
+        `UPDATE jobs AS j SET language = v.lang
+         FROM (VALUES ${placeholders}) AS v(id, lang)
+         WHERE j.id = v.id`,
+        values,
       );
-      updated++;
+      updated += batch.length;
     }
     logInfo(`Backfill complete: ${updated} jobs updated with language.`);
   } catch (err) {
