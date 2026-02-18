@@ -49,6 +49,8 @@ export default function processRapidAPIjob(job) {
   }
 
   const url = normalizeUrl(url1) || normalizeUrl(url2);
+  const normalized_description =
+    normalizeDescription(title) + normalizeDescription(description_text);
 
   const processedJob = {
     id: url,
@@ -63,11 +65,8 @@ export default function processRapidAPIjob(job) {
         : null,
     seniority: normalizedSeniority,
     description_text,
-    normalized_description:
-      normalizeDescription(title) + normalizeDescription(description_text),
-    language: detectLanguage(
-      normalizeDescription(title) + normalizeDescription(description_text),
-    ),
+    normalized_description,
+    language: detectLanguage(normalized_description),
     travel_time: null,
     least_transfers: null,
     organization,
