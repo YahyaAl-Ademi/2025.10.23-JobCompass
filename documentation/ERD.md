@@ -40,6 +40,7 @@ erDiagram
         seniority character_varying_255
         description_text text
         normalized_description text
+        language character_varying_50
     }
 
     user_favorites {
@@ -94,6 +95,7 @@ Central repository for all job listings:
 - **Job Details**: Title, description, employment type, seniority
 - **Location**: Display location and work mode (remote/on-site)
 - **Search Optimization**: Normalized description for better matching
+- **Language**: Detected language of job description (English or Dutch) for filtering
 
 ### user_favorites Table
 

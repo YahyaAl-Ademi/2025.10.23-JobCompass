@@ -1,14 +1,3 @@
-import detectLanguage from "shared/utils/detectLanguage.js";
-
-/**
- * Returns job language: use stored value if set; otherwise detect from description.
- * Empty string is treated as not set (fall back to detection).
- */
-function getJobLanguage(job) {
-  if (job.language != null && job.language !== "") return job.language;
-  return detectLanguage(job.normalized_description ?? "");
-}
-
 export function findFilterOptions(allJobs) {
   const experienceSet = new Set();
   const jobTypeSet = new Set();
@@ -30,16 +19,14 @@ export function findFilterOptions(allJobs) {
     } else {
       locationModeSet.add("precise");
     }
-    languageSet.add(getJobLanguage(job));
+    if (job.language) languageSet.add(job.language);
   }
-  const languageOptions = Array.from(languageSet).sort();
   return {
     experienceOptions: Array.from(experienceSet),
     jobTypeOptions: Array.from(jobTypeSet),
     workModeOptions: Array.from(workModeSet),
     locationPrecisionOptions: Array.from(locationModeSet),
-    languageOptions:
-      languageOptions.length > 0 ? languageOptions : ["English", "Dutch"],
+    languageOptions: Array.from(languageSet).sort(),
   };
 }
 
@@ -67,8 +54,10 @@ export function filterJobs(allJobs, activeFilters) {
       locationPrecision.size === 0 ||
       (locationPrecision.has("approximate") && hasApproximateLocation(job)) ||
       (locationPrecision.has("precise") && !hasApproximateLocation(job));
-    const jobLang = getJobLanguage(job);
-    const matchesLanguage = language.size === 0 || language.has(jobLang);
+    const matchesLanguage =
+      language.size === 0 ||
+      language.has(job.language) ||
+      (!job.language && language.size > 0);
 
     return (
       matchesSeniority &&

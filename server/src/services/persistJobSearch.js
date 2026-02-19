@@ -82,7 +82,7 @@ export default async function persistJobSearch(
           job.seniority,
           job.description_text,
           job.normalized_description,
-          job.language ?? null,
+          job.language,
         ]);
 
         const insertJobsQuery = `
@@ -99,8 +99,7 @@ export default async function persistJobSearch(
           description_text = CASE
             WHEN EXCLUDED.description_text ~ '<[^>]+>' THEN EXCLUDED.description_text
             ELSE jobs.description_text
-          END,
-          language = COALESCE(EXCLUDED.language, jobs.language)
+          END
       `;
 
         await connectedClient.query(insertJobsQuery, values);
