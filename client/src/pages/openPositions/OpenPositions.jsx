@@ -1,7 +1,13 @@
 // React hooks
 import { useMemo, useState, useEffect } from "react";
 // Lucide React icons
-import { GraduationCap, Briefcase, Monitor, MapPin } from "lucide-react";
+import {
+  GraduationCap,
+  Briefcase,
+  Monitor,
+  MapPin,
+  Languages,
+} from "lucide-react";
 // Components
 import AlertMessage from "../../components/AlertMessage/AlertMessage";
 import DropdownFilter from "../../components/DropdownFilter/DropdownFilter";
@@ -46,6 +52,7 @@ export default function OpenPositions() {
     employmentType: new Set(),
     work_mode: new Set(),
     locationPrecision: new Set(),
+    language: new Set(),
   });
 
   const [selectedSort, setSelectedSort] = useState([
@@ -87,6 +94,7 @@ export default function OpenPositions() {
       );
       return {
         ...job,
+        language: job.language,
         skillsInDescription,
         skillsMatch: String(skillsInDescription.length).padStart(2, "0"),
       };
@@ -94,8 +102,8 @@ export default function OpenPositions() {
   }, [allJobs, skills]);
 
   const filterOptions = useMemo(() => {
-    return findFilterOptions(allJobs);
-  }, [allJobs]);
+    return findFilterOptions(jobsWithSkills);
+  }, [jobsWithSkills]);
 
   function handleFilterChange(filterKey, value, isChecked) {
     setActiveFilters((prev) => {
@@ -112,6 +120,7 @@ export default function OpenPositions() {
       employmentType: new Set(),
       work_mode: new Set(),
       locationPrecision: new Set(),
+      language: new Set(),
     });
     setCurrentPage(1);
   }
@@ -182,6 +191,14 @@ export default function OpenPositions() {
                 activeValues={activeFilters.locationPrecision}
                 onFilterChange={handleFilterChange}
                 icon={<MapPin />}
+              />
+              <DropdownFilter
+                filterKey="language"
+                label="Language"
+                options={filterOptions.languageOptions}
+                activeValues={activeFilters.language}
+                onFilterChange={handleFilterChange}
+                icon={<Languages />}
               />
               <button
                 onClick={handleClearFilters}

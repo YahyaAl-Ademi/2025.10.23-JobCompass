@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     seniority character varying(255),
     description_text text,
     normalized_description text,
+    language character varying(50),
     CONSTRAINT jobs_pkey PRIMARY KEY (id)
 );
 

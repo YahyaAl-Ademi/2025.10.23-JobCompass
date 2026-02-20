@@ -2,6 +2,7 @@ import normalizeDescription from "./normalizeDescription.js";
 import validateJob from "./validateJob.js";
 import normalizeUrl from "./normalizeUrl.js";
 import checkExperienceLevel from "./checkExperienceLevel.js";
+import detectLanguage from "./detectLanguage.js";
 
 export default function processScraperJob(job) {
   const {
@@ -30,6 +31,8 @@ export default function processScraperJob(job) {
   }
 
   const url = normalizeUrl(url1) || normalizeUrl(url2);
+  const normalized_description =
+    normalizeDescription(title) + normalizeDescription(descriptionText);
 
   const processedJob = {
     id: url,
@@ -41,8 +44,8 @@ export default function processScraperJob(job) {
     display_location: location || null,
     seniority: normalizedSeniority,
     description_text,
-    normalized_description:
-      normalizeDescription(title) + normalizeDescription(descriptionText),
+    normalized_description,
+    language: detectLanguage(normalized_description),
     travel_time: null,
     least_transfers: null,
     organization,

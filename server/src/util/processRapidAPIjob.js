@@ -3,6 +3,7 @@ import validateJob from "./validateJob.js";
 import normalizeUrl from "./normalizeUrl.js";
 import checkExperienceLevel from "./checkExperienceLevel.js";
 import normalizeEmploymentType from "./normalizeEmploymentType.js";
+import detectLanguage from "./detectLanguage.js";
 
 export default function processRapidAPIjob(job) {
   const {
@@ -48,6 +49,8 @@ export default function processRapidAPIjob(job) {
   }
 
   const url = normalizeUrl(url1) || normalizeUrl(url2);
+  const normalized_description =
+    normalizeDescription(title) + normalizeDescription(description_text);
 
   const processedJob = {
     id: url,
@@ -62,8 +65,8 @@ export default function processRapidAPIjob(job) {
         : null,
     seniority: normalizedSeniority,
     description_text,
-    normalized_description:
-      normalizeDescription(title) + normalizeDescription(description_text),
+    normalized_description,
+    language: detectLanguage(normalized_description),
     travel_time: null,
     least_transfers: null,
     organization,
