@@ -48,9 +48,7 @@ export default function processRapidAPIjob(job) {
       normalizedSeniority = seniority;
   }
 
-  const url = stripRefIdFromUrl(
-    normalizeUrl(url1) || normalizeUrl(url2),
-  );
+  const url = stripRefIdFromUrl(normalizeUrl(url1) || normalizeUrl(url2));
   const normalized_description =
     normalizeDescription(title) + normalizeDescription(description_text);
 

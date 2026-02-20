@@ -30,9 +30,7 @@ export default function processScraperJob(job) {
       normalizedSeniority = seniorityLevel;
   }
 
-  const url = stripRefIdFromUrl(
-    normalizeUrl(url1) || normalizeUrl(url2),
-  );
+  const url = stripRefIdFromUrl(normalizeUrl(url1) || normalizeUrl(url2));
   const normalized_description =
     normalizeDescription(title) + normalizeDescription(descriptionText);
 
