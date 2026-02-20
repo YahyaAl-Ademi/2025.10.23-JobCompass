@@ -1,6 +1,6 @@
 import normalizeDescription from "./normalizeDescription.js";
 import validateJob from "./validateJob.js";
-import normalizeUrl from "./normalizeUrl.js";
+import normalizeUrl, { stripRefIdFromUrl } from "./normalizeUrl.js";
 import checkExperienceLevel from "./checkExperienceLevel.js";
 import detectLanguage from "./detectLanguage.js";
 
@@ -30,7 +30,9 @@ export default function processScraperJob(job) {
       normalizedSeniority = seniorityLevel;
   }
 
-  const url = normalizeUrl(url1) || normalizeUrl(url2);
+  const url = stripRefIdFromUrl(
+    normalizeUrl(url1) || normalizeUrl(url2),
+  );
   const normalized_description =
     normalizeDescription(title) + normalizeDescription(descriptionText);
 
