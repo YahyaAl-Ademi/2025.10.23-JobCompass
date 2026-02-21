@@ -1,3 +1,4 @@
+import { ChevronUp } from "lucide-react";
 import "./Footer.css";
 
 export default function Footer() {
@@ -7,10 +8,10 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-inner content-container">
-        <div className="logo">
-          <div className="copyright">
-            <p>© {new Date().getFullYear()} Job Compass</p>
-          </div>
+        <div className="footer-left">
+          <p className="copyright">
+            © {new Date().getFullYear()} JobCompass. All rights reserved.
+          </p>
         </div>
 
         <div className="support-footer">
@@ -23,14 +24,13 @@ export default function Footer() {
           </a>
         </div>
 
-        {/* back to top button */}
         <button
           type="button"
           onClick={handleBackToTop}
           aria-label="Back to top"
-          className="back-btn-footer"
+          className="back-to-top-btn"
         >
-          Back to top
+          <ChevronUp size={22} strokeWidth={2.5} />
         </button>
       </div>
     </footer>

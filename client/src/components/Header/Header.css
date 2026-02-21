@@ -10,10 +10,13 @@
   border-bottom: 1px solid #e2e6e9;
   position: sticky;
   top: 0;
-  box-shadow: 0 4px 8px rgba(44, 44, 44, 0.08);
+  box-shadow:
+    0 1px 3px 0 rgba(44, 44, 44, 0.06),
+    0 1px 2px -1px rgba(44, 44, 44, 0.04);
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  transition: box-shadow 0.2s ease;
 }
 
 @media (min-width: 768px) {
@@ -49,6 +52,7 @@
   font-style: italic;
   font-size: 1rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 @media (min-width: 768px) {
@@ -86,9 +90,11 @@
   padding: 8px;
   background: transparent;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .hamburger-btn:hover {
@@ -120,10 +126,13 @@
   right: 0;
   background: white;
   border-bottom: 1px solid #e2e6e9;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
   padding: 1rem;
   gap: 0.5rem;
   align-items: stretch;
+  border-radius: 0 0 12px 12px;
 }
 
 .nav-links-open {
@@ -161,7 +170,9 @@
   padding: 0.5rem 1rem;
   background-color: #d6e6ff;
   border-radius: 60px;
-  transition: background 0.2s;
+  transition:
+    background 0.25s ease,
+    transform 0.2s ease;
 }
 
 .user-avatar {
@@ -178,10 +189,13 @@
   min-width: 12rem;
   background: white;
   border: 1px solid #e6e6e6;
-  border-radius: 3px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
   overflow: hidden;
   z-index: 110;
+  transition: box-shadow 0.2s ease;
 }
 
 .divider {
@@ -211,7 +225,9 @@
   outline: none;
   text-decoration: none;
   color: #333333;
-  transition: all 0.2s;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .user-item:hover {
@@ -236,9 +252,12 @@
   right: 1rem;
   max-width: calc(100vw - 2rem);
   z-index: 1000;
-  border-radius: 7px;
+  border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
 }
 
 @media (min-width: 640px) {
