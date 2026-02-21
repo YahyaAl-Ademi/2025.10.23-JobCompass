@@ -2,6 +2,7 @@ footer {
   margin-top: auto;
   border-top: 1px solid #e6e6e6;
   position: relative;
+  transition: border-color 0.2s ease;
 }
 
 .logo {
@@ -36,6 +37,7 @@ footer {
   font-style: italic;
   font-size: 15px;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 /* Mobile-first: stack on small screens */
@@ -100,9 +102,9 @@ footer {
   font-weight: 500;
   padding: 10px 20px;
   border: none;
-  border-radius: 3px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.25s ease;
 }
 
 .back-btn-footer:hover {

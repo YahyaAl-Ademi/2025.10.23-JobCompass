@@ -7,15 +7,14 @@
 }
 
 .pagination button {
-  /* Base style for all pagination buttons */
-  padding: 6px 12px; /* Adopted from the original small padding */
-  border: 1px solid #4a87e1; /* Border color for all buttons */
+  padding: 6px 12px;
+  border: 1px solid #4a87e1;
   background-color: white;
   color: #4a87e1;
-  border-radius: 0.25rem; /* Adopted from newer styles */
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.1s;
-  width: auto; /* Allow text-size buttons */
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  width: auto;
   height: auto;
 }
 
@@ -97,9 +96,10 @@
   height: 38px;
   text-align: center;
   border: 2px solid #4a87e1;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: bold;
   outline: none;
   background-color: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }

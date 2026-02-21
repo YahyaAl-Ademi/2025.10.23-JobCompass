@@ -37,10 +37,11 @@
 .profile-avatar-row {
   display: flex;
   align-items: center;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #fff;
   border: 1px solid #d6ddeb;
   margin-bottom: 24px;
+  transition: box-shadow 0.2s ease;
 }
 
 .avatar-uploader-info {
@@ -67,9 +68,10 @@
   flex-direction: column;
   padding: 1.25rem;
   margin-bottom: 24px;
-  border-radius: 7px;
+  border-radius: 12px;
   background: #fff;
   border: 1px solid #d6ddeb;
+  transition: box-shadow 0.2s ease;
 }
 
 @media (min-width: 768px) {

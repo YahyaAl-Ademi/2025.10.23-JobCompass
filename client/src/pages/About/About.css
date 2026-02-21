@@ -18,13 +18,14 @@
 .project-overview {
   background: white;
   border: 1px solid #e5e7eb;
-  border-radius: 7px;
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transition: box-shadow 0.2s ease;
 }
 
 .overview-item {
