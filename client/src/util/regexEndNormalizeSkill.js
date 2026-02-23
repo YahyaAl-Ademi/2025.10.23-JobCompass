@@ -29,5 +29,5 @@ export default function regexEndNormalizeSkill(skill) {
   let escaped = normalizedSkill;
   escaped = escaped.replace(/[.*+?^${}()|[\]\\#]/g, "\\$&");
   const skillRegex = new RegExp(" " + escaped + " ", "i");
-  return { skill, skillRegex, normalizedSkill };
+  return { skill, normalizedSkill, skillRegex };
 }

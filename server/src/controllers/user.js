@@ -200,9 +200,7 @@ export async function loginUser(req, res) {
       house_number: userDataRow.house_number,
       city: userDataRow.city,
       country: userDataRow.country,
-      skills: userDataRow.skills
-        ? userDataRow.skills.split(",").map((skill) => skill.trim())
-        : [],
+      skills: userDataRow.skills ? userDataRow.skills.split(",") : [],
       favorites: [],
       time_to_donate:
         userDataRow.number_of_logins + 1 === 5
