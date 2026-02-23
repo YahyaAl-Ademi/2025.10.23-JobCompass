@@ -23,7 +23,6 @@ export default function LoginForm({
   }
 
   function handleLoginResults(data) {
-    const normalizedSkills = convertNames2Objects(data.user.skills);
     const favoriteJobs = Array.isArray(data.user.favorites)
       ? data.user.favorites.map((job) => ({
           id: job.id,
@@ -48,7 +47,7 @@ export default function LoginForm({
       type: "LOGIN",
       payload: {
         ...data.user,
-        skills: normalizedSkills,
+        skills: convertNames2Objects(data.user.skills),
         favorites: favoriteJobs,
       },
     });

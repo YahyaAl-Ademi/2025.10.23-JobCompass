@@ -56,12 +56,11 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
   }
 
   function handleSignupResults(data) {
-    const normalizedSkills = convertNames2Objects(data.user.skills);
     dispatch({
       type: "REGISTER",
       payload: {
         ...data.user,
-        skills: normalizedSkills,
+        skills: convertNames2Objects(data.user.skills),
         favorites: [],
       },
     });
