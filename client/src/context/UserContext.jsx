@@ -6,7 +6,7 @@ import {
   useEffect,
 } from "react";
 import { defaultUser } from "../data/defaultUser";
-import fixUserSkills from "../util/fixUserSkills";
+import { convertNames2Objects } from "../util/skillsConversion";
 import useFetch from "../hooks/useFetch";
 import userReducer from "../reducers/userReducer";
 
@@ -25,7 +25,6 @@ function UserContextProvider({ children }) {
   // -------------------- GET CURRENT USER --------------------
   function handleFetchMeResults(data) {
     if (data.user) {
-      const normalizedSkills = fixUserSkills(data.user.skills);
       const favoriteJobs = Array.isArray(data.user.favorites)
         ? data.user.favorites.map((job) => ({
             id: job.id,
@@ -49,7 +48,7 @@ function UserContextProvider({ children }) {
         type: "LOGIN",
         payload: {
           ...data.user,
-          skills: normalizedSkills,
+          skills: convertNames2Objects(data.user.skills),
           favorites: favoriteJobs,
         },
       });
