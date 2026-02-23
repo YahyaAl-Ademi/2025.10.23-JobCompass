@@ -319,11 +319,7 @@ export async function getMe(req, res) {
       house_number: userDataRow.house_number,
       city: userDataRow.city,
       country: userDataRow.country,
-      skills: userDataRow.skills
-        ? userDataRow.skills.split(",").map((skill) => skill.trim())
-        : [],
-      favorites: [],
-      number_of_logins: userDataRow.number_of_logins,
+      skills: userDataRow.skills ? userDataRow.skills.split(",") : [],
     };
     rows.forEach((row) => {
       if (row.job_id) {

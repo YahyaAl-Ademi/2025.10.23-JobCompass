@@ -13,7 +13,7 @@ const USER_FULL_INFO_QUERY = `
   LEFT JOIN jobs j ON uf.job_id = j.id
 `;
 
-async function updateUserProfile(user_id, fieldsToUpdate) {
+export default async function updateUserProfile(user_id, fieldsToUpdate) {
   let setParts = [];
   let values = [];
   let i = 1;
@@ -70,9 +70,7 @@ async function updateUserProfile(user_id, fieldsToUpdate) {
       house_number: userDataRow.house_number,
       city: userDataRow.city,
       country: userDataRow.country,
-      skills: userDataRow.skills
-        ? userDataRow.skills.split(",").map((skill) => skill.trim())
-        : [],
+      skills: userDataRow.skills ? userDataRow.skills.split(",") : [],
       favorites: [],
     };
 
@@ -104,5 +102,3 @@ async function updateUserProfile(user_id, fieldsToUpdate) {
     if (endConnection) await endConnection();
   }
 }
-
-export default updateUserProfile;
