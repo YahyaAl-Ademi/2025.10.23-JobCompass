@@ -64,33 +64,3 @@ footer {
   text-decoration: underline;
   color: #3272d2;
 }
-
-/* Back to top – icon button */
-.back-to-top-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background-color: #e2e6e9;
-  color: #333;
-  cursor: pointer;
-  transition:
-    background-color 0.25s ease,
-    transform 0.2s ease;
-  order: 3;
-  flex-shrink: 0;
-}
-
-.back-to-top-btn:hover {
-  background-color: #d1d5d8;
-  transform: translateY(-2px);
-}
-
-.back-to-top-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(22, 67, 135, 0.15);
-}

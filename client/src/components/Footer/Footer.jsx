@@ -1,10 +1,6 @@
-import { ChevronUp } from "lucide-react";
 import "./Footer.css";
 
 export default function Footer() {
-  function handleBackToTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
   return (
     <footer className="footer">
       <div className="footer-inner content-container">
@@ -23,15 +19,6 @@ export default function Footer() {
             jobcompass2025@gmail.com
           </a>
         </div>
-
-        <button
-          type="button"
-          onClick={handleBackToTop}
-          aria-label="Back to top"
-          className="back-to-top-btn"
-        >
-          <ChevronUp size={22} strokeWidth={2.5} />
-        </button>
       </div>
     </footer>
   );
