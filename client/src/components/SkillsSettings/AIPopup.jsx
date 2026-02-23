@@ -4,7 +4,7 @@ import { gif } from "../../assets/index.js";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { UseUser } from "../../context/UserContext";
-import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill.js";
+import { convertName2Obj } from "../../util/skillsConversion.js";
 import cleanUpText from "../../util/cleanUpText.js";
 
 export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
@@ -36,7 +36,7 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
         );
 
         const filtered = result.skills
-          .map((skill) => regexEndNormalizeSkill(cleanUpText(skill)))
+          .map((skill) => convertName2Obj(cleanUpText(skill)))
           .filter((s) => !existingSkills.has(s.normalizedSkill))
           .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
 

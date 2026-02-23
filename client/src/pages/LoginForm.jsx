@@ -4,7 +4,7 @@ import { UseUser } from "../context/UserContext";
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
-import fixUserSkills from "../util/fixUserSkills";
+import { convertNames2Objects } from "../util/skillsConversion";
 import DonationPopup from "../components/DonationPopup/DonationPopup";
 
 export default function LoginForm({
@@ -23,7 +23,7 @@ export default function LoginForm({
   }
 
   function handleLoginResults(data) {
-    const normalizedSkills = fixUserSkills(data.user.skills);
+    const normalizedSkills = convertNames2Objects(data.user.skills);
     const favoriteJobs = Array.isArray(data.user.favorites)
       ? data.user.favorites.map((job) => ({
           id: job.id,

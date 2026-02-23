@@ -1,5 +1,5 @@
 import { images } from "../assets";
-import regexEndNormalizeSkill from "../util/regexEndNormalizeSkill";
+import { convertNames2Objects } from "../util/skillsConversion";
 
 export function formatAddress(user) {
   const streetAddress = [
@@ -50,8 +50,8 @@ export const defaultUser = {
   house_number: 123,
   city: "Amsterdam",
   country: "Netherlands",
-  skills: defaultSkillNames
-    .map((skill) => regexEndNormalizeSkill(skill))
-    .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill)),
+  skills: convertNames2Objects(defaultSkillNames).sort((a, b) =>
+    a.normalizedSkill.localeCompare(b.normalizedSkill),
+  ),
   favorites: [],
 };

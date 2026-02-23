@@ -10,7 +10,10 @@ import AIPopup from "./AIPopup";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
 import cleanUpText from "../../util/cleanUpText";
-import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill";
+import {
+  convertName2Obj,
+  convertObjects2Names,
+} from "../../util/skillsConversion";
 import validateSkillInput from "../../util/skillValidation";
 import { gif } from "../../assets/index.js";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
@@ -74,7 +77,7 @@ export default function SkillsSettings() {
   }
 
   async function changeSkillsHelper(skills) {
-    const skillNames = skills.map((s) => s.skill);
+    const skillNames = convertObjects2Names(skills);
 
     performFetch({
       method: "POST",
@@ -99,7 +102,7 @@ export default function SkillsSettings() {
     }
 
     const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const newSkillObj = regexEndNormalizeSkill(newSkill);
+    const newSkillObj = convertName2Obj(newSkill);
     const combined = [...prevSkills, newSkillObj].sort((a, b) =>
       String(a?.normalizedSkill ?? "").localeCompare(
         String(b?.normalizedSkill ?? ""),
@@ -140,7 +143,7 @@ export default function SkillsSettings() {
       if (validationError) {
         failedSkills.push(newSkill);
       } else {
-        combined.push(regexEndNormalizeSkill(newSkill));
+        combined.push(convertName2Obj(newSkill));
         newAiSkills = newAiSkills.filter(
           (aiSkill) => aiSkill.normalizedSkill !== aiSkills[i]?.normalizedSkill,
         );

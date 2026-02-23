@@ -13,14 +13,14 @@
  * @param {string} skill - The raw skill text to escape and normalize.
  *
  * Returns:
- * @returns {{ skill: string, skillRegex: RegExp, normalizedSkill: string }}
+ * @returns {{ skill: string, normalizedSkill: string, skillRegex: RegExp }}
  * - skill: the original input string.
  * - skillRegex: a case-insensitive RegExp that matches the skill as a standalone token
  *   (note: the regex built here uses surrounding spaces when matching).
  * - normalizedSkill: the input with hyphens, slashes and whitespace collapsed to single
  *   spaces (useful for normalization and comparisons).
  */
-export default function regexEndNormalizeSkill(skill) {
+export function convertName2Obj(skill) {
   let normalizedSkill = skill;
   normalizedSkill = normalizedSkill
     .toLowerCase()
@@ -30,4 +30,16 @@ export default function regexEndNormalizeSkill(skill) {
   escaped = escaped.replace(/[.*+?^${}()|[\]\\#]/g, "\\$&");
   const skillRegex = new RegExp(" " + escaped + " ", "i");
   return { skill, normalizedSkill, skillRegex };
+}
+
+export function convertNames2Objects(skills) {
+  let result = [];
+  if (Array.isArray(skills)) {
+    result = skills.map((skill) => convertName2Obj(skill));
+  }
+  return result;
+}
+
+export function convertObjects2Names(skills) {
+  return skills.map((s) => s.skill);
 }
