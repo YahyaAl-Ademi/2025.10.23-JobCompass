@@ -60,17 +60,14 @@ const DUTCH_WORDS = new Set([
 const MIN_MATCHES = 2;
 
 export default function detectLanguage(description) {
-  const normalized =
-    " " + description.toLowerCase().replace(/[^a-z0-9\s]/g, " ") + " ";
-
   let enCount = 0;
   for (const word of ENGLISH_WORDS) {
-    if (normalized.includes(" " + word + " ")) enCount++;
+    if (description.includes(" " + word + " ")) enCount++;
   }
 
   let nlCount = 0;
   for (const word of DUTCH_WORDS) {
-    if (normalized.includes(" " + word + " ")) nlCount++;
+    if (description.includes(" " + word + " ")) nlCount++;
   }
 
   if (enCount < MIN_MATCHES && nlCount < MIN_MATCHES) return "English";
