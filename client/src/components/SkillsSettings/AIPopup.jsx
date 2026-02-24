@@ -12,7 +12,6 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
   const isCVRef = useRef(true);
-  const isCvRequest = isCVRef.current;
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
@@ -141,10 +140,10 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
               onClick={() => handleGetSkills(true)}
               disabled={isLoading || !aiInputText.trim()}
             >
-              {isLoading && isCvRequest
+              {isLoading && isCVRef.current
                 ? "Extracting..."
                 : "Get skills from CV"}
-              {isLoading && isCvRequest && (
+              {isLoading && isCVRef.current && (
                 <img src={gif.spinner} alt="Loading..." className="spinner" />
               )}
             </button>
@@ -153,10 +152,10 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
               onClick={() => handleGetSkills(false)}
               disabled={isLoading || !aiInputText.trim()}
             >
-              {isLoading && !isCvRequest
+              {isLoading && !isCVRef.current
                 ? "Identifying..."
                 : "Get typical job skills"}
-              {isLoading && !isCvRequest && (
+              {isLoading && !isCVRef.current && (
                 <img src={gif.spinner} alt="Loading..." className="spinner" />
               )}
             </button>
