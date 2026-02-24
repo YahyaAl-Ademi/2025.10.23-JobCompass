@@ -75,10 +75,10 @@ function JobsProvider({ children }) {
     }
 
     const homeAddress = {
-      homeStreet: user?.street,
-      homeHouseNumber: user?.house_number,
-      homeCity: user?.city,
-      homeCountry: user?.country,
+      street: user?.street,
+      house_number: user?.house_number,
+      city: user?.city,
+      country: user?.country,
     };
 
     performTravelFetch({

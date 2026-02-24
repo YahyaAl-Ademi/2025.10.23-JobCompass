@@ -1,18 +1,7 @@
 import { logError, logWarning } from "../util/logging.js";
 import getTransitRouteSummary from "../services/googleMapsApi.js";
 import createRegExWspaces from "../../../shared/createRegExWspaces.js";
-
-function formatAddress(address) {
-  const streetAddress = [
-    address?.homeStreet,
-    address?.homeStreet && address?.homeHouseNumber,
-    address?.homeCity,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  return [streetAddress, address?.homeCountry].filter(Boolean).join(", ");
-}
+import formatAddress from "../../../shared/formatAddress.js";
 
 const workPlacesSet = new Set([
   "Brabantine City Row",
@@ -34,7 +23,6 @@ const workPlacesSet = new Set([
 export default async function calculateBatchTravelTime(req, res) {
   try {
     const { homeAddress, workCities } = req.body || {};
-
     if (
       !homeAddress ||
       !workCities ||
@@ -48,14 +36,12 @@ export default async function calculateBatchTravelTime(req, res) {
       });
     }
 
-    const { homeCity } = homeAddress;
+    const { city } = homeAddress;
     const formattedHomeAddress = formatAddress(homeAddress);
-
-    const re = createRegExWspaces(homeCity);
+    const re = createRegExWspaces(city);
 
     const promises = workCities.map(async (workCity) => {
       let result;
-
       if (workPlacesSet.has(workCity)) {
         result = {
           workCity,

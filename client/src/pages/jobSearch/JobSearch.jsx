@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import SearchInput from "../../components/SearchInput/SearchInput";
 import "./JobSearch.css";
 import { defaultUser } from "../../data/defaultUser.js";
-import { formatAddress } from "../../data/defaultUser.js";
+import formatAddress from "../../../../shared/formatAddress.js";
 import { UseUser } from "../../context/UserContext";
 import AlertMessage from "../../components/AlertMessage/AlertMessage";
 

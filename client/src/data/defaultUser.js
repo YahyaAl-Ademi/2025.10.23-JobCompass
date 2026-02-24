@@ -1,18 +1,6 @@
 import { images } from "../assets";
 import { convertNames2Objects } from "../util/skillsConversion";
 
-export function formatAddress(user) {
-  const streetAddress = [
-    user?.street,
-    user?.street && user?.house_number,
-    user?.city,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  return [streetAddress, user?.country].filter(Boolean).join(", ");
-}
-
 // list of default skill display names
 const defaultSkillNames = [
   "Adaptability",
