@@ -1,3 +1,5 @@
+import createRegExWspaces from "../../../shared/createRegExWspaces.js";
+
 /**
  * Prepare a skill string for reliable matching and comparison.
  *
@@ -26,9 +28,7 @@ export function convertName2Obj(skill) {
     .toLowerCase()
     .replace(/[-/\s]/g, " ")
     .replace(/ +/g, " ");
-  let escaped = normalizedSkill;
-  escaped = escaped.replace(/[.*+?^${}()|[\]\\#]/g, "\\$&");
-  const skillRegex = new RegExp(" " + escaped + " ", "i");
+  const skillRegex = createRegExWspaces(normalizedSkill);
   return { skill, normalizedSkill, skillRegex };
 }
 
