@@ -1,7 +1,7 @@
 import { logError, logWarning } from "../util/logging.js";
 import getTransitRouteSummary from "../services/googleMapsApi.js";
-import createRegExWspaces from "../../../shared/createRegExWspaces.js";
 import formatAddress from "../../../shared/formatAddress.js";
+import normalizeText from "../util/normalizeText.js";
 
 const workPlacesSet = new Set([
   "Brabantine City Row",
@@ -38,7 +38,7 @@ export default async function calculateBatchTravelTime(req, res) {
 
     const { city } = homeAddress;
     const formattedHomeAddress = formatAddress(homeAddress);
-    const re = createRegExWspaces(city);
+    const normalizedHomeCity = normalizeText(city);
 
     const promises = workCities.map(async (workCity) => {
       let result;
@@ -48,7 +48,10 @@ export default async function calculateBatchTravelTime(req, res) {
           travel_time: null,
           least_transfers: null,
         };
-      } else if (re && re.test(" " + workCity.replace(",", " ") + " ")) {
+      } else if (
+        normalizedHomeCity &&
+        normalizeText(workCity).includes(normalizedHomeCity)
+      ) {
         result = {
           workCity,
           travel_time: 0,
