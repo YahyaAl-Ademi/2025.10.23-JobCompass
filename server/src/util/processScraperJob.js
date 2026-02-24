@@ -1,4 +1,4 @@
-import normalizeText from "./normalizeText.js";
+import normalizeText from "../../../shared/normalizeText.js";
 import validateJob from "./validateJob.js";
 import normalizeUrl, { stripRefIdFromUrl } from "./normalizeUrl.js";
 import checkExperienceLevel from "./checkExperienceLevel.js";

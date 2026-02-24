@@ -10,10 +10,7 @@ import AIPopup from "./AIPopup";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
 import cleanUpText from "../../util/cleanUpText";
-import {
-  convertName2Obj,
-  convertObjects2Names,
-} from "../../util/skillsConversion";
+import normalizeText from "../../../../shared/normalizeText";
 import validateSkillInput from "../../util/skillValidation";
 import { gif } from "../../assets/index.js";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
@@ -77,11 +74,9 @@ export default function SkillsSettings() {
   }
 
   async function changeSkillsHelper(skills) {
-    const skillNames = convertObjects2Names(skills);
-
     performFetch({
       method: "POST",
-      body: JSON.stringify({ skills: skillNames }),
+      body: JSON.stringify({ skills }),
       credentials: "include",
     });
   }
@@ -94,6 +89,7 @@ export default function SkillsSettings() {
     }
     let newAiSkills = [...aiSkills];
     const newSkill = cleanUpText(skill || "");
+    const normalizedNewSkill = normalizeText(newSkill);
     const validationError = validateSkillInput({ text: newSkill, skills });
     if (validationError) {
       setAlert(validationError);
@@ -102,14 +98,11 @@ export default function SkillsSettings() {
     }
 
     const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const newSkillObj = convertName2Obj(newSkill);
-    const combined = [...prevSkills, newSkillObj].sort((a, b) =>
-      String(a?.normalizedSkill ?? "").localeCompare(
-        String(b?.normalizedSkill ?? ""),
-      ),
+    const combined = [...prevSkills, newSkill].sort((a, b) =>
+      normalizeText(String(a)).localeCompare(normalizeText(String(b))),
     );
     newAiSkills = newAiSkills.filter(
-      (aiSkill) => aiSkill.normalizedSkill !== newSkillObj?.normalizedSkill,
+      (aiSkill) => normalizeText(aiSkill) !== normalizedNewSkill,
     );
     setAiSkills(newAiSkills);
 
@@ -134,7 +127,8 @@ export default function SkillsSettings() {
     let newAiSkills = [...aiSkills];
 
     for (let i = 0; i < aiSkills.length; i++) {
-      const newSkill = aiSkills[i]?.skill;
+      const newSkill = aiSkills[i];
+      const normalizedNewSkill = normalizeText(newSkill);
       const validationError = validateSkillInput({
         text: newSkill,
         skills: combined,
@@ -143,9 +137,9 @@ export default function SkillsSettings() {
       if (validationError) {
         failedSkills.push(newSkill);
       } else {
-        combined.push(convertName2Obj(newSkill));
+        combined.push(newSkill);
         newAiSkills = newAiSkills.filter(
-          (aiSkill) => aiSkill.normalizedSkill !== aiSkills[i]?.normalizedSkill,
+          (aiSkill) => normalizeText(aiSkill) !== normalizedNewSkill,
         );
       }
     }
@@ -153,9 +147,7 @@ export default function SkillsSettings() {
     setAiSkills(newAiSkills);
 
     combined.sort((a, b) =>
-      String(a?.normalizedSkill ?? "").localeCompare(
-        String(b?.normalizedSkill ?? ""),
-      ),
+      normalizeText(String(a)).localeCompare(normalizeText(String(b))),
     );
 
     if (combined.length === prevSkills.length) {
@@ -197,7 +189,7 @@ export default function SkillsSettings() {
       return;
     }
     const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const filtered = prevSkills.filter((s) => s.skill !== skill.skill);
+    const filtered = prevSkills.filter((s) => s !== skill);
 
     prepareSkillsUpdate(
       filtered,
@@ -293,12 +285,12 @@ export default function SkillsSettings() {
         <div className="skills-list-row">
           <div id="skillsList" className="skills-list">
             {visibleSkills.map((s, idx) => (
-              <div key={`${s.skill}-${idx}`} className="skill-item">
-                <span className="skill-name">{s.skill}</span>
+              <div key={`${s}-${idx}`} className="skill-item">
+                <span className="skill-name">{s}</span>
                 <button
                   className="skill-remove-btn"
                   onClick={() => removeSkill(s)}
-                  aria-label={`Remove ${s.skill}`}
+                  aria-label={`Remove ${s}`}
                   type="button"
                   disabled={isLoading}
                 >
@@ -371,15 +363,15 @@ export default function SkillsSettings() {
             <h4 className="ai-skills-heading">AI Suggested Skills</h4>
             <div className="skills-list">
               {aiSkills.map((s, idx) => (
-                <div key={`ai-${s.skill}-${idx}`} className="skill-item">
-                  <span className="skill-name">{s.skill}</span>
+                <div key={`ai-${s}-${idx}`} className="skill-item">
+                  <span className="skill-name">{s}</span>
                   <button
                     className="skill-remove-btn"
                     onClick={() => {
-                      skillInputRef.current.value = s.skill;
+                      skillInputRef.current.value = s;
                       handleInputSkill();
                     }}
-                    aria-label={`Add ${s.skill}`}
+                    aria-label={`Add ${s}`}
                     type="button"
                     disabled={isLoading}
                   >

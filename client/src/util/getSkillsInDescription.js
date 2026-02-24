@@ -1,8 +1,10 @@
+import normalizeText from "../../../shared/normalizeText";
+
 export default function getSkillsInDescription(
   normalized_description,
   skills = [],
 ) {
-  return skills
-    .filter((s) => normalized_description.includes(` ${s?.normalizedSkill} `))
-    .map((s) => s.skill);
+  return skills.filter((skill) =>
+    normalized_description.includes(normalizeText(skill)),
+  );
 }

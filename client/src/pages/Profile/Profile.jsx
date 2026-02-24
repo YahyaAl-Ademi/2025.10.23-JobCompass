@@ -8,7 +8,6 @@ import validateAddressTextInputs from "../../util/addressTextsValidation";
 import validateHouseNoInput from "../../util/addressHouseNoValidation";
 import { UseUser } from "../../context/UserContext";
 import useFetch from "../../hooks/useFetch";
-import { convertNames2Objects } from "../../util/skillsConversion";
 import AvatarUploader from "../../components/AvatarUploader/AvatarUploader";
 import DeleteProfilePopup from "../../components/DeleteProfilePopup/DeleteProfilePopup";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
@@ -46,7 +45,7 @@ export default function Profile() {
       type: "UPDATE_USER",
       payload: {
         ...data.user,
-        skills: convertNames2Objects(data.user.skills),
+        skills: Array.isArray(data.user.skills) ? data.user.skills : [],
       },
     });
     setAlert({ type: "success", message: "Profile updated successfully!" });

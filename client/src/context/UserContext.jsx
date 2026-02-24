@@ -6,7 +6,6 @@ import {
   useEffect,
 } from "react";
 import { defaultUser } from "../data/defaultUser";
-import { convertNames2Objects } from "../util/skillsConversion";
 import useFetch from "../hooks/useFetch";
 import userReducer from "../reducers/userReducer";
 
@@ -48,7 +47,7 @@ function UserContextProvider({ children }) {
         type: "LOGIN",
         payload: {
           ...data.user,
-          skills: convertNames2Objects(data.user.skills),
+          skills: data.user.skills,
           favorites: favoriteJobs,
         },
       });

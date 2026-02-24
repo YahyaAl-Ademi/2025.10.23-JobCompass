@@ -4,8 +4,8 @@ import { gif } from "../../assets/index.js";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { UseUser } from "../../context/UserContext";
-import { convertName2Obj } from "../../util/skillsConversion.js";
 import cleanUpText from "../../util/cleanUpText.js";
+import normalizeText from "../../../../shared/normalizeText.js";
 
 export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
   const { user } = UseUser();
@@ -32,13 +32,25 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
         result.skills.length > 0
       ) {
         const existingSkills = new Set(
-          (user?.skills ?? []).map((s) => s.normalizedSkill),
+          (user?.skills ?? []).map((s) => normalizeText(s)),
         );
+        const normalizedInResult = new Set();
 
         const filtered = result.skills
-          .map((skill) => convertName2Obj(cleanUpText(skill)))
-          .filter((s) => !existingSkills.has(s.normalizedSkill))
-          .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
+          .map((skill) => cleanUpText(skill))
+          .filter((skill) => Boolean(skill))
+          .filter((skill) => {
+            const normalized = normalizeText(skill);
+            if (
+              existingSkills.has(normalized) ||
+              normalizedInResult.has(normalized)
+            ) {
+              return false;
+            }
+            normalizedInResult.add(normalized);
+            return true;
+          })
+          .sort((a, b) => normalizeText(a).localeCompare(normalizeText(b)));
 
         if (filtered.length === 0) {
           setAlert({

@@ -1,5 +1,5 @@
 import { images } from "../assets";
-import { convertNames2Objects } from "../util/skillsConversion";
+import normalizeText from "../../../shared/normalizeText";
 
 // list of default skill display names
 const defaultSkillNames = [
@@ -38,8 +38,8 @@ export const defaultUser = {
   house_number: 123,
   city: "Amsterdam",
   country: "Netherlands",
-  skills: convertNames2Objects(defaultSkillNames).sort((a, b) =>
-    a.normalizedSkill.localeCompare(b.normalizedSkill),
+  skills: [...defaultSkillNames].sort((a, b) =>
+    normalizeText(a).localeCompare(normalizeText(b)),
   ),
   favorites: [],
 };

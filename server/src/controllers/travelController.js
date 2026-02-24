@@ -1,7 +1,7 @@
 import { logError, logWarning } from "../util/logging.js";
 import getTransitRouteSummary from "../services/googleMapsApi.js";
 import formatAddress from "../../../shared/formatAddress.js";
-import normalizeText from "../util/normalizeText.js";
+import normalizeText from "../../../shared/normalizeText.js";
 
 const workPlacesSet = new Set([
   "Brabantine City Row",

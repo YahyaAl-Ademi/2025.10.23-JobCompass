@@ -7,10 +7,7 @@ import { UseUser } from "../../context/UserContext";
 import AlertMessage from "../../components/AlertMessage/AlertMessage";
 
 export default function JobSearch() {
-  const displayedSkills = defaultUser.skills
-    .map((s) => s.skill)
-    .slice(0, 3)
-    .join(", ");
+  const displayedSkills = defaultUser.skills.slice(0, 3).join(", ");
   const { user } = UseUser();
 
   return (
