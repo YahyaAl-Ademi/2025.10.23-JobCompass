@@ -88,18 +88,17 @@ export default function SkillsSettings() {
       return;
     }
     let newAiSkills = [...aiSkills];
-    const newSkill = cleanUpText(skill || "");
+    const newSkill = cleanUpText(skill);
     const normalizedNewSkill = normalizeText(newSkill);
-    const validationError = validateSkillInput({ text: newSkill, skills });
+    const validationError = validateSkillInput({ skill: newSkill, skills });
     if (validationError) {
       setAlert(validationError);
       delayedClearAlert();
       return;
     }
 
-    const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const combined = [...prevSkills, newSkill].sort((a, b) =>
-      normalizeText(String(a)).localeCompare(normalizeText(String(b))),
+    const combined = [...skills, newSkill].sort((a, b) =>
+      normalizeText(a).localeCompare(normalizeText(b)),
     );
     newAiSkills = newAiSkills.filter(
       (aiSkill) => normalizeText(aiSkill) !== normalizedNewSkill,
@@ -121,53 +120,15 @@ export default function SkillsSettings() {
       return;
     }
 
-    const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const combined = [...prevSkills];
-    const failedSkills = [];
-    let newAiSkills = [...aiSkills];
-
-    for (let i = 0; i < aiSkills.length; i++) {
-      const newSkill = aiSkills[i];
-      const normalizedNewSkill = normalizeText(newSkill);
-      const validationError = validateSkillInput({
-        text: newSkill,
-        skills: combined,
-      });
-
-      if (validationError) {
-        failedSkills.push(newSkill);
-      } else {
-        combined.push(newSkill);
-        newAiSkills = newAiSkills.filter(
-          (aiSkill) => normalizeText(aiSkill) !== normalizedNewSkill,
-        );
-      }
-    }
-
-    setAiSkills(newAiSkills);
-
-    combined.sort((a, b) =>
-      normalizeText(String(a)).localeCompare(normalizeText(String(b))),
+    const combined = [...skills, ...aiSkills].sort((a, b) =>
+      normalizeText(a).localeCompare(normalizeText(b)),
     );
+    setAiSkills([]);
 
-    if (combined.length === prevSkills.length) {
-      setAlert({
-        type: "error",
-        message:
-          "None of the AI suggested skills could be added due to validation errors.",
-      });
-      delayedClearAlert();
-      return;
-    }
-
-    const failedList = failedSkills.map((skill) => `${skill}`).join(" ");
-    const alertType = failedSkills.length > 0 ? "warning" : "success";
-    const alertMessage =
-      failedSkills.length > 0
-        ? `Some skills failed to be added: ${failedList}`
-        : "All AI suggestions have been added to the user's profile!";
-
-    prepareSkillsUpdate(combined, alertMessage, alertType);
+    prepareSkillsUpdate(
+      combined,
+      "All AI suggestions have been added to the user's profile!",
+    );
 
     await changeSkillsHelper(combined);
     delayedClearAlert();
@@ -188,8 +149,7 @@ export default function SkillsSettings() {
       setShowSavePopup(true);
       return;
     }
-    const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const filtered = prevSkills.filter((s) => s !== skill);
+    const filtered = skills.filter((s) => s !== skill);
 
     prepareSkillsUpdate(
       filtered,

@@ -4,7 +4,7 @@ import { gif } from "../../assets/index.js";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { UseUser } from "../../context/UserContext";
-import cleanUpText from "../../util/cleanUpText.js";
+import validateSkillInput from "../../util/skillValidation";
 import normalizeText from "../../../../shared/normalizeText.js";
 
 export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
@@ -30,23 +30,18 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
         Array.isArray(result.skills) &&
         result.skills.length > 0
       ) {
-        const existingSkills = new Set(
-          (user?.skills ?? []).map((s) => normalizeText(s)),
-        );
-        const normalizedInResult = new Set();
+        const acceptedSkills = [];
 
         const filtered = result.skills
-          .map((skill) => cleanUpText(skill))
-          .filter((skill) => Boolean(skill))
           .filter((skill) => {
-            const normalized = normalizeText(skill);
-            if (
-              existingSkills.has(normalized) ||
-              normalizedInResult.has(normalized)
-            ) {
+            const validationError = validateSkillInput({
+              skill,
+              skills: [...(user?.skills ?? []), ...acceptedSkills],
+            });
+            if (validationError) {
               return false;
             }
-            normalizedInResult.add(normalized);
+            acceptedSkills.push(skill);
             return true;
           })
           .sort((a, b) => normalizeText(a).localeCompare(normalizeText(b)));
@@ -54,7 +49,8 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
         if (filtered.length === 0) {
           setAlert({
             type: "warning",
-            message: "AI returned skills, but they are already in your list.",
+            message:
+              "AI returned skills, but they do not pass validation checks or are already in your list.",
           });
           delayedClearAlert();
           setAiSkills([]);
