@@ -1,6 +1,6 @@
 # Entity Relationship Diagram (ERD)
 
-This diagram illustrates the current database architecture for the JobCompass application. See [`create_tables.sql`](../db_migrations/create_tables.sql) for the SQL implementation of this schema.
+This document contains only the ERD, schema overview, and detailed table descriptions for JobCompass. See [`create_tables.sql`](../db_migrations/create_tables.sql) for the SQL implementation.
 
 ```mermaid
 erDiagram
@@ -46,6 +46,7 @@ erDiagram
     user_favorites {
         user_id uuid PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_user_id_fkey, ON DELETE CASCADE"
         job_id text PK,FK "NOT NULL, PK: user_favorites_pkey, FK: user_favorites_job_id_fkey, ON DELETE CASCADE"
+        adding_date timestamp
         travel_time smallint
         least_transfers smallint
     }
@@ -80,11 +81,11 @@ The JobCompass database consists of 5 main tables that support user management, 
 Stores user authentication and profile data:
 
 - **Primary Key**: UUID-based unique identifier
-- **Authentication**: Email and password (bcrypt hashed)
+- **Authentication**: Email and password credential fields
 - **Profile**: Name, avatar, location details
 - **Skills**: Text field for user skills and qualifications
 - **Password Reset**: Token-based password recovery system
-- Activity Tracking: Track the number of user logins (defaults to 1)
+- **Activity Tracking**: Number of user logins (defaults to 1)
 
 ### jobs Table
 
@@ -94,14 +95,15 @@ Central repository for all job listings:
 - **Company Information**: Organization details, logos, and URLs
 - **Job Details**: Title, description, employment type, seniority
 - **Location**: Display location and work mode (remote/on-site)
-- **Search Optimization**: Normalized description for better matching
-- **Language**: Detected language of job description (English or Dutch) for filtering
+- **Normalized Content**: `normalized_description` field for normalized text
+- **Language**: `language` field for detected/stored language
 
 ### user_favorites Table
 
 Links users to their saved jobs with commute data:
 
 - **Composite Key**: User ID + Job ID combination
+- **Save Timestamp**: `adding_date` records when a favorite was added
 - **Commute Data**: Travel time and transfer calculations
 - **Cascade Delete**: Automatic cleanup when users or jobs are removed
 
@@ -110,14 +112,13 @@ Links users to their saved jobs with commute data:
 Tracks all search queries for caching and analytics:
 
 - **Search Context**: The actual search string used
-- **Authentication Context**: UUID of user who made the search (null for guests)
+- **Authentication Context**: Optional UUID in `is_auth`
 - **Timestamp**: When the search was performed
-- **Whole String Flag**: Boolean indicating if the string matches the whole search string (defaults to false)
+- **Whole String Flag**: Boolean `is_whole_string` (defaults to false)
 
 ### search_strings_jobs Table
 
 Many-to-many relationship between searches and resulting jobs:
 
-- **Linkage**: Connects search queries to specific job results
-- **Cache Foundation**: Enables efficient result retrieval for repeated searches
-- **Analytics**: Supports search result analysis and optimization
+- **Composite Key**: Search string + job ID combination
+- **Linkage**: Connects each search query to its associated job IDs
