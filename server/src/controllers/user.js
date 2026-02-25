@@ -320,6 +320,7 @@ export async function getMe(req, res) {
       city: userDataRow.city,
       country: userDataRow.country,
       skills: userDataRow.skills ? userDataRow.skills.split(",") : [],
+      favorites: [],
     };
     rows.forEach((row) => {
       if (row.job_id) {

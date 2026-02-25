@@ -109,13 +109,16 @@ Connect talented professionals with opportunities that match their skills, prefe
 │   │   ├── config/             # Configuration files (1 item)
 │   │   ├── util/               # Utility functions (10)
 │   │   │   ├── logging.js      # Error and info logging
-│   │   │   └── [9 more]        # cleanupInProgress, normalizeDescription, processRapidAPIjob, processScraperJob, validateAllowedFields, validateUserRegistration, validateJob, validatePassword, validationErrorMessage
+│   │   │   └── [13 more]       # cleanupInProgress, detectLanguage, normalizeEmploymentType, normalizeUrl, processRapidAPIjob, processScraperJob, validateAllowedFields, validateJob, validatePassword, validateUserRegistration, validationErrorMessage, zodTextFormat
 │   │   ├── app.js              # Express app configuration
 │   │   └── index.js            # Server entry point with cron jobs
 │   ├── .env.example            # Environment variables template
 │   ├── .eslintrc.cjs           # ESLint configuration
 │   ├── babel.config.cjs        # Babel configuration
 │   └── package.json            # Backend dependencies
+├── shared/                     # Shared utilities used across client/server
+│   ├── formatAddress.js        # Address formatting helper
+│   └── normalizeText.js        # Text normalization helper
 ├── db_migrations/              # Database schema and migrations
 │   └── create_tables.sql       # PostgreSQL table definitions
 ├── documentation/              # Project documentation

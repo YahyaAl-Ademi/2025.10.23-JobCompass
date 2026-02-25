@@ -18,10 +18,6 @@ import {
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
-import {
-  convertNames2Objects,
-  convertObjects2Names,
-} from "../util/skillsConversion";
 import { defaultUser } from "../data/defaultUser";
 
 function renderRuleItem(condition, text) {
@@ -60,7 +56,7 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
       type: "REGISTER",
       payload: {
         ...data.user,
-        skills: convertNames2Objects(data.user.skills),
+        skills: Array.isArray(data.user.skills) ? data.user.skills : [],
         favorites: [],
       },
     });
@@ -119,7 +115,7 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
       body: JSON.stringify({
         user: {
           ...defaultUser,
-          skills: convertObjects2Names(defaultUser.skills),
+          skills: defaultUser.skills,
           first_name: signupData.first_name,
           last_name: signupData.last_name,
           email: signupData.email,

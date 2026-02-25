@@ -10,10 +10,7 @@ import AIPopup from "./AIPopup";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
 import cleanUpText from "../../util/cleanUpText";
-import {
-  convertName2Obj,
-  convertObjects2Names,
-} from "../../util/skillsConversion";
+import normalizeText from "../../../../shared/normalizeText";
 import validateSkillInput from "../../util/skillValidation";
 import { gif } from "../../assets/index.js";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
@@ -77,11 +74,9 @@ export default function SkillsSettings() {
   }
 
   async function changeSkillsHelper(skills) {
-    const skillNames = convertObjects2Names(skills);
-
     performFetch({
       method: "POST",
-      body: JSON.stringify({ skills: skillNames }),
+      body: JSON.stringify({ skills }),
       credentials: "include",
     });
   }
@@ -93,23 +88,20 @@ export default function SkillsSettings() {
       return;
     }
     let newAiSkills = [...aiSkills];
-    const newSkill = cleanUpText(skill || "");
-    const validationError = validateSkillInput({ text: newSkill, skills });
+    const newSkill = cleanUpText(skill);
+    const normalizedNewSkill = normalizeText(newSkill);
+    const validationError = validateSkillInput({ skill: newSkill, skills });
     if (validationError) {
       setAlert(validationError);
       delayedClearAlert();
       return;
     }
 
-    const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const newSkillObj = convertName2Obj(newSkill);
-    const combined = [...prevSkills, newSkillObj].sort((a, b) =>
-      String(a?.normalizedSkill ?? "").localeCompare(
-        String(b?.normalizedSkill ?? ""),
-      ),
+    const combined = [...skills, newSkill].sort((a, b) =>
+      normalizeText(a).localeCompare(normalizeText(b)),
     );
     newAiSkills = newAiSkills.filter(
-      (aiSkill) => aiSkill.normalizedSkill !== newSkillObj?.normalizedSkill,
+      (aiSkill) => normalizeText(aiSkill) !== normalizedNewSkill,
     );
     setAiSkills(newAiSkills);
 
@@ -128,54 +120,15 @@ export default function SkillsSettings() {
       return;
     }
 
-    const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const combined = [...prevSkills];
-    const failedSkills = [];
-    let newAiSkills = [...aiSkills];
-
-    for (let i = 0; i < aiSkills.length; i++) {
-      const newSkill = aiSkills[i]?.skill;
-      const validationError = validateSkillInput({
-        text: newSkill,
-        skills: combined,
-      });
-
-      if (validationError) {
-        failedSkills.push(newSkill);
-      } else {
-        combined.push(convertName2Obj(newSkill));
-        newAiSkills = newAiSkills.filter(
-          (aiSkill) => aiSkill.normalizedSkill !== aiSkills[i]?.normalizedSkill,
-        );
-      }
-    }
-
-    setAiSkills(newAiSkills);
-
-    combined.sort((a, b) =>
-      String(a?.normalizedSkill ?? "").localeCompare(
-        String(b?.normalizedSkill ?? ""),
-      ),
+    const combined = [...skills, ...aiSkills].sort((a, b) =>
+      normalizeText(a).localeCompare(normalizeText(b)),
     );
+    setAiSkills([]);
 
-    if (combined.length === prevSkills.length) {
-      setAlert({
-        type: "error",
-        message:
-          "None of the AI suggested skills could be added due to validation errors.",
-      });
-      delayedClearAlert();
-      return;
-    }
-
-    const failedList = failedSkills.map((skill) => `${skill}`).join(" ");
-    const alertType = failedSkills.length > 0 ? "warning" : "success";
-    const alertMessage =
-      failedSkills.length > 0
-        ? `Some skills failed to be added: ${failedList}`
-        : "All AI suggestions have been added to the user's profile!";
-
-    prepareSkillsUpdate(combined, alertMessage, alertType);
+    prepareSkillsUpdate(
+      combined,
+      "All AI suggestions have been added to the user's profile!",
+    );
 
     await changeSkillsHelper(combined);
     delayedClearAlert();
@@ -196,8 +149,7 @@ export default function SkillsSettings() {
       setShowSavePopup(true);
       return;
     }
-    const prevSkills = Array.isArray(user?.skills) ? user.skills : [];
-    const filtered = prevSkills.filter((s) => s.skill !== skill.skill);
+    const filtered = skills.filter((s) => s !== skill);
 
     prepareSkillsUpdate(
       filtered,
@@ -293,12 +245,12 @@ export default function SkillsSettings() {
         <div className="skills-list-row">
           <div id="skillsList" className="skills-list">
             {visibleSkills.map((s, idx) => (
-              <div key={`${s.skill}-${idx}`} className="skill-item">
-                <span className="skill-name">{s.skill}</span>
+              <div key={`${s}-${idx}`} className="skill-item">
+                <span className="skill-name">{s}</span>
                 <button
                   className="skill-remove-btn"
                   onClick={() => removeSkill(s)}
-                  aria-label={`Remove ${s.skill}`}
+                  aria-label={`Remove ${s}`}
                   type="button"
                   disabled={isLoading}
                 >
@@ -371,15 +323,15 @@ export default function SkillsSettings() {
             <h4 className="ai-skills-heading">AI Suggested Skills</h4>
             <div className="skills-list">
               {aiSkills.map((s, idx) => (
-                <div key={`ai-${s.skill}-${idx}`} className="skill-item">
-                  <span className="skill-name">{s.skill}</span>
+                <div key={`ai-${s}-${idx}`} className="skill-item">
+                  <span className="skill-name">{s}</span>
                   <button
                     className="skill-remove-btn"
                     onClick={() => {
-                      skillInputRef.current.value = s.skill;
+                      skillInputRef.current.value = s;
                       handleInputSkill();
                     }}
-                    aria-label={`Add ${s.skill}`}
+                    aria-label={`Add ${s}`}
                     type="button"
                     disabled={isLoading}
                   >

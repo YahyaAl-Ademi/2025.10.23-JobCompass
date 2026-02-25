@@ -1,8 +1,15 @@
-import normalizeDescription from "./normalizeDescription.js";
+import normalizeText from "../../../shared/normalizeText.js";
 import validateJob from "./validateJob.js";
 import normalizeUrl, { stripRefIdFromUrl } from "./normalizeUrl.js";
 import checkExperienceLevel from "./checkExperienceLevel.js";
 import detectLanguage from "./detectLanguage.js";
+
+function replaceHtmlTagsWithSpaces(text) {
+  if (typeof text !== "string" || text.length === 0) {
+    return "";
+  }
+  return text.replace(/<[^>]*>/g, " ");
+}
 
 export default function processScraperJob(job) {
   const {
@@ -32,7 +39,10 @@ export default function processScraperJob(job) {
 
   const url = stripRefIdFromUrl(normalizeUrl(url1) || normalizeUrl(url2));
   const normalized_description =
-    normalizeDescription(title) + normalizeDescription(descriptionText);
+    normalizeText(title) +
+    normalizeText(
+      replaceHtmlTagsWithSpaces(description_text || descriptionText),
+    );
 
   const processedJob = {
     id: url,

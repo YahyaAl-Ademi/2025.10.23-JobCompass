@@ -4,7 +4,6 @@ import { UseUser } from "../context/UserContext";
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
-import { convertNames2Objects } from "../util/skillsConversion";
 import DonationPopup from "../components/DonationPopup/DonationPopup";
 
 export default function LoginForm({
@@ -47,7 +46,7 @@ export default function LoginForm({
       type: "LOGIN",
       payload: {
         ...data.user,
-        skills: convertNames2Objects(data.user.skills),
+        skills: data.user.skills,
         favorites: favoriteJobs,
       },
     });

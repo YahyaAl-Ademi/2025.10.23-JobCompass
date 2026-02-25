@@ -4,15 +4,14 @@ import { gif } from "../../assets/index.js";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { UseUser } from "../../context/UserContext";
-import { convertName2Obj } from "../../util/skillsConversion.js";
-import cleanUpText from "../../util/cleanUpText.js";
+import validateSkillInput from "../../util/skillValidation";
+import normalizeText from "../../../../shared/normalizeText.js";
 
 export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
   const { user } = UseUser();
   const [aiInputText, setAiInputText] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
   const isCVRef = useRef(true);
-  const isCvRequest = isCVRef.current;
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
@@ -31,19 +30,27 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
         Array.isArray(result.skills) &&
         result.skills.length > 0
       ) {
-        const existingSkills = new Set(
-          (user?.skills ?? []).map((s) => s.normalizedSkill),
-        );
+        const acceptedSkills = [];
 
         const filtered = result.skills
-          .map((skill) => convertName2Obj(cleanUpText(skill)))
-          .filter((s) => !existingSkills.has(s.normalizedSkill))
-          .sort((a, b) => a.normalizedSkill.localeCompare(b.normalizedSkill));
+          .filter((skill) => {
+            const validationError = validateSkillInput({
+              skill,
+              skills: [...(user?.skills ?? []), ...acceptedSkills],
+            });
+            if (validationError) {
+              return false;
+            }
+            acceptedSkills.push(skill);
+            return true;
+          })
+          .sort((a, b) => normalizeText(a).localeCompare(normalizeText(b)));
 
         if (filtered.length === 0) {
           setAlert({
             type: "warning",
-            message: "AI returned skills, but they are already in your list.",
+            message:
+              "AI returned skills, but they do not pass validation checks or are already in your list.",
           });
           delayedClearAlert();
           setAiSkills([]);
@@ -129,10 +136,10 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
               onClick={() => handleGetSkills(true)}
               disabled={isLoading || !aiInputText.trim()}
             >
-              {isLoading && isCvRequest
+              {isLoading && isCVRef.current
                 ? "Extracting..."
                 : "Get skills from CV"}
-              {isLoading && isCvRequest && (
+              {isLoading && isCVRef.current && (
                 <img src={gif.spinner} alt="Loading..." className="spinner" />
               )}
             </button>
@@ -141,10 +148,10 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
               onClick={() => handleGetSkills(false)}
               disabled={isLoading || !aiInputText.trim()}
             >
-              {isLoading && !isCvRequest
+              {isLoading && !isCVRef.current
                 ? "Identifying..."
                 : "Get typical job skills"}
-              {isLoading && !isCvRequest && (
+              {isLoading && !isCVRef.current && (
                 <img src={gif.spinner} alt="Loading..." className="spinner" />
               )}
             </button>

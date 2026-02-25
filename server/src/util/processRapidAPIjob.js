@@ -1,4 +1,4 @@
-import normalizeDescription from "./normalizeDescription.js";
+import normalizeText from "../../../shared/normalizeText.js";
 import validateJob from "./validateJob.js";
 import normalizeUrl, { stripRefIdFromUrl } from "./normalizeUrl.js";
 import checkExperienceLevel from "./checkExperienceLevel.js";
@@ -50,7 +50,7 @@ export default function processRapidAPIjob(job) {
 
   const url = stripRefIdFromUrl(normalizeUrl(url1) || normalizeUrl(url2));
   const normalized_description =
-    normalizeDescription(title) + normalizeDescription(description_text);
+    normalizeText(title) + normalizeText(description_text);
 
   const processedJob = {
     id: url,
