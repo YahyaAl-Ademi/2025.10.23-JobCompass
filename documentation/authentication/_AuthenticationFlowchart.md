@@ -6,26 +6,49 @@ This document provides a comprehensive overview of the authentication system in 
 
 ```mermaid
 flowchart TD
-    A[User Registration] --> B[User Login]
-    B --> C[Token Verification]
-    C --> D[Protected Routes]
-    D --> E[User Logout]
-    E --> F[Password Reset]
-    F --> G[Account Management]
-    G --> H[Security Features]
-    H --> I[Error Handling]
-    I --> J[API Reference]
+    Client[Client request to /api/users/*] --> Route{Route type}
 
-    style A fill:#e1f5fe
-    style B fill:#e8f5e8
-    style C fill:#fff3e0
-    style D fill:#f3e5f5
-    style E fill:#ffebee
-    style F fill:#e0f2f1
-    style G fill:#fce4ec
-    style H fill:#f1f8e9
-    style I fill:#fff8e1
-    style J fill:#e8eaf6
+    Route --> Register[POST /api/users]
+    Register --> Hash[bcrypt hash password]
+    Hash --> SetCookie[Set jwt cookie token]
+
+    Route --> Login[POST /api/users/login]
+    Login --> VerifyCreds[bcrypt compare credentials]
+    VerifyCreds --> SetCookie
+
+    Route --> Forgot[POST /api/users/forgot-password]
+    Forgot --> ResetToken[Generate UUID reset token + 10 min expiry]
+    ResetToken --> Mail[Send reset email via SMTP]
+
+    Route --> Reset[POST /api/users/reset-password]
+    Reset --> ValidateReset[Validate token + expiry]
+    ValidateReset --> SaveNew[Hash and store new password]
+
+    Route --> Protected[Protected routes]
+    Protected --> Verify{verifyToken middleware}
+    Verify -->|Valid token| Handler[Controller handler executes]
+    Verify -->|Invalid token + /api/jobs/search| Guest[Set req.user = null and continue]
+    Verify -->|Invalid token + other routes| Deny[401 Unauthorized]
+
+    Handler --> Me[GET /api/users/me]
+    Handler --> Profile[PUT /api/users/profile]
+    Handler --> Avatar[POST /api/users/update-avatar]
+    Handler --> Fav[POST /api/users/favorites/toggle]
+    Handler --> ChangePwd[POST /api/users/change-password]
+    Handler --> Skills[POST /api/users/change-skills]
+    Handler --> Delete[DELETE /api/users/delete]
+    Handler --> Logout[POST /api/users/logout]
+
+    Logout --> Blacklist[Add token to in-memory blacklist]
+    Blacklist --> ClearCookie[Clear token cookie]
+
+    style Client fill:#e1f5fe
+    style Route fill:#fff3e0
+    style Protected fill:#f3e5f5
+    style Verify fill:#fff3e0
+    style Deny fill:#ffebee
+    style Guest fill:#e8f5e8
+    style Blacklist fill:#fff8e1
 ```
 
 ## Phase Navigation

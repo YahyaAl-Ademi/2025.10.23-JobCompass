@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS user_favorites (
     user_id uuid NOT NULL,
     job_id text NOT NULL,
+    adding_date timestamp without time zone,
     travel_time smallint,
     least_transfers smallint,
     CONSTRAINT user_favorites_pkey PRIMARY KEY (user_id, job_id),

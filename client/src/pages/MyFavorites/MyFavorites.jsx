@@ -10,17 +10,23 @@ export default function MyFavorites() {
   const skills = Array.isArray(user?.skills) ? user.skills : [];
 
   const jobsWithSkills = useMemo(() => {
-    return favoriteJobs.map((job) => {
-      const skillsInDescription = getSkillsInDescription(
-        job.normalized_description || "",
-        skills,
-      );
-      return {
-        ...job,
-        skillsInDescription,
-        skillsMatch: String(skillsInDescription.length).padStart(2, "0"),
-      };
-    });
+    return [...favoriteJobs]
+      .sort((a, b) => {
+        const dateA = a?.adding_date ? new Date(a.adding_date) : new Date(0);
+        const dateB = b?.adding_date ? new Date(b.adding_date) : new Date(0);
+        return dateA - dateB;
+      })
+      .map((job) => {
+        const skillsInDescription = getSkillsInDescription(
+          job.normalized_description,
+          skills,
+        );
+        return {
+          ...job,
+          skillsInDescription,
+          skillsMatch: String(skillsInDescription.length).padStart(2, "0"),
+        };
+      });
   }, [favoriteJobs, skills]);
 
   if (favoriteJobs.length === 0) {

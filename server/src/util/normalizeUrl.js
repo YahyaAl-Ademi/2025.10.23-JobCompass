@@ -15,8 +15,8 @@ export default function normalizeUrl(url) {
  * @returns {string} - URL without refId and following query params
  */
 export function stripRefIdFromUrl(url) {
-  if (!url || typeof url !== "string") return url || "";
-  const i = url.toLowerCase().indexOf("?refid=");
+  if (!url || typeof url !== "string") return "";
+  const i = url.toLowerCase().indexOf("?");
   if (i === -1) return url;
   return url.slice(0, i);
 }
