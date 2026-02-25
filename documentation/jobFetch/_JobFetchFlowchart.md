@@ -11,6 +11,7 @@
 - [4.4. Server-Network Error Handling](4.4.Server-Network%20Error%20Handling.md)
 - [4.5. Background Scraper Fetch](4.5.Background%20Scraper%20Fetch.md)
 - [5. Travel Details Fetch](5.Travel%20Details%20Fetch.md)
+- [6. Response Delivery](6.Response%20Delivery.md)
 - [6. Display Results](6.Display%20Results.md)
 
 ```mermaid
@@ -54,8 +55,10 @@ flowchart TD
         N -.->|Fetch jobs| ApifyAPI
         N -.->|Store results| DB
 
-        J --> O[Split search_string into words]
-        O --> P[For each word: cache lookup → RapidAPI fetch if miss<br/>dedupe aggregated jobs]
+        J --> O[Split search_string by spaces, slashes, and hyphens]
+        O --> O2{Run word loop?<br/>is_whole_string undefined<br/>OR words > 1}
+        O2 -->|No| Q["<a href='./4.3.Search%20Processing%20&%20Results%20Aggregation.md'>4.3.Search Processing & Results Aggregation</a>"]
+        O2 -->|Yes| P[For each word: cache lookup → RapidAPI fetch if miss<br/>dedupe aggregated jobs]
         P -.->|Query cache| DB
         P -.->|Fetch jobs| RapidAPI
         P -.->|Store results| DB
@@ -66,7 +69,8 @@ flowchart TD
 
     R -->|Yes| S["<a href='./5.Travel%20Details%20Fetch.md'>5.Travel Details Fetch</a>"]
     S -.->|Calculate travel times| GoogleMaps
-    S --> T["<a href='./6.Display%20Results.md'>6.Display Results</a>"]
+    S --> U["<a href='./6.Response%20Delivery.md'>6.Response Delivery</a>"]
+    U --> T["<a href='./6.Display%20Results.md'>6.Display Results</a>"]
     H --> T
     C --> T
     T --> User
@@ -89,9 +93,11 @@ flowchart TD
     style M fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style N fill:#96783c,stroke:#4a9eff,color:#fff
     style O fill:#96783c,stroke:#4a9eff,color:#fff
+    style O2 fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style P fill:#96783c,stroke:#4a9eff,color:#fff
     style Q fill:#647850,stroke:#4a9eff,color:#fff
     style R fill:#ff6b6b,stroke:#4a9eff,color:#fff
     style S fill:#787846,stroke:#4a9eff,color:#fff
+    style U fill:#787846,stroke:#4a9eff,color:#fff
     style T fill:#4a9eff,stroke:#fff,color:#fff
 ```
