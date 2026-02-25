@@ -12,7 +12,7 @@
 - [4.5. Background Scraper Fetch](4.5.Background%20Scraper%20Fetch.md)
 - [5. Travel Details Fetch](5.Travel%20Details%20Fetch.md)
 - [6. Response Delivery](6.Response%20Delivery.md)
-- [6. Display Results](6.Display%20Results.md)
+- [7. Display Results](7.Display%20Results.md)
 
 ```mermaid
 flowchart TD
@@ -70,7 +70,7 @@ flowchart TD
     R -->|Yes| S["<a href='./5.Travel%20Details%20Fetch.md'>5.Travel Details Fetch</a>"]
     S -.->|Calculate travel times| GoogleMaps
     S --> U["<a href='./6.Response%20Delivery.md'>6.Response Delivery</a>"]
-    U --> T["<a href='./6.Display%20Results.md'>6.Display Results</a>"]
+    U --> T["<a href='./7.Display%20Results.md'>7.Display Results</a>"]
     H --> T
     C --> T
     T --> User
