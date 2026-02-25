@@ -37,7 +37,7 @@ const USER_FULL_INFO_QUERY = `
   SELECT
     u.id AS user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
     u.street, u.house_number, u.city, u.country, u.skills, u.number_of_logins,
-    uf.travel_time, uf.least_transfers,
+    uf.travel_time, uf.least_transfers, uf.adding_date,
     j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
     j.employment_type, j.url, j.organization_logo, j.display_location,
     j.work_mode, j.seniority, j.description_text, j.normalized_description
@@ -225,6 +225,7 @@ export async function loginUser(req, res) {
           description_text: row.description_text,
           travel_time: row.travel_time,
           least_transfers: row.least_transfers,
+          adding_date: row.adding_date,
           normalized_description: row.normalized_description,
         };
         user.favorites.push(jobFavorite);
@@ -339,6 +340,7 @@ export async function getMe(req, res) {
           description_text: row.description_text,
           travel_time: row.travel_time,
           least_transfers: row.least_transfers,
+          adding_date: row.adding_date,
           normalized_description: row.normalized_description,
         };
         user.favorites.push(jobFavorite);

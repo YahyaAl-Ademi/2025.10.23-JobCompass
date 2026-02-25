@@ -1,7 +1,7 @@
 import normalizeText from "../../../shared/normalizeText";
 
 export default function getSkillsInDescription(
-  normalized_description,
+  normalized_description = "",
   skills = [],
 ) {
   return skills.filter((skill) =>

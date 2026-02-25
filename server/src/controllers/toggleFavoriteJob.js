@@ -81,12 +81,19 @@ export default async function toggleFavoriteJob(req, res) {
     }
 
     //  Add favorite and store per-user travel metadata on the relation
-    await connectedClient.query(
-      "INSERT INTO user_favorites (user_id, job_id, travel_time, least_transfers) VALUES ($1, $2, $3, $4)",
+    const insertFavoriteResult = await connectedClient.query(
+      "INSERT INTO user_favorites (user_id, job_id, adding_date, travel_time, least_transfers) VALUES ($1, $2, NOW(), $3, $4) RETURNING adding_date",
       [user_id, jobId, job.travel_time, job.least_transfers],
     );
 
-    return res.status(200).json({ success: true, action: "added", job });
+    return res.status(200).json({
+      success: true,
+      action: "added",
+      job: {
+        ...job,
+        adding_date: insertFavoriteResult.rows[0].adding_date,
+      },
+    });
   } catch (err) {
     logError(`Toggle favorite error: ${err}`);
     return res.status(500).json({
