@@ -16,8 +16,16 @@ if (!process.env.GOOGLE_MAPS_API_KEY) {
 }
 
 export default async function getTransitRouteSummary(origin, destination) {
-  const arrivalDate = new Date();
-  arrivalDate.setDate(arrivalDate.getDate() + 44);
+  let dateOffset = 44;
+  const today = new Date();
+  const arrivalDate = new Date(today);
+  arrivalDate.setDate(today.getDate() + dateOffset);
+
+  while (arrivalDate.getDay() === 0 || arrivalDate.getDay() === 6) {
+    dateOffset -= 1;
+    arrivalDate.setDate(today.getDate() + dateOffset);
+  }
+
   arrivalDate.setHours(9, 0, 0, 0);
   const arrivalTime = Math.floor(arrivalDate.getTime() / 1000);
   console.log("date", arrivalDate);
