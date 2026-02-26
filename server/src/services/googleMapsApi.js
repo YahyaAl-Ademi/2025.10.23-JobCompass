@@ -9,35 +9,17 @@ Google Maps Integration Details:
 - Performance: Optimized for transit mode with duration and transfer metrics
 */
 
-import Holidays from "date-holidays";
-
-const holidays = new Holidays("NL");
-
 if (!process.env.GOOGLE_MAPS_API_KEY) {
   throw new Error(
     "GOOGLE_MAPS_API_KEY is not defined in environment variables. Please check your .env file.",
   );
 }
 
-export default async function getTransitRouteSummary(origin, destination) {
-  let dateOffset = 44;
-  const today = new Date();
-  let arrivalDate = new Date();
-  arrivalDate.setDate(today.getDate() + dateOffset);
-
-  while (
-    arrivalDate.getDay() === 0 ||
-    arrivalDate.getDay() === 6 ||
-    holidays.isHoliday(arrivalDate)
-  ) {
-    dateOffset -= 1;
-    arrivalDate = new Date();
-    arrivalDate.setDate(today.getDate() + dateOffset);
-  }
-
-  arrivalDate.setHours(9, 0, 0, 0);
-  const arrivalTime = Math.floor(arrivalDate.getTime() / 1000);
-
+export default async function getTransitRouteSummary(
+  origin,
+  destination,
+  arrivalTime,
+) {
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(
     origin,
   )}&destination=${encodeURIComponent(

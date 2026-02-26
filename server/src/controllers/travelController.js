@@ -2,6 +2,7 @@ import { logError, logWarning } from "../util/logging.js";
 import getTransitRouteSummary from "../services/googleMapsApi.js";
 import formatAddress from "../../../shared/formatAddress.js";
 import normalizeText from "../../../shared/normalizeText.js";
+import getArrivalTime from "../util/getArrivalTime.js";
 
 const workPlacesSet = new Set([
   "Brabantine City Row",
@@ -36,6 +37,7 @@ export default async function calculateBatchTravelTime(req, res) {
       });
     }
 
+    const arrivalTime = getArrivalTime();
     const { city } = homeAddress;
     const formattedHomeAddress = formatAddress(homeAddress);
     const normalizedHomeCity = normalizeText(city);
@@ -62,6 +64,7 @@ export default async function calculateBatchTravelTime(req, res) {
           const travelData = await getTransitRouteSummary(
             formattedHomeAddress,
             workCity,
+            arrivalTime,
           );
           result = {
             workCity,
