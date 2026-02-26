@@ -9,6 +9,10 @@ Google Maps Integration Details:
 - Performance: Optimized for transit mode with duration and transfer metrics
 */
 
+import nolidayModule from "noliday";
+
+const { default: noliday, Country } = nolidayModule;
+
 if (!process.env.GOOGLE_MAPS_API_KEY) {
   throw new Error(
     "GOOGLE_MAPS_API_KEY is not defined in environment variables. Please check your .env file.",
@@ -21,7 +25,14 @@ export default async function getTransitRouteSummary(origin, destination) {
   const arrivalDate = new Date(today);
   arrivalDate.setDate(today.getDate() + dateOffset);
 
-  while (arrivalDate.getDay() === 0 || arrivalDate.getDay() === 6) {
+  while (
+    arrivalDate.getDay() === 0 ||
+    arrivalDate.getDay() === 6 ||
+    noliday.isHoliday({
+      date: arrivalDate,
+      country: Country.Netherlands,
+    })
+  ) {
     dateOffset -= 1;
     arrivalDate.setDate(today.getDate() + dateOffset);
   }
