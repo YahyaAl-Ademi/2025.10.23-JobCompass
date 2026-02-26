@@ -18,7 +18,7 @@ if (!process.env.GOOGLE_MAPS_API_KEY) {
 export default async function getTransitRouteSummary(
   origin,
   destination,
-  arrivalTime,
+  arrivalTime = Math.floor(Date.now() / 1000),
 ) {
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(
     origin,
