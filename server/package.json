@@ -13,7 +13,7 @@
     "test:coverage": "jest --coverage",
     "setup": "npm ci",
     "start": "node ./src/index",
-    "dev": "nodemon ./src/index",
+    "dev": "nodemon --watch src --watch ../shared ./src/index",
     "code-style-check": "npm run prettier && npm run lint",
     "pre-commit": "npm run code-style-check",
     "autofix": "npm run lint:fix && npm run prettier:fix",

@@ -4,28 +4,28 @@
 
 JobCompass is a full-stack job search platform focused on practical matching: skill-based search, smart filtering/sorting, commute estimation, and favorites.
 
+## 🎯 Mission
+
+Connect talented professionals with opportunities that match their skills, preferences, and career goals.
+
+## ✨ Features
+
+- **🔍 Smart filtering and sorting** of fetched job listings
+- **⚡ Skill-oriented matching** from normalized job descriptions
+- **🗺️ Commute calculator** (travel time + transfer count) using Google Directions API
+- **❤️ Favorites** with persisted travel details
+- **👤 User profiles** (skills, address settings, avatar upload)
+- **👥 Guest mode** with default profile and reduced job-fetch scope
+- **✉️ Password reset flow** via email
+- **🤖 AI skills assistant** for CV/job-input-based skill suggestions
+
+## 🛠️ Tech Stack
+
 The repository is a monorepo with:
 
 - `client/` — Vite + React frontend
 - `server/` — Express + PostgreSQL backend
 - `shared/` — utilities used by both client and server
-
-## Mission
-
-Connect talented professionals with opportunities that match their skills, preferences, and career goals.
-
-## Features
-
-- **Smart filtering and sorting** of fetched job listings
-- **Skill-oriented matching** from normalized job descriptions
-- **Commute calculator** (travel time + transfer count) using Google Directions API
-- **Favorites** with persisted travel details
-- **User profiles** (skills, address settings, avatar upload)
-- **Guest mode** with default profile and reduced job-fetch scope
-- **Password reset flow** via email
-- **AI skills assistant** (`/api/ai/assist-skills`) for CV/job-input-based skill suggestions
-
-## Tech Stack
 
 ### Frontend
 
@@ -145,7 +145,14 @@ OPENAI_API_KEY=
 VITE_BACKEND_URL=http://localhost:3000
 ```
 
-## Getting Started
+## 🚀 Getting Started
+
+> If you haven’t cloned the repository yet, run:
+>
+> ```bash
+> git clone https://github.com/YaroslavKazeev/2025.10.23-JobCompass.git
+> cd 2025.10.23-JobCompass
+> ```
 
 1. Install dependencies (root + client + server):
 
@@ -167,7 +174,7 @@ npm run dev
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:3000`
 
-## Root Scripts
+## 📜 Root Scripts
 
 - `npm run dev` — Run client and server in parallel
 - `npm run start` — Start production server (`server/src/index`)
@@ -177,30 +184,44 @@ npm run dev
 - `npm run lint` — Run client and server lint
 - `npm run code-style-check` — Prettier check + lint (client and server)
 
-## Deployment
+## 🚢 Deployment
 
-- `Procfile` starts the app via `npm run start`
-- `heroku-postbuild` runs setup and client build:
+The deployment relies on the following scripts in the root `package.json`:
 
-```bash
-npm run heroku-postbuild
-```
+- `heroku-postbuild`: Automatically runs during Heroku's build phase. It sets up dependencies and builds the client production bundle.
+  ```bash
+  npm run heroku-postbuild
+  ```
+- `start`: The production start command, as defined in the `Procfile`.
+  ```bash
+  npm run start
+  ```
 
-## Contributors
+### 🔄 CI/CD Pipeline
+
+1.  **Continuous Integration (GitHub Actions)**: Every Pull Request triggers automated workflows:
+    - `client-code-style-check`: Runs Prettier and Lint for the frontend.
+    - `server-code-style-check`: Runs Prettier and Lint for the backend.
+    - (Optional) Performance and unit tests are executed to ensure stability.
+2.  **Automated Deployment (Heroku)**:
+    - **Review Apps**: Every PR automatically creates a temporary, isolated environment on Heroku. A link is provided in the PR for manual testing and QA.
+    - **Production**: Merging to `main` (or `develop`) triggers an automatic deployment to the main Heroku application.
+
+## 👥 Contributors
 
 - **Yaroslav Kazeev** - HYF alumni - [GitHub](https://github.com/YaroslavKazeev) | [LinkedIn](https://www.linkedin.com/in/yaroslavkazeev/)
 - **Yahya Al-Ademi** - HYF alumni - [GitHub](https://github.com/YahyaAl-Ademi) | [LinkedIn](https://www.linkedin.com/in/yahya-al-ademi-12786555/)
 - **Stas Seldin** - DevOps, Education Director - [GitHub](https://github.com/stasel) | [LinkedIn](https://www.linkedin.com/in/stasel/)
 
-## Contact
+## 📧 Contact
 
 Questions or feedback: [jobcompass2025@gmail.com](mailto:jobcompass2025@gmail.com?subject=Question%20about%20JobCompass)
 
-## License
+## 📄 License
 
 ISC
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - Based on [c53-final-project-group-A](https://github.com/HackYourFutureProjects/c53-final-project-group-A)
 - Thanks to all mentors and contributors who supported the project
