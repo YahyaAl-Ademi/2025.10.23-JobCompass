@@ -9,9 +9,9 @@ Google Maps Integration Details:
 - Performance: Optimized for transit mode with duration and transfer metrics
 */
 
-import nolidayModule from "noliday";
+import Holidays from "date-holidays";
 
-const { default: noliday, Country } = nolidayModule;
+const holidays = new Holidays("NL");
 
 if (!process.env.GOOGLE_MAPS_API_KEY) {
   throw new Error(
@@ -22,24 +22,21 @@ if (!process.env.GOOGLE_MAPS_API_KEY) {
 export default async function getTransitRouteSummary(origin, destination) {
   let dateOffset = 44;
   const today = new Date();
-  const arrivalDate = new Date(today);
+  let arrivalDate = new Date();
   arrivalDate.setDate(today.getDate() + dateOffset);
 
   while (
     arrivalDate.getDay() === 0 ||
     arrivalDate.getDay() === 6 ||
-    noliday.isHoliday({
-      date: arrivalDate,
-      country: Country.Netherlands,
-    })
+    holidays.isHoliday(arrivalDate)
   ) {
     dateOffset -= 1;
+    arrivalDate = new Date();
     arrivalDate.setDate(today.getDate() + dateOffset);
   }
 
   arrivalDate.setHours(9, 0, 0, 0);
   const arrivalTime = Math.floor(arrivalDate.getTime() / 1000);
-  console.log("date", arrivalDate);
 
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(
     origin,
@@ -52,7 +49,6 @@ export default async function getTransitRouteSummary(origin, destination) {
   const data = await response.json();
 
   const routes = data.routes;
-  console.log("routes", routes);
 
   if (!routes || routes.length === 0) throw new Error("No routes found");
   const durations = routes.map((r) => r.legs[0].duration.value / 60);
@@ -60,8 +56,6 @@ export default async function getTransitRouteSummary(origin, destination) {
     (r) =>
       r.legs[0].steps.filter((s) => s.travel_mode === "TRANSIT").length - 1,
   );
-  console.log("durations", durations);
-  console.log("transfers", transfers);
 
   return {
     travel_time: durations.reduce((a, b) => a + b, 0) / durations.length,
