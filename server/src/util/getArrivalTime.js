@@ -21,9 +21,20 @@ function getNetherlandsUtcOffsetHours(date) {
 
 export default function getArrivalTime() {
   let dateOffset = 44;
-  const today = new Date();
-  let arrivalDate = new Date();
-  arrivalDate.setDate(today.getDate() + dateOffset);
+  const now = new Date();
+  const today = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      0,
+      0,
+      0,
+      0,
+    ),
+  );
+  let arrivalDate = new Date(today);
+  arrivalDate.setUTCDate(today.getUTCDate() + dateOffset);
 
   while (
     arrivalDate.getDay() === 0 ||
@@ -31,8 +42,8 @@ export default function getArrivalTime() {
     holidays.isHoliday(arrivalDate)
   ) {
     dateOffset -= 1;
-    arrivalDate = new Date();
-    arrivalDate.setDate(today.getDate() + dateOffset);
+    arrivalDate = new Date(today);
+    arrivalDate.setUTCDate(today.getUTCDate() + dateOffset);
   }
 
   const nlUtcOffsetHours = getNetherlandsUtcOffsetHours(arrivalDate);
