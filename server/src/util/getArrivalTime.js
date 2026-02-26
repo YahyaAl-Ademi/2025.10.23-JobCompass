@@ -49,9 +49,9 @@ export default function getArrivalTime() {
   const nlUtcOffsetHours = getNetherlandsUtcOffsetHours(arrivalDate);
   arrivalDate = new Date(
     Date.UTC(
-      arrivalDate.getFullYear(),
-      arrivalDate.getMonth(),
-      arrivalDate.getDate(),
+      arrivalDate.getUTCFullYear(),
+      arrivalDate.getUTCMonth(),
+      arrivalDate.getUTCDate(),
       9 - nlUtcOffsetHours,
       0,
       0,
