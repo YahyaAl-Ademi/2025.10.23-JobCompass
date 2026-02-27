@@ -37,8 +37,8 @@ export default function getArrivalTime() {
   arrivalDate.setUTCDate(today.getUTCDate() + dateOffset);
 
   while (
-    arrivalDate.getDay() === 0 ||
-    arrivalDate.getDay() === 6 ||
+    arrivalDate.getUTCDay() === 0 ||
+    arrivalDate.getUTCDay() === 6 ||
     holidays.isHoliday(arrivalDate)
   ) {
     dateOffset -= 1;
