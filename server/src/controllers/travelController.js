@@ -18,6 +18,10 @@ const workPlacesSet = new Set([
   "Utrecht, Netherlands",
   "Zeeland, Netherlands",
   "Zuid-Holland, Netherlands",
+  "Amsterdam Area",
+  "Utrecht Area",
+  "Arnhem-Nijmegen Region",
+  "The Randstad, Netherlands",
 ]);
 
 export default async function calculateBatchTravelTime(req, res) {
