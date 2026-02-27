@@ -13,7 +13,7 @@
     "test:coverage": "jest --coverage",
     "setup": "npm ci",
     "start": "node ./src/index",
-    "dev": "nodemon ./src/index",
+    "dev": "nodemon --watch src --watch ../shared ./src/index",
     "code-style-check": "npm run prettier && npm run lint",
     "pre-commit": "npm run code-style-check",
     "autofix": "npm run lint:fix && npm run prettier:fix",
@@ -42,6 +42,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "date-holidays": "^3.26.8",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",

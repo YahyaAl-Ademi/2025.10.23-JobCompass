@@ -15,16 +15,23 @@ if (!process.env.GOOGLE_MAPS_API_KEY) {
   );
 }
 
-export default async function getTransitRouteSummary(origin, destination) {
+export default async function getTransitRouteSummary(
+  origin,
+  destination,
+  arrivalTime = Math.floor(Date.now() / 1000),
+) {
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(
     origin,
-  )}&destination=${encodeURIComponent(destination)}&mode=transit&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+  )}&destination=${encodeURIComponent(
+    destination,
+  )}&mode=transit&arrival_time=${arrivalTime}&alternatives=true&key=${process.env.GOOGLE_MAPS_API_KEY}`;
 
   const response = await fetch(url);
   if (!response.ok) throw new Error("Failed to fetch from Google Maps API");
   const data = await response.json();
 
   const routes = data.routes;
+
   if (!routes || routes.length === 0) throw new Error("No routes found");
   const durations = routes.map((r) => r.legs[0].duration.value / 60);
   const transfers = routes.map(
