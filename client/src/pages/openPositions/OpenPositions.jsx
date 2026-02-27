@@ -94,7 +94,6 @@ export default function OpenPositions() {
       );
       return {
         ...job,
-        language: job.language,
         skillsInDescription,
         skillsMatch: String(skillsInDescription.length).padStart(2, "0"),
       };
