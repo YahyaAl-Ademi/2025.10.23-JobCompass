@@ -22,10 +22,10 @@ export function findFilterOptions(allJobs) {
     if (job.language) languageSet.add(job.language);
   }
   return {
-    experienceOptions: Array.from(experienceSet),
-    jobTypeOptions: Array.from(jobTypeSet),
-    workModeOptions: Array.from(workModeSet),
-    locationPrecisionOptions: Array.from(locationModeSet),
+    experienceOptions: Array.from(experienceSet).sort(),
+    jobTypeOptions: Array.from(jobTypeSet).sort(),
+    workModeOptions: Array.from(workModeSet).sort(),
+    locationPrecisionOptions: Array.from(locationModeSet).sort(),
     languageOptions: Array.from(languageSet).sort(),
   };
 }
@@ -54,10 +54,7 @@ export function filterJobs(allJobs, activeFilters) {
       locationPrecision.size === 0 ||
       (locationPrecision.has("approximate") && hasApproximateLocation(job)) ||
       (locationPrecision.has("precise") && !hasApproximateLocation(job));
-    const matchesLanguage =
-      language.size === 0 ||
-      language.has(job.language) ||
-      (!job.language && language.size > 0);
+    const matchesLanguage = language.size === 0 || language.has(job.language);
 
     return (
       matchesSeniority &&
