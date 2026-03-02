@@ -20,7 +20,8 @@ export default async function connectNeonDB() {
   }
 
   try {
-    connectedClient = await client.connect();
+    await client.connect();
+    connectedClient = client;
   } catch (err) {
     error = err;
     logError(`Database connection error: ${err.message}`);
