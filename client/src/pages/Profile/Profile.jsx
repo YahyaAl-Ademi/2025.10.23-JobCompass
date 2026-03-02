@@ -58,27 +58,25 @@ export default function Profile() {
     }, DELAYED_CLEAR_INTERVAL);
   }
 
-  const {
-    error: updateProfileError,
-    isLoading: isUpdateLoading,
-    performFetch: performUpdateProfile,
-  } = useFetch("/users/profile", (data) => {
-    dispatch({
-      type: "UPDATE_USER",
-      payload: {
-        ...data.user,
-        skills: Array.isArray(data.user.skills) ? data.user.skills : [],
-      },
-    });
-    setAlert({ type: "success", message: "Profile updated successfully!" });
-    delayedClearAlert();
-  });
+  const { error, isLoading, performFetch } = useFetch(
+    "/users/profile",
+    (data) => {
+      dispatch({
+        type: "UPDATE_USER",
+        payload: {
+          ...data.user,
+          skills: Array.isArray(data.user.skills) ? data.user.skills : [],
+        },
+      });
+      setAlert({ type: "success", message: "Profile updated successfully!" });
+      delayedClearAlert();
+    },
+  );
 
   useEffect(() => {
-    if (updateProfileError)
-      setAlert({ type: "error", message: String(updateProfileError) });
+    if (error) setAlert({ type: "error", message: String(error) });
     delayedClearAlert();
-  }, [updateProfileError]);
+  }, [error]);
 
   function handleDeleteClick() {
     setShowDeletePopup(true);
@@ -195,7 +193,7 @@ export default function Profile() {
           setAlert({ type: "info", message: "No changes detected." });
         delayedClearAlert();
       } else {
-        performUpdateProfile({
+        performFetch({
           method: "PUT",
           body: JSON.stringify(updatedFields),
           credentials: "include",
@@ -269,7 +267,7 @@ export default function Profile() {
         currentPasswordInputRef={currentPasswordInputRef}
         newPasswordInputRef={newPasswordInputRef}
         confirmPasswordInputRef={confirmPasswordInputRef}
-        isUpdateLoading={isUpdateLoading}
+        isLoading={isLoading}
       />
       {/* <!-- Save Button --> */}
       <div className="profile-save-row">
@@ -285,7 +283,7 @@ export default function Profile() {
             className="profile-save-btn"
           >
             Save
-            {isUpdateLoading && (
+            {isLoading && (
               <img src={gif.spinner} alt="Loading..." className="spinner" />
             )}
           </button>

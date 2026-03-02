@@ -8,7 +8,7 @@ export default function ChangePassword({
   currentPasswordInputRef,
   newPasswordInputRef,
   confirmPasswordInputRef,
-  isUpdateLoading,
+  isLoading,
 }) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -19,7 +19,7 @@ export default function ChangePassword({
     <div className="profile-section">
       <h3 className="profile-section-title">
         Change password{" "}
-        {isUpdateLoading && (
+        {isLoading && (
           <img src={gif.spinner} alt="Loading..." className="spinner" />
         )}
       </h3>
