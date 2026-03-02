@@ -3,7 +3,7 @@ import { logError } from "../util/logging.js";
 export function createHttpError(status, messageText) {
   const error = new Error(messageText);
   error.status = status;
-  throw error;
+  return error;
 }
 
 export default function errorHandler(err, req, res, next) {
