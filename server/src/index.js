@@ -3,19 +3,18 @@
 import "dotenv/config";
 import express from "express";
 import cron from "node-cron";
-
-import app from "./app.js";
 import { logInfo, logError } from "./util/logging.js";
+
 import cleanupDatabase from "./services/cleanupDatabase.js";
 import validateEnvironment from "./config/validateEnvironment.js";
+validateEnvironment();
 
+import app from "./app.js";
 /*
 Maintenance & Operations Implementation:
 - Daily Cleanup: Removal of old cache entries and expired data (see cleanupDatabase function below) and Cron jobs for scheduled maintenance tasks
 - Error Monitoring: Comprehensive logging and alerting (see logging utility)
 */
-
-validateEnvironment();
 const port = process.env.PORT;
 
 // Schedule cleanup in format "12 23 * * 4", where:
