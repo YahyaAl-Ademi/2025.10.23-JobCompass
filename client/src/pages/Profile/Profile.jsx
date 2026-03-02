@@ -99,19 +99,29 @@ export default function Profile() {
       newPassword: null,
     };
 
-    if (!(newPassword && confirmPassword && currentPassword)) {
-      result.passwordValidationError =
-        "To change your password, please fill in all fields.";
-    } else if (!validatePassword(newPassword)) {
-      result.passwordValidationError =
-        "Password must be at least 8 characters and meet at least 2 complexity rules.";
-    } else {
-      const matchCheck = validatePasswordMatch(newPassword, confirmPassword);
-      if (!matchCheck.valid) {
-        result.passwordValidationError = matchCheck.message;
+    if (currentPassword || newPassword || confirmPassword) {
+      if (!(newPassword && confirmPassword && currentPassword)) {
+        result.passwordValidationError = {
+          type: "error",
+          message: "To change your password, please fill in all fields.",
+        };
+      } else if (!validatePassword(newPassword)) {
+        result.passwordValidationError = {
+          type: "error",
+          message:
+            "Password must be at least 8 characters and meet at least 2 complexity rules.",
+        };
       } else {
-        result.currentPassword = currentPassword;
-        result.newPassword = newPassword;
+        const matchCheck = validatePasswordMatch(newPassword, confirmPassword);
+        if (!matchCheck.valid) {
+          result.passwordValidationError = {
+            type: "error",
+            message: matchCheck.message,
+          };
+        } else {
+          result.currentPassword = currentPassword;
+          result.newPassword = newPassword;
+        }
       }
     }
 
@@ -152,10 +162,7 @@ export default function Profile() {
       passwordValidationError;
 
     if (validationError) {
-      setAlert({
-        type: "error",
-        message: validationError,
-      });
+      setAlert(validationError);
       delayedClearAlert();
     } else {
       if (first_name !== user.first_name) updatedFields.first_name = first_name;
