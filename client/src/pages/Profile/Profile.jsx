@@ -18,13 +18,21 @@ export default function Profile() {
   const [alert, setAlert] = useState({ type: "", message: "" });
   const first_nameInputRef = useRef(null);
   const last_nameInputRef = useRef(null);
-  const changePasswordRef = useRef(null);
   const streetInputRef = useRef(null);
   const houseInputRef = useRef(null);
   const cityInputRef = useRef(null);
   const countryInputRef = useRef(null);
+  first_nameInputRef.current &&
+    (first_nameInputRef.current.value = user.first_name);
+  last_nameInputRef.current &&
+    (last_nameInputRef.current.value = user.last_name);
+  streetInputRef.current && (streetInputRef.current.value = user.street);
+  houseInputRef.current && (houseInputRef.current.value = user.house_number);
+  cityInputRef.current && (cityInputRef.current.value = user.city);
+  countryInputRef.current && (countryInputRef.current.value = user.country);
   const { user, dispatch } = UseUser();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const changePasswordRef = useRef(null);
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
@@ -57,24 +65,6 @@ export default function Profile() {
       setAlert({ type: "error", message: String(updateProfileError) });
     delayedClearAlert();
   }, [updateProfileError]);
-
-  useEffect(() => {
-    if (
-      first_nameInputRef.current &&
-      last_nameInputRef.current &&
-      streetInputRef.current &&
-      houseInputRef.current &&
-      cityInputRef.current &&
-      countryInputRef.current
-    ) {
-      first_nameInputRef.current.value = user.first_name;
-      last_nameInputRef.current.value = user.last_name;
-      streetInputRef.current.value = user.street;
-      houseInputRef.current.value = user.house_number;
-      cityInputRef.current.value = user.city;
-      countryInputRef.current.value = user.country;
-    }
-  }, [user]);
 
   function handleDeleteClick() {
     setShowDeletePopup(true);
