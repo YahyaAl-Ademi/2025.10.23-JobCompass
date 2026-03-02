@@ -30,22 +30,6 @@ export default function Profile() {
   const newPasswordInputRef = useRef("");
   const confirmPasswordInputRef = useRef("");
   const { user, dispatch } = UseUser();
-  first_nameInputRef.current &&
-    (first_nameInputRef.current.value = user.first_name);
-  last_nameInputRef.current &&
-    (last_nameInputRef.current.value = user.last_name);
-  streetInputRef.current && (streetInputRef.current.value = user.street);
-  houseInputRef.current && (houseInputRef.current.value = user.house_number);
-  cityInputRef.current && (cityInputRef.current.value = user.city);
-  countryInputRef.current && (countryInputRef.current.value = user.country);
-  currentPasswordInputRef.current &&
-    (currentPasswordInputRef.current.value = "");
-  newPasswordInputRef.current && (newPasswordInputRef.current.value = "");
-  confirmPasswordInputRef.current &&
-    (confirmPasswordInputRef.current.value = "");
-  newPasswordInputRef.current && (newPasswordInputRef.current.value = "");
-  confirmPasswordInputRef.current &&
-    (confirmPasswordInputRef.current.value = "");
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
   function handleClearAlert() {
@@ -57,6 +41,28 @@ export default function Profile() {
       handleClearAlert();
     }, DELAYED_CLEAR_INTERVAL);
   }
+
+  useEffect(() => {
+    if (!user) return;
+
+    if (first_nameInputRef.current)
+      first_nameInputRef.current.value = user.first_name ?? "";
+    if (last_nameInputRef.current)
+      last_nameInputRef.current.value = user.last_name ?? "";
+    if (streetInputRef.current)
+      streetInputRef.current.value = user.street ?? "";
+    if (houseInputRef.current)
+      houseInputRef.current.value = user.house_number ?? "";
+    if (cityInputRef.current) cityInputRef.current.value = user.city ?? "";
+    if (countryInputRef.current)
+      countryInputRef.current.value = user.country ?? "";
+
+    if (currentPasswordInputRef.current)
+      currentPasswordInputRef.current.value = "";
+    if (newPasswordInputRef.current) newPasswordInputRef.current.value = "";
+    if (confirmPasswordInputRef.current)
+      confirmPasswordInputRef.current.value = "";
+  }, [user]);
 
   const { error, isLoading, performFetch } = useFetch(
     "/users/profile",
@@ -83,60 +89,40 @@ export default function Profile() {
   }
 
   function getPasswordChangeValues() {
-    const currentPassword = currentPasswordInputRef?.current?.value || "";
-    const newPassword = newPasswordInputRef?.current?.value || "";
-    const confirmPassword = confirmPasswordInputRef?.current?.value || "";
+    const currentPassword = currentPasswordInputRef?.current?.value;
+    const newPassword = newPasswordInputRef?.current?.value;
+    const confirmPassword = confirmPasswordInputRef?.current?.value;
 
-    if (!newPassword && !confirmPassword && !currentPassword) {
-      return {
-        validationError: null,
-        inputsFilled: false,
-        currentPassword,
-        newPassword,
-      };
-    }
+    let result = {
+      passwordValidationError: null,
+      currentPassword: null,
+      newPassword: null,
+    };
 
     if (!(newPassword && confirmPassword && currentPassword)) {
-      return {
-        validationError: "To change your password, please fill in all fields.",
-        inputsFilled: true,
-        currentPassword,
-        newPassword,
-      };
+      result.passwordValidationError =
+        "To change your password, please fill in all fields.";
+    } else if (!validatePassword(newPassword)) {
+      result.passwordValidationError =
+        "Password must be at least 8 characters and meet at least 2 complexity rules.";
+    } else {
+      const matchCheck = validatePasswordMatch(newPassword, confirmPassword);
+      if (!matchCheck.valid) {
+        result.passwordValidationError = matchCheck.message;
+      } else {
+        result.currentPassword = currentPassword;
+        result.newPassword = newPassword;
+      }
     }
 
-    if (!validatePassword(newPassword)) {
-      return {
-        validationError:
-          "Password must be at least 8 characters and meet at least 2 complexity rules.",
-        inputsFilled: true,
-        currentPassword,
-        newPassword,
-      };
-    }
-
-    const matchCheck = validatePasswordMatch(newPassword, confirmPassword);
-    if (!matchCheck.valid) {
-      return {
-        validationError: matchCheck.message,
-        inputsFilled: true,
-        currentPassword,
-        newPassword,
-      };
-    }
-
-    return {
-      validationError: null,
-      inputsFilled: true,
-      currentPassword,
-      newPassword,
-    };
+    return result;
   }
 
   function handleSaveClick() {
     handleClearAlert();
 
-    const passwordResult = getPasswordChangeValues();
+    const { passwordValidationError, currentPassword, newPassword } =
+      getPasswordChangeValues();
 
     const updatedFields = {};
 
@@ -146,9 +132,6 @@ export default function Profile() {
     const house_number = cleanUpText(houseInputRef?.current.value);
     const city = cleanUpText(cityInputRef?.current.value);
     const country = cleanUpText(countryInputRef?.current.value);
-
-    if (first_name !== user.first_name) updatedFields.first_name = first_name;
-    if (last_name !== user.last_name) updatedFields.last_name = last_name;
 
     const streetValidationError = validateAddressTextInputs({ text: street });
     const cityValidationError = validateAddressTextInputs({
@@ -166,31 +149,29 @@ export default function Profile() {
       cityValidationError ||
       countryValidationError ||
       houseValidationError ||
-      passwordResult.validationError;
+      passwordValidationError;
 
     if (validationError) {
       setAlert({
         type: "error",
-        message:
-          validationError === passwordResult.validationError
-            ? passwordResult.validationError
-            : validationError,
+        message: validationError,
       });
       delayedClearAlert();
     } else {
+      if (first_name !== user.first_name) updatedFields.first_name = first_name;
+      if (last_name !== user.last_name) updatedFields.last_name = last_name;
       if (street !== user.street) updatedFields.street = street;
       if (city !== user.city) updatedFields.city = city;
       if (country !== user.country) updatedFields.country = country;
       if (house_number !== user.house_number)
         updatedFields.house_number = house_number;
-      if (passwordResult.inputsFilled) {
-        updatedFields.currentPassword = passwordResult.currentPassword;
-        updatedFields.newPassword = passwordResult.newPassword;
+      if (currentPassword && newPassword) {
+        updatedFields.currentPassword = currentPassword;
+        updatedFields.newPassword = newPassword;
       }
 
       if (Object.keys(updatedFields).length === 0) {
-        if (passwordResult.inputsFilled === false)
-          setAlert({ type: "info", message: "No changes detected." });
+        setAlert({ type: "info", message: "No changes detected." });
         delayedClearAlert();
       } else {
         performFetch({
