@@ -16,26 +16,56 @@ const USER_FULL_INFO_QUERY = `
   LEFT JOIN jobs j ON uf.job_id = j.id
 `;
 
+const ALLOWED_PROFILE_FIELDS = new Set([
+  "first_name",
+  "last_name",
+  "street",
+  "house_number",
+  "city",
+  "country",
+  "skills",
+]);
+
 export default async function updateUserProfile(user_id, fieldsToUpdate) {
   const { currentPassword, newPassword, ...profileFields } = fieldsToUpdate;
   let setParts = [];
   let values = [];
   let i = 1;
 
-  for (const key in profileFields) {
-    if (profileFields[key] !== undefined) {
-      let value = profileFields[key];
+  const providedProfileKeys = Object.keys(profileFields).filter(
+    (key) => profileFields[key] !== undefined,
+  );
 
-      if (key === "skills") {
-        if (Array.isArray(value)) value = value.join(",");
-        else if (value === null) value = null;
-        else value = String(value);
-      }
+  if (providedProfileKeys.includes("password")) {
+    throw createHttpError(
+      400,
+      "Direct password updates are not allowed. Use currentPassword and newPassword.",
+    );
+  }
 
-      setParts.push(`${key} = $${i}`);
-      values.push(value);
-      i++;
+  const invalidProfileKeys = providedProfileKeys.filter(
+    (key) => !ALLOWED_PROFILE_FIELDS.has(key),
+  );
+
+  if (invalidProfileKeys.length > 0) {
+    throw createHttpError(
+      400,
+      `Invalid profile fields: ${invalidProfileKeys.join(", ")}`,
+    );
+  }
+
+  for (const key of providedProfileKeys) {
+    let value = profileFields[key];
+
+    if (key === "skills") {
+      if (Array.isArray(value)) value = value.join(",");
+      else if (value === null) value = null;
+      else value = String(value);
     }
+
+    setParts.push(`${key} = $${i}`);
+    values.push(value);
+    i++;
   }
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
