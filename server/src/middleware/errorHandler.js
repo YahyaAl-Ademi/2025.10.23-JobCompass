@@ -11,10 +11,8 @@ export default function errorHandler(err, req, res, next) {
     return next(err);
   }
 
-  let message = "Internal server error";
+  const message = err?.message || "Internal server error";
   const statusCode = Number.isInteger(err?.status) ? err.status : 500;
-  statusCode < 500 && (message = err?.message);
-
   logError(err);
 
   const payload = {
