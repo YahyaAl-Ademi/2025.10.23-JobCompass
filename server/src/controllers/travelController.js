@@ -1,4 +1,4 @@
-import { logError, logWarning } from "../util/logging.js";
+import { logWarning } from "../util/logging.js";
 import getTransitRouteSummary from "../services/googleMapsApi.js";
 import formatAddress from "../../../shared/formatAddress.js";
 import normalizeText from "../../../shared/normalizeText.js";
@@ -99,7 +99,6 @@ export default async function calculateBatchTravelTime(req, res, next) {
       },
     });
   } catch (error) {
-    logError(`Batch travel calculation error: ${error}`);
     return next(
       createHttpError(
         500,

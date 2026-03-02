@@ -1,6 +1,5 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
-import { logError } from "../util/logging.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
 
@@ -35,7 +34,6 @@ export default async function resetPassword(req, res, next) {
 
     res.json({ success: true, msg: "Password updated" });
   } catch (err) {
-    logError(err);
     return next(createHttpError(500, "Server error"));
   } finally {
     await endConnection();

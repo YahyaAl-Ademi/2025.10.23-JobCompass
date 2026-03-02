@@ -1,7 +1,6 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
-import { logError } from "../util/logging.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 
 // transporter Gmail App Password
@@ -59,7 +58,6 @@ export default async function forgotPassword(req, res, next) {
 
     res.json({ success: true, msg: "Reset link sent to email" });
   } catch (err) {
-    logError(`Forgot Password Error: ${err}`);
     return next(createHttpError(500, "Server error"));
   } finally {
     await endConnection();

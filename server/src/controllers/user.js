@@ -4,13 +4,11 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { v4 as uuidv4 } from "uuid";
 
 import validationErrorMessage from "../util/validationErrorMessage.js";
-import { logError } from "../util/logging.js";
 import { blacklistedTokens } from "../middleware/authVerify.js";
 import validateUserRegistration from "../util/validateUserRegistration.js";
 import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
 import { createHttpError } from "../middleware/errorHandler.js";
-import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
 
 /*
 Personalization Features Implementation:
@@ -75,10 +73,7 @@ export async function createUser(req, res, next) {
     }
 
     const newUserId = uuidv4();
-    const hashedPassword = await bcrypt.hash(
-      user.password,
-      PASSWORD_HASH_COST_FACTOR,
-    );
+    const hashedPassword = await bcrypt.hash(user.password, 12);
     const skillsValue = Array.isArray(user.skills)
       ? user.skills.join(",")
       : user.skills || null;
@@ -126,7 +121,6 @@ export async function createUser(req, res, next) {
       token,
     });
   } catch (err) {
-    logError(err);
     return next(
       createHttpError(
         500,
@@ -248,8 +242,6 @@ export async function loginUser(req, res, next) {
       token,
     });
   } catch (err) {
-    // Using logError for 500 response
-    logError(err);
     return next(
       createHttpError(
         500,
@@ -353,7 +345,6 @@ export async function getMe(req, res, next) {
 
     res.json({ success: true, user: user });
   } catch (err) {
-    logError(`Error in getMe: ${err}`);
     return next(createHttpError(500, "Failed to fetch user data"));
   } finally {
     if (endConnection) await endConnection();
@@ -386,7 +377,6 @@ export async function updateUserAvatar(req, res, next) {
       url: imageUrl,
     });
   } catch (error) {
-    logError(error);
     return next(createHttpError(500, "Error uploading image."));
   } finally {
     if (endConnection) await endConnection();

@@ -1,5 +1,4 @@
 import connectNeonDB from "../db/connectNeonDB.js";
-import { logError } from "../util/logging.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 
 export default async function toggleFavoriteJob(req, res, next) {
@@ -88,7 +87,6 @@ export default async function toggleFavoriteJob(req, res, next) {
       },
     });
   } catch (err) {
-    logError(`Toggle favorite error: ${err}`);
     return next(createHttpError(500, "Failed to toggle favorite"));
   } finally {
     if (endConnection) await endConnection();

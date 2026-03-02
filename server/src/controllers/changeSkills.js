@@ -1,5 +1,4 @@
 import connectNeonDB from "../db/connectNeonDB.js";
-import { logError } from "../util/logging.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 
 export default async function changeSkills(req, res, next) {
@@ -41,7 +40,6 @@ export default async function changeSkills(req, res, next) {
       msg: "Skills are updated",
     });
   } catch (err) {
-    logError(err);
     return next(
       createHttpError(
         500,

@@ -1,4 +1,3 @@
-import { logError } from "../util/logging.js";
 import connectNeonDB from "../db/connectNeonDB.js";
 import getCachedJobsBySearchString from "../services/getCachedJobsBySearchString.js";
 import rapidAPIfetchPersister from "../services/rapidAPIfetchPersister.js";
@@ -87,7 +86,6 @@ export default async function searchJobs(req, res, next) {
         msg,
       });
     } catch (error) {
-      logError(`searchJobs error: ${error}`);
       return next(
         createHttpError(
           500,

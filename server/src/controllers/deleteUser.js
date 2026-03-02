@@ -1,5 +1,4 @@
 import connectNeonDB from "../db/connectNeonDB.js";
-import { logError } from "../util/logging.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 
 export default async function deleteUser(req, res, next) {
@@ -25,7 +24,6 @@ export default async function deleteUser(req, res, next) {
   // Connect to the database
   const { error, connectedClient, endConnection } = await connectNeonDB();
   if (error) {
-    logError(`DB connection failed: ${error}`);
     return next(createHttpError(500, "Database connection failed"));
   }
 
@@ -45,7 +43,6 @@ export default async function deleteUser(req, res, next) {
       deletedUser: result.rows,
     });
   } catch (err) {
-    logError(`Error deleting user: ${err.message}`);
     return next(createHttpError(500, "Internal server error"));
   } finally {
     await endConnection();

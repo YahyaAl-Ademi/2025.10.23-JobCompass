@@ -1,5 +1,4 @@
 import aiGenerateSkills from "../services/aiGenerateSkills.js";
-import { logError } from "../util/logging.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 
 /**
@@ -30,7 +29,6 @@ export default async function aiAssistSkills(req, res, next) {
     const skills = await aiGenerateSkills(isCV, prompt);
     return res.status(200).json({ success: true, skills, msg: "" });
   } catch (error) {
-    logError(error);
     return next(
       createHttpError(
         500,
