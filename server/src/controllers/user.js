@@ -356,18 +356,11 @@ export async function getMe(req, res, next) {
   }
 }
 
-export async function updateProfile(req, res, next) {
+export async function updateProfile(req, res) {
   const user_id = req.user.id;
   const fields = req.body;
-
-  try {
-    const updatedUser = await updateUserProfile(user_id, fields);
-    res.json({ success: true, user: updatedUser });
-  } catch (err) {
-    return next(
-      createHttpError(500, err instanceof Error ? err.message : "Update error"),
-    );
-  }
+  const updatedUser = await updateUserProfile(user_id, fields);
+  res.json({ success: true, user: updatedUser });
 }
 
 export async function updateUserAvatar(req, res, next) {

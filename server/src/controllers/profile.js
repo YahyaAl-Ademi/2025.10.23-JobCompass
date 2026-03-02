@@ -1,5 +1,6 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
+import { createHttpError } from "../middleware/errorHandler.js";
 
 const USER_FULL_INFO_QUERY = `
   SELECT
@@ -37,12 +38,15 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
   }
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
-  if (error) throw new Error("DB connection error");
+  if (error) throw createHttpError(503, "DB connection error");
 
   try {
     if (currentPassword || newPassword) {
       if (!currentPassword || !newPassword) {
-        throw new Error("To change your password, please fill in all fields.");
+        throw createHttpError(
+          400,
+          "To change your password, please fill in all fields.",
+        );
       }
 
       const userResult = await connectedClient.query(
@@ -51,7 +55,7 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
       );
 
       if (userResult.rows.length === 0) {
-        throw new Error("User not found");
+        throw createHttpError(404, "User not found");
       }
 
       const isMatch = await bcrypt.compare(
@@ -60,7 +64,7 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
       );
 
       if (!isMatch) {
-        throw new Error("Current password is incorrect");
+        throw createHttpError(401, "Current password is incorrect");
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -69,7 +73,9 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
       i++;
     }
 
-    if (setParts.length === 0) throw new Error("No fields provided to update");
+    if (setParts.length === 0) {
+      throw createHttpError(400, "No fields provided to update");
+    }
 
     values.push(user_id);
     const updateUserIdIndex = i;
@@ -85,7 +91,7 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
     const result = await connectedClient.query(fetchQuery, [user_id]);
 
     if (result.rows.length === 0) {
-      throw new Error("User not found after update");
+      throw createHttpError(404, "User not found after update");
     }
 
     const rows = result.rows;
