@@ -7,6 +7,7 @@ import cron from "node-cron";
 import app from "./app.js";
 import { logInfo, logError } from "./util/logging.js";
 import cleanupDatabase from "./services/cleanupDatabase.js";
+import validateEnvironment from "./config/validateEnvironment.js";
 
 /*
 Maintenance & Operations Implementation:
@@ -14,10 +15,8 @@ Maintenance & Operations Implementation:
 - Error Monitoring: Comprehensive logging and alerting (see logging utility)
 */
 
+validateEnvironment();
 const port = process.env.PORT;
-if (port == null) {
-  logError(new Error("Cannot find a PORT number, did you create a .env file?"));
-}
 
 // Schedule cleanup in format "12 23 * * 4", where:
 // 12 = 12th minute
