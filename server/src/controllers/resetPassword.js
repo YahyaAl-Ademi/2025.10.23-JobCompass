@@ -2,6 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
 import { logError } from "../util/logging.js";
 import { createHttpError } from "../middleware/errorHandler.js";
+import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
 
 export default async function resetPassword(req, res, next) {
   const { token, newPassword } = req.body;
@@ -25,7 +26,7 @@ export default async function resetPassword(req, res, next) {
     if (new Date() > new Date(reset_token_expires))
       return next(createHttpError(400, "Token expired"));
 
-    const hashed = await bcrypt.hash(newPassword, 12);
+    const hashed = await bcrypt.hash(newPassword, PASSWORD_HASH_COST_FACTOR);
 
     await connectedClient.query(
       "UPDATE users SET password=$1, reset_token=NULL, reset_token_expires=NULL WHERE id=$2",

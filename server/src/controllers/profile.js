@@ -1,6 +1,7 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
 import { createHttpError } from "../middleware/errorHandler.js";
+import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
 
 const USER_FULL_INFO_QUERY = `
   SELECT
@@ -67,7 +68,10 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
         throw createHttpError(401, "Current password is incorrect");
       }
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword = await bcrypt.hash(
+        newPassword,
+        PASSWORD_HASH_COST_FACTOR,
+      );
       setParts.push(`password = $${i}`);
       values.push(hashedPassword);
       i++;

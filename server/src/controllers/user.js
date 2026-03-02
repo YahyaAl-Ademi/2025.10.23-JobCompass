@@ -10,6 +10,7 @@ import validateUserRegistration from "../util/validateUserRegistration.js";
 import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
 import { createHttpError } from "../middleware/errorHandler.js";
+import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
 
 /*
 Personalization Features Implementation:
@@ -74,7 +75,10 @@ export async function createUser(req, res, next) {
     }
 
     const newUserId = uuidv4();
-    const hashedPassword = await bcrypt.hash(user.password, 12);
+    const hashedPassword = await bcrypt.hash(
+      user.password,
+      PASSWORD_HASH_COST_FACTOR,
+    );
     const skillsValue = Array.isArray(user.skills)
       ? user.skills.join(",")
       : user.skills || null;
