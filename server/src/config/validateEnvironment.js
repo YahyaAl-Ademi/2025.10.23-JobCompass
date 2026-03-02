@@ -27,4 +27,12 @@ export default function validateEnvironment() {
       `Missing required environment variables: ${missingVars.join(", ")}`,
     );
   }
+
+  try {
+    JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+  } catch (err) {
+    throw new Error(
+      `Configuration error: GOOGLE_APPLICATION_CREDENTIALS must contain valid JSON. Original error: ${err.message}`,
+    );
+  }
 }
