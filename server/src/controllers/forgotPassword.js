@@ -41,8 +41,7 @@ export default async function forgotPassword(req, res, next) {
       [token, expiresAt, user_id],
     );
 
-    const frontendUrl =
-      process.env.VITE_FRONTEND_URL || "http://localhost:5173";
+    const frontendUrl = process.env.VITE_FRONTEND_URL;
     const resetLink = `${frontendUrl}/reset-password?token=${token}`;
 
     await transporter.sendMail({
