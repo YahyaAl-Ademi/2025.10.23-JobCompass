@@ -6,6 +6,10 @@ import ChangePassword from "../../components/ChangePassword";
 import cleanUpText from "../../util/cleanUpText";
 import validateAddressTextInputs from "../../util/addressTextsValidation";
 import validateHouseNoInput from "../../util/addressHouseNoValidation";
+import {
+  validatePassword,
+  validatePasswordMatch,
+} from "../../util/AuthValidation";
 import { UseUser } from "../../context/UserContext";
 import useFetch from "../../hooks/useFetch";
 import AvatarUploader from "../../components/AvatarUploader/AvatarUploader";
@@ -16,12 +20,16 @@ import { gif } from "../../assets/index.js";
 
 export default function Profile() {
   const [alert, setAlert] = useState({ type: "", message: "" });
-  const first_nameInputRef = useRef(null);
-  const last_nameInputRef = useRef(null);
-  const streetInputRef = useRef(null);
-  const houseInputRef = useRef(null);
-  const cityInputRef = useRef(null);
-  const countryInputRef = useRef(null);
+  const first_nameInputRef = useRef("");
+  const last_nameInputRef = useRef("");
+  const streetInputRef = useRef("");
+  const houseInputRef = useRef("");
+  const cityInputRef = useRef("");
+  const countryInputRef = useRef("");
+  const currentPasswordInputRef = useRef("");
+  const newPasswordInputRef = useRef("");
+  const confirmPasswordInputRef = useRef("");
+  const { user, dispatch } = UseUser();
   first_nameInputRef.current &&
     (first_nameInputRef.current.value = user.first_name);
   last_nameInputRef.current &&
@@ -30,9 +38,15 @@ export default function Profile() {
   houseInputRef.current && (houseInputRef.current.value = user.house_number);
   cityInputRef.current && (cityInputRef.current.value = user.city);
   countryInputRef.current && (countryInputRef.current.value = user.country);
-  const { user, dispatch } = UseUser();
+  currentPasswordInputRef.current &&
+    (currentPasswordInputRef.current.value = "");
+  newPasswordInputRef.current && (newPasswordInputRef.current.value = "");
+  confirmPasswordInputRef.current &&
+    (confirmPasswordInputRef.current.value = "");
+  newPasswordInputRef.current && (newPasswordInputRef.current.value = "");
+  confirmPasswordInputRef.current &&
+    (confirmPasswordInputRef.current.value = "");
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const changePasswordRef = useRef(null);
 
   function handleClearAlert() {
     setAlert({ type: "", message: "" });
@@ -70,24 +84,61 @@ export default function Profile() {
     setShowDeletePopup(true);
   }
 
-  function handlePasswordChangeSuccess() {
-    setAlert({
-      type: "success",
-      message: "Password changed successfully!",
-    });
-    delayedClearAlert();
+  function getPasswordChangeValues() {
+    const currentPassword = currentPasswordInputRef?.current?.value || "";
+    const newPassword = newPasswordInputRef?.current?.value || "";
+    const confirmPassword = confirmPasswordInputRef?.current?.value || "";
+
+    if (!newPassword && !confirmPassword && !currentPassword) {
+      return {
+        validationError: null,
+        inputsFilled: false,
+        currentPassword,
+        newPassword,
+      };
+    }
+
+    if (!(newPassword && confirmPassword && currentPassword)) {
+      return {
+        validationError: "To change your password, please fill in all fields.",
+        inputsFilled: true,
+        currentPassword,
+        newPassword,
+      };
+    }
+
+    if (!validatePassword(newPassword)) {
+      return {
+        validationError:
+          "Password must be at least 8 characters and meet at least 2 complexity rules.",
+        inputsFilled: true,
+        currentPassword,
+        newPassword,
+      };
+    }
+
+    const matchCheck = validatePasswordMatch(newPassword, confirmPassword);
+    if (!matchCheck.valid) {
+      return {
+        validationError: matchCheck.message,
+        inputsFilled: true,
+        currentPassword,
+        newPassword,
+      };
+    }
+
+    return {
+      validationError: null,
+      inputsFilled: true,
+      currentPassword,
+      newPassword,
+    };
   }
 
-  function handlePasswordChangeError(message) {
-    setAlert({ type: "error", message: String(message) });
-    delayedClearAlert();
-  }
-
-  async function handleSaveClick() {
+  function handleSaveClick() {
     handleClearAlert();
 
-    const passwordResult =
-      await changePasswordRef.current.handlePasswordChange();
+    const passwordResult = getPasswordChangeValues();
 
     const updatedFields = {};
 
@@ -134,6 +185,10 @@ export default function Profile() {
       if (country !== user.country) updatedFields.country = country;
       if (house_number !== user.house_number)
         updatedFields.house_number = house_number;
+      if (passwordResult.inputsFilled) {
+        updatedFields.currentPassword = passwordResult.currentPassword;
+        updatedFields.newPassword = passwordResult.newPassword;
+      }
 
       if (Object.keys(updatedFields).length === 0) {
         if (passwordResult.inputsFilled === false)
@@ -209,11 +264,12 @@ export default function Profile() {
       </div>
 
       <ChangePassword
-        ref={changePasswordRef}
         onKeyDown={pressEnterKey}
-        onInputChange={handleClearAlert}
-        onSuccess={handlePasswordChangeSuccess}
-        onError={handlePasswordChangeError}
+        clearAlert={handleClearAlert}
+        currentPasswordInputRef={currentPasswordInputRef}
+        newPasswordInputRef={newPasswordInputRef}
+        confirmPasswordInputRef={confirmPasswordInputRef}
+        isUpdateLoading={isUpdateLoading}
       />
       {/* <!-- Save Button --> */}
       <div className="profile-save-row">

@@ -1,4 +1,5 @@
 import connectNeonDB from "../db/connectNeonDB.js";
+import bcrypt from "bcrypt";
 
 const USER_FULL_INFO_QUERY = `
   SELECT
@@ -14,13 +15,14 @@ const USER_FULL_INFO_QUERY = `
 `;
 
 export default async function updateUserProfile(user_id, fieldsToUpdate) {
+  const { currentPassword, newPassword, ...profileFields } = fieldsToUpdate;
   let setParts = [];
   let values = [];
   let i = 1;
 
-  for (const key in fieldsToUpdate) {
-    if (fieldsToUpdate[key] !== undefined) {
-      let value = fieldsToUpdate[key];
+  for (const key in profileFields) {
+    if (profileFields[key] !== undefined) {
+      let value = profileFields[key];
 
       if (key === "skills") {
         if (Array.isArray(value)) value = value.join(",");
@@ -34,20 +36,49 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
     }
   }
 
-  if (setParts.length === 0) throw new Error("No fields provided to update");
-
-  values.push(user_id);
-  const updateUserIdIndex = i;
-  const updateQuery = `
-    UPDATE users
-    SET ${setParts.join(", ")}
-    WHERE id = $${updateUserIdIndex}
-  `;
-
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) throw new Error("DB connection error");
 
   try {
+    if (currentPassword || newPassword) {
+      if (!currentPassword || !newPassword) {
+        throw new Error("To change your password, please fill in all fields.");
+      }
+
+      const userResult = await connectedClient.query(
+        "SELECT password FROM users WHERE id = $1",
+        [user_id],
+      );
+
+      if (userResult.rows.length === 0) {
+        throw new Error("User not found");
+      }
+
+      const isMatch = await bcrypt.compare(
+        currentPassword,
+        userResult.rows[0].password,
+      );
+
+      if (!isMatch) {
+        throw new Error("Current password is incorrect");
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      setParts.push(`password = $${i}`);
+      values.push(hashedPassword);
+      i++;
+    }
+
+    if (setParts.length === 0) throw new Error("No fields provided to update");
+
+    values.push(user_id);
+    const updateUserIdIndex = i;
+    const updateQuery = `
+      UPDATE users
+      SET ${setParts.join(", ")}
+      WHERE id = $${updateUserIdIndex}
+    `;
+
     await connectedClient.query(updateQuery, values);
 
     const fetchQuery = `${USER_FULL_INFO_QUERY} WHERE u.id = $1`;
