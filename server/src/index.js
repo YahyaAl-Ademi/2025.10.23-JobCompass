@@ -10,6 +10,7 @@ import validateEnvironment from "./config/validateEnvironment.js";
 validateEnvironment();
 
 import app from "./app.js";
+import errorHandler from "./middleware/errorHandler.js";
 /*
 Maintenance & Operations Implementation:
 - Daily Cleanup: Removal of old cache entries and expired data (see cleanupDatabase function below) and Cron jobs for scheduled maintenance tasks
@@ -68,5 +69,5 @@ if (process.env.NODE_ENV === "production") {
 
 /****** Removed test router import and mounting. The `testRouter.js` file was deleted and is no longer used. ******/
 
-// Start the server
+app.use(errorHandler);
 startServer();
