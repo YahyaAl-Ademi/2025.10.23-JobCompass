@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { createHttpError } from "./errorHandler.js";
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is not set");
@@ -41,6 +42,6 @@ export function verifyToken(req, res, next) {
     req.user = null;
     return next();
   } else {
-    return res.status(401).json({ success: false, msg });
+    return next(createHttpError(401, msg));
   }
 }

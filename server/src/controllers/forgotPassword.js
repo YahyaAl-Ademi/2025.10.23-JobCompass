@@ -2,6 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import { logError } from "../util/logging.js";
+import { createHttpError } from "../middleware/errorHandler.js";
 
 if (!process.env.SMTP_HOST) {
   throw new Error("SMTP_HOST environment variable is not set");
@@ -25,17 +26,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export default async function forgotPassword(req, res) {
+export default async function forgotPassword(req, res, next) {
   const { email } = req.body;
 
-  if (!email)
-    return res.status(400).json({ success: false, msg: "Email required" });
+  if (!email) return next(createHttpError(400, "Email required"));
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
-  if (error)
-    return res
-      .status(503)
-      .json({ success: false, msg: "DB connection failed" });
+  if (error) return next(createHttpError(503, "DB connection failed"));
 
   try {
     const result = await connectedClient.query(
@@ -43,7 +40,7 @@ export default async function forgotPassword(req, res) {
       [email],
     );
     if (result.rows.length === 0) {
-      return res.status(404).json({ success: false, msg: "Email not found" });
+      return next(createHttpError(404, "Email not found"));
     }
 
     const user_id = result.rows[0].id;
@@ -76,7 +73,7 @@ export default async function forgotPassword(req, res) {
     res.json({ success: true, msg: "Reset link sent to email" });
   } catch (err) {
     logError(`Forgot Password Error: ${err}`);
-    res.status(500).json({ success: false, msg: "Server error" });
+    return next(createHttpError(500, "Server error"));
   } finally {
     await endConnection();
   }

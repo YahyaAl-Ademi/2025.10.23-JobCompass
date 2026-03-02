@@ -4,8 +4,6 @@
  */
 
 // errorList should be an array of strings
-function validationErrorMessage(errorList) {
+export default function validationErrorMessage(errorList) {
   return `BAD REQUEST: ${errorList.join(", ")}`;
 }
-
-export default validationErrorMessage;

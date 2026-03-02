@@ -9,6 +9,7 @@ import { blacklistedTokens } from "../middleware/authVerify.js";
 import validateUserRegistration from "../util/validateUserRegistration.js";
 import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
+import { createHttpError } from "../middleware/errorHandler.js";
 
 /*
 Personalization Features Implementation:
@@ -48,13 +49,15 @@ const USER_FULL_INFO_QUERY = `
 
 // SIGNUP - Create a new user
 
-export async function createUser(req, res) {
+export async function createUser(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
-    return res.status(503).json({
-      success: false,
-      msg: "Service unavailable. Could not connect to the database.",
-    });
+    return next(
+      createHttpError(
+        503,
+        "Service unavailable. Could not connect to the database.",
+      ),
+    );
   }
 
   try {
@@ -62,9 +65,7 @@ export async function createUser(req, res) {
     const { valid, errors } = validateUserRegistration(user);
 
     if (!valid) {
-      return res
-        .status(400)
-        .json({ success: false, msg: validationErrorMessage(errors) });
+      return next(createHttpError(400, validationErrorMessage(errors)));
     }
 
     const checkEmail = await connectedClient.query(
@@ -72,10 +73,12 @@ export async function createUser(req, res) {
       [user.email],
     );
     if (checkEmail.rows.length > 0) {
-      return res.status(400).json({
-        success: false,
-        msg: validationErrorMessage(["Email already registered"]),
-      });
+      return next(
+        createHttpError(
+          400,
+          validationErrorMessage(["Email already registered"]),
+        ),
+      );
     }
 
     const newUserId = uuidv4();
@@ -128,10 +131,12 @@ export async function createUser(req, res) {
     });
   } catch (err) {
     logError(err);
-    res.status(500).json({
-      success: false,
-      msg: "Sorry, there's an error with the DB. Unable to create user",
-    });
+    return next(
+      createHttpError(
+        500,
+        "Sorry, there's an error with the DB. Unable to create user",
+      ),
+    );
   } finally {
     if (endConnection) await endConnection();
   }
@@ -139,14 +144,16 @@ export async function createUser(req, res) {
 
 // LOGIN - Authenticate user
 
-export async function loginUser(req, res) {
+export async function loginUser(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
 
   if (error) {
-    return res.status(503).json({
-      success: false,
-      msg: "Service unavailable. Could not connect to the database.",
-    });
+    return next(
+      createHttpError(
+        503,
+        "Service unavailable. Could not connect to the database.",
+      ),
+    );
   }
 
   try {
@@ -162,9 +169,7 @@ export async function loginUser(req, res) {
     if (errors.length > 0) {
       // Using validationErrorMessage for 400 response
       // Connection will be closed in finally block
-      return res
-        .status(400)
-        .json({ success: false, msg: validationErrorMessage(errors) });
+      return next(createHttpError(400, validationErrorMessage(errors)));
     }
 
     const result = await connectedClient.query(
@@ -176,9 +181,7 @@ export async function loginUser(req, res) {
       result.rows.length === 0 ||
       !(await bcrypt.compare(password, result.rows[0]?.password))
     ) {
-      return res
-        .status(401)
-        .json({ success: false, msg: "Invalid credentials" });
+      return next(createHttpError(401, "Invalid credentials"));
     }
 
     // Increment number of logins
@@ -251,10 +254,12 @@ export async function loginUser(req, res) {
   } catch (err) {
     // Using logError for 500 response
     logError(err);
-    res.status(500).json({
-      success: false,
-      msg: "Sorry, there's an error with the DB. Unable to login user",
-    });
+    return next(
+      createHttpError(
+        500,
+        "Sorry, there's an error with the DB. Unable to login user",
+      ),
+    );
   } finally {
     // 💡 Crucial: Ensure the connection is closed regardless of success or failure.
     if (endConnection) await endConnection();
@@ -263,29 +268,30 @@ export async function loginUser(req, res) {
 
 // LOGOUT - Blacklist JWT token (In-Memory)
 
-export async function logoutUser(req, res) {
+export async function logoutUser(req, res, next) {
   try {
     // Extract token from "Bearer <token>" header
     const token = req.cookies?.token;
-    if (!token)
-      return res.status(400).json({ success: false, msg: "No token provided" }); // Add the token to the in-memory blacklist
+    if (!token) return next(createHttpError(400, "No token provided")); // Add the token to the in-memory blacklist
 
     blacklistedTokens.push(token);
     res.clearCookie("token");
 
     res.json({ success: true, msg: "Logged out successfully" });
   } catch (err) {
-    res.status(500).json({ success: false, msg: "Logout error" });
+    return next(createHttpError(500, "Logout error"));
   }
 }
 
-export async function getMe(req, res) {
+export async function getMe(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
-    return res.status(503).json({
-      success: false,
-      msg: "Service unavailable. Could not connect to the database.",
-    });
+    return next(
+      createHttpError(
+        503,
+        "Service unavailable. Could not connect to the database.",
+      ),
+    );
   }
 
   try {
@@ -294,10 +300,12 @@ export async function getMe(req, res) {
 
     // Safety check: if req.user is not set, return 401
     if (!decoded || !decoded.id) {
-      return res.status(401).json({
-        success: false,
-        msg: "Unauthorized - Invalid or missing authentication",
-      });
+      return next(
+        createHttpError(
+          401,
+          "Unauthorized - Invalid or missing authentication",
+        ),
+      );
     }
 
     const result = await connectedClient.query(
@@ -305,7 +313,7 @@ export async function getMe(req, res) {
       [decoded.id],
     );
     if (result.rows.length === 0) {
-      return res.status(401).json({ success: false, msg: "User not found" });
+      return next(createHttpError(401, "User not found"));
     }
     const rows = result.rows;
     const userDataRow = rows[0];
@@ -350,15 +358,13 @@ export async function getMe(req, res) {
     res.json({ success: true, user: user });
   } catch (err) {
     logError(`Error in getMe: ${err}`);
-    return res
-      .status(500)
-      .json({ success: false, msg: "Failed to fetch user data" });
+    return next(createHttpError(500, "Failed to fetch user data"));
   } finally {
     if (endConnection) await endConnection();
   }
 }
 
-export async function updateProfile(req, res) {
+export async function updateProfile(req, res, next) {
   const user_id = req.user.id;
   const fields = req.body;
 
@@ -366,14 +372,13 @@ export async function updateProfile(req, res) {
     const updatedUser = await updateUserProfile(user_id, fields);
     res.json({ success: true, user: updatedUser });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      msg: err instanceof Error ? err.message : "Update error",
-    });
+    return next(
+      createHttpError(500, err instanceof Error ? err.message : "Update error"),
+    );
   }
 }
 
-export async function updateUserAvatar(req, res) {
+export async function updateUserAvatar(req, res, next) {
   const { connectedClient, endConnection } = await connectNeonDB();
   try {
     const file = req.file;
@@ -393,10 +398,7 @@ export async function updateUserAvatar(req, res) {
     });
   } catch (error) {
     logError(error);
-    res.status(500).json({
-      success: false,
-      message: "Error uploading image.",
-    });
+    return next(createHttpError(500, "Error uploading image."));
   } finally {
     if (endConnection) await endConnection();
   }

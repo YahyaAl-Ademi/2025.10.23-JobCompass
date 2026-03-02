@@ -1,15 +1,14 @@
 import aiGenerateSkills from "../services/aiGenerateSkills.js";
 import { logError } from "../util/logging.js";
+import { createHttpError } from "../middleware/errorHandler.js";
 
 /**
  * Controller for assisting with AI-based skill generation based on user input
  * @param {object} req - Express request object
  * @param {object} res - Express response object
  */
-export default async function aiAssistSkills(req, res) {
+export default async function aiAssistSkills(req, res, next) {
   const maxPromptLength = 10000;
-  let responseStatus = 200;
-  let responseData = { success: true, skills: [], msg: "" };
 
   try {
     const { isCV, prompt } = req.body;
@@ -20,23 +19,23 @@ export default async function aiAssistSkills(req, res) {
       !prompt.trim() ||
       prompt.length > maxPromptLength
     ) {
-      responseStatus = 400;
-      responseData = {
-        success: false,
-        msg: `You need to provide 'prompt' (non-empty string up to ${maxPromptLength} characters) and 'isCV' (boolean) in the request body.`,
-      };
-    } else {
-      const skills = await aiGenerateSkills(isCV, prompt);
-      responseData = { ...responseData, skills };
+      return next(
+        createHttpError(
+          400,
+          `You need to provide 'prompt' (non-empty string up to ${maxPromptLength} characters) and 'isCV' (boolean) in the request body.`,
+        ),
+      );
     }
+
+    const skills = await aiGenerateSkills(isCV, prompt);
+    return res.status(200).json({ success: true, skills, msg: "" });
   } catch (error) {
     logError(error);
-    responseStatus = 500;
-    responseData = {
-      success: false,
-      msg: "An error occurred while generating skills based on the provided prompt. Please try again later.",
-    };
+    return next(
+      createHttpError(
+        500,
+        "An error occurred while generating skills based on the provided prompt. Please try again later.",
+      ),
+    );
   }
-
-  res.status(responseStatus).json(responseData);
 }
