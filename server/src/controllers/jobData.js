@@ -3,7 +3,7 @@ import getCachedJobsBySearchString from "../services/getCachedJobsBySearchString
 import rapidAPIfetchPersister from "../services/rapidAPIfetchPersister.js";
 import apifyScraperFetchPersister from "../services/apifyScraperFetchPersister.js";
 import { createHttpError } from "../middleware/errorHandler.js";
-import { LogError } from "../util/logging.js";
+import { logError } from "../util/logging.js";
 
 export default async function searchJobs(req, res, next) {
   let is_auth = req?.user?.id || null;
@@ -16,8 +16,8 @@ export default async function searchJobs(req, res, next) {
 
   if (connectionError) {
     if (endConnection) await endConnection();
-    LogError(`DB Connection Error: ${connectionError}`);
-    return next(createHttpError(500, "DB Connection Error"));
+    logError(`DB Connection Error: ${connectionError}`);
+    return next(createHttpError(503, "DB Connection Error"));
   } else {
     try {
       let { search_string } = req.body;

@@ -1,5 +1,6 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import { createHttpError } from "../middleware/errorHandler.js";
+import { logError } from "../util/logging.js";
 
 export default async function deleteUser(req, res, next) {
   // This API endpoint is secured via `verifyToken` middleware,
@@ -24,7 +25,9 @@ export default async function deleteUser(req, res, next) {
   // Connect to the database
   const { error, connectedClient, endConnection } = await connectNeonDB();
   if (error) {
-    return next(createHttpError(500, "Database connection failed"));
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
   }
 
   try {

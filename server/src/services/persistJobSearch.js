@@ -129,6 +129,8 @@ export default async function persistJobSearch(
       await connectedClient.query("ROLLBACK");
       logError(`Transaction error: ${error}`);
     }
+  } else {
+    logError(`DB Connection Error: ${connectionError}`);
   }
 
   if (endConnection) await endConnection();

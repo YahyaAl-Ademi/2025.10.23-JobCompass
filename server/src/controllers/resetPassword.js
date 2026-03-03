@@ -2,6 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
 import { createHttpError } from "../middleware/errorHandler.js";
 import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
+import { logError } from "../util/logging.js";
 
 export default async function resetPassword(req, res, next) {
   const { token, newPassword } = req.body;
@@ -9,7 +10,13 @@ export default async function resetPassword(req, res, next) {
   if (!token || !newPassword)
     return next(createHttpError(400, "Missing token or password"));
 
-  const { connectedClient, endConnection } = await connectNeonDB();
+  const { connectedClient, endConnection, error } = await connectNeonDB();
+
+  if (error) {
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
+  }
 
   try {
     const result = await connectedClient.query(

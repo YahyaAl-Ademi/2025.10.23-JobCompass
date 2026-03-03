@@ -2,6 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
 import { createHttpError } from "../middleware/errorHandler.js";
 import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
+import { logError } from "../util/logging.js";
 
 const USER_FULL_INFO_QUERY = `
   SELECT
@@ -69,7 +70,11 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
   }
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
-  if (error) throw createHttpError(503, "DB connection error");
+  if (error) {
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    throw createHttpError(503, "DB Connection Error");
+  }
 
   try {
     if (currentPassword || newPassword) {

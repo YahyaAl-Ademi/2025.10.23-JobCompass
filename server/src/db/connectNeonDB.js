@@ -24,12 +24,10 @@ export default async function connectNeonDB() {
     connectedClient = client;
   } catch (err) {
     error = err;
-    logError(`Database connection error: ${err.message}`);
+    logError(`DB Connection Error: ${err}`);
     await client
       .end()
-      .catch((e) =>
-        logError(`Error during failed connection cleanup: ${e.message}`),
-      );
+      .catch((e) => logError(`Error during failed connection cleanup: ${e}`));
   }
 
   return { error, connectedClient, endConnection };

@@ -9,6 +9,7 @@ import validateUserRegistration from "../util/validateUserRegistration.js";
 import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
 import { createHttpError } from "../middleware/errorHandler.js";
+import { logError } from "../util/logging.js";
 
 /*
 Personalization Features Implementation:
@@ -43,12 +44,9 @@ const USER_FULL_INFO_QUERY = `
 export async function createUser(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
-    return next(
-      createHttpError(
-        503,
-        "Service unavailable. Could not connect to the database.",
-      ),
-    );
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
   }
 
   try {
@@ -138,12 +136,9 @@ export async function loginUser(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
 
   if (error) {
-    return next(
-      createHttpError(
-        503,
-        "Service unavailable. Could not connect to the database.",
-      ),
-    );
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
   }
 
   try {
@@ -274,12 +269,9 @@ export async function logoutUser(req, res, next) {
 export async function getMe(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
-    return next(
-      createHttpError(
-        503,
-        "Service unavailable. Could not connect to the database.",
-      ),
-    );
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
   }
 
   try {
@@ -359,7 +351,14 @@ export async function updateProfile(req, res) {
 }
 
 export async function updateUserAvatar(req, res, next) {
-  const { connectedClient, endConnection } = await connectNeonDB();
+  const { connectedClient, endConnection, error } = await connectNeonDB();
+
+  if (error) {
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
+  }
+
   try {
     const file = req.file;
     const imageUrl = await uploadImage(file);

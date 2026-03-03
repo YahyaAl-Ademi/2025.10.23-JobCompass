@@ -2,6 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import { createHttpError } from "../middleware/errorHandler.js";
+import { logError } from "../util/logging.js";
 
 // transporter Gmail App Password
 const transporter = nodemailer.createTransport({
@@ -19,7 +20,11 @@ export default async function forgotPassword(req, res, next) {
   if (!email) return next(createHttpError(400, "Email required"));
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
-  if (error) return next(createHttpError(503, "DB connection failed"));
+  if (error) {
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
+  }
 
   try {
     const result = await connectedClient.query(

@@ -1,5 +1,6 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import { createHttpError } from "../middleware/errorHandler.js";
+import { logError } from "../util/logging.js";
 
 export default async function changeSkills(req, res, next) {
   const user_id = req.user?.id;
@@ -20,7 +21,11 @@ export default async function changeSkills(req, res, next) {
     );
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
-  if (error) return next(createHttpError(503, "Database connection error"));
+  if (error) {
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
+  }
 
   try {
     const result = await connectedClient.query(
