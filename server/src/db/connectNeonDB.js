@@ -14,7 +14,7 @@ export default async function connectNeonDB() {
       try {
         await connectedClient.end();
       } catch (err) {
-        logError(`Error closing database connection: ${err.message}`);
+        logError(`Error closing database connection: ${err}`);
       }
     }
   }
