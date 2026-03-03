@@ -36,6 +36,7 @@ export default function LoginForm({
           seniority: job.seniority,
           description_text: job.description_text,
           date_posted: job.date_posted,
+          adding_date: job.adding_date,
           travel_time: job.travel_time,
           least_transfers: job.least_transfers,
           normalized_description: job.normalized_description,

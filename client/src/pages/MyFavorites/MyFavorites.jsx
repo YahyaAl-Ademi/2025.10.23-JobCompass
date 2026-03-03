@@ -11,11 +11,6 @@ export default function MyFavorites() {
 
   const jobsWithSkills = useMemo(() => {
     return [...favoriteJobs]
-      .sort((a, b) => {
-        const dateA = a?.adding_date ? new Date(a.adding_date) : new Date(0);
-        const dateB = b?.adding_date ? new Date(b.adding_date) : new Date(0);
-        return dateA - dateB;
-      })
       .map((job) => {
         const skillsInDescription = getSkillsInDescription(
           job.normalized_description,
@@ -26,6 +21,11 @@ export default function MyFavorites() {
           skillsInDescription,
           skillsMatch: String(skillsInDescription.length).padStart(2, "0"),
         };
+      })
+      .sort((a, b) => {
+        const dateA = a?.adding_date ? new Date(a.adding_date) : new Date(0);
+        const dateB = b?.adding_date ? new Date(b.adding_date) : new Date(0);
+        return dateA - dateB;
       });
   }, [favoriteJobs, skills]);
 

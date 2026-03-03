@@ -9,12 +9,6 @@ Google Maps Integration Details:
 - Performance: Optimized for transit mode with duration and transfer metrics
 */
 
-if (!process.env.GOOGLE_MAPS_API_KEY) {
-  throw new Error(
-    "GOOGLE_MAPS_API_KEY is not defined in environment variables. Please check your .env file.",
-  );
-}
-
 export default async function getTransitRouteSummary(
   origin,
   destination,

@@ -1,8 +1,5 @@
 import jwt from "jsonwebtoken";
-
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET environment variable is not set");
-}
+import { createHttpError } from "./errorHandler.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 export const blacklistedTokens = [];
@@ -41,6 +38,6 @@ export function verifyToken(req, res, next) {
     req.user = null;
     return next();
   } else {
-    return res.status(401).json({ success: false, msg });
+    return next(createHttpError(401, msg));
   }
 }

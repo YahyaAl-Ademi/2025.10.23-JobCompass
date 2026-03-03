@@ -11,10 +11,6 @@ RapidAPI LinkedIn Integration Details:
 - Data Processing: Job validation and normalization through processRapidAPIjob utility
 */
 
-if (!process.env.X_RAPIDAPI_KEY) {
-  throw new Error("X_RAPIDAPI_KEY environment variable is not set");
-}
-
 export default async function rapidAPIfetch(
   searchWord,
   is_auth,

@@ -1,8 +1,9 @@
-import { logError, logWarning } from "../util/logging.js";
+import { logWarning } from "../util/logging.js";
 import getTransitRouteSummary from "../services/googleMapsApi.js";
 import formatAddress from "../../../shared/formatAddress.js";
 import normalizeText from "../../../shared/normalizeText.js";
 import getArrivalTime from "../util/getArrivalTime.js";
+import { createHttpError } from "../middleware/errorHandler.js";
 
 const workPlacesSet = new Set([
   "Brabantine City Row",
@@ -25,7 +26,7 @@ const workPlacesSet = new Set([
   "The Randstad, Netherlands",
 ]);
 
-export default async function calculateBatchTravelTime(req, res) {
+export default async function calculateBatchTravelTime(req, res, next) {
   try {
     const { homeAddress, workCities } = req.body || {};
     if (
@@ -35,10 +36,12 @@ export default async function calculateBatchTravelTime(req, res) {
       workCities.some((city) => typeof city !== "string")
     ) {
       logWarning("Invalid request body for batch travel calculation");
-      return res.status(400).json({
-        success: false,
-        msg: "Missing homeAddress or workCities text string array",
-      });
+      return next(
+        createHttpError(
+          400,
+          "Missing homeAddress or workCities text string array",
+        ),
+      );
     }
 
     const arrivalTime = getArrivalTime();
@@ -96,11 +99,11 @@ export default async function calculateBatchTravelTime(req, res) {
       },
     });
   } catch (error) {
-    logError(`Batch travel calculation error: ${error}`);
-    res.status(500).json({
-      success: false,
-      msg: "An unexpected error occurred during travel calculation",
-      error: error.message,
-    });
+    return next(
+      createHttpError(
+        500,
+        "An unexpected error occurred during travel calculation",
+      ),
+    );
   }
 }

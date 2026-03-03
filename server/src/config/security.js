@@ -1,0 +1,1 @@
+export const PASSWORD_HASH_COST_FACTOR = 12;

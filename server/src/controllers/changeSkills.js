@@ -1,30 +1,31 @@
 import connectNeonDB from "../db/connectNeonDB.js";
+import { createHttpError } from "../middleware/errorHandler.js";
 import { logError } from "../util/logging.js";
 
-export default async function changeSkills(req, res) {
+export default async function changeSkills(req, res, next) {
   const user_id = req.user?.id;
   const { skills } = req.body;
 
-  if (!user_id)
-    return res
-      .status(401)
-      .json({ success: false, msg: "User not authenticated" });
+  if (!user_id) return next(createHttpError(401, "User not authenticated"));
 
   if (
     !skills ||
     !Array.isArray(skills) ||
     (skills.length !== 0 && skills.some((skill) => typeof skill !== "string"))
   )
-    return res.status(400).json({
-      success: false,
-      msg: "Only an array of strings (or empty array) is allowed",
-    });
+    return next(
+      createHttpError(
+        400,
+        "Only an array of strings (or empty array) is allowed",
+      ),
+    );
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
-  if (error)
-    return res
-      .status(503)
-      .json({ success: false, msg: "Database connection error" });
+  if (error) {
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
+  }
 
   try {
     const result = await connectedClient.query(
@@ -36,7 +37,7 @@ export default async function changeSkills(req, res) {
     );
 
     if (result.rowCount === 0) {
-      throw new Error("User not found after update");
+      return next(createHttpError(404, "User not found after update"));
     }
 
     res.status(200).json({
@@ -44,11 +45,12 @@ export default async function changeSkills(req, res) {
       msg: "Skills are updated",
     });
   } catch (err) {
-    logError(err);
-    res.status(500).json({
-      success: false,
-      msg: "Sorry, there's an error with the DB. Unable to update skills",
-    });
+    return next(
+      createHttpError(
+        500,
+        "Sorry, there's an error with the DB. Unable to update skills",
+      ),
+    );
   } finally {
     if (endConnection) await endConnection();
   }

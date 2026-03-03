@@ -1,34 +1,31 @@
 import connectNeonDB from "../db/connectNeonDB.js";
+import { createHttpError } from "../middleware/errorHandler.js";
 import { logError } from "../util/logging.js";
-export default async function toggleFavoriteJob(req, res) {
+
+export default async function toggleFavoriteJob(req, res, next) {
   const user_id = req.user?.id;
   const { job } = req.body;
   const jobId = job?.id;
 
   //  Check if user is authenticated
-  if (!user_id)
-    return res
-      .status(401)
-      .json({ success: false, msg: "User not authenticated" });
+  if (!user_id) return next(createHttpError(401, "User not authenticated"));
 
   //  Check if jobId is provided
-  if (!jobId)
-    return res.status(400).json({ success: false, msg: "job.id is required" });
+  if (!jobId) return next(createHttpError(400, "job.id is required"));
 
   //  Validate job object
   if (!job || !job.title) {
-    return res
-      .status(400)
-      .json({ success: false, msg: "Invalid job: title is required" });
+    return next(createHttpError(400, "Invalid job: title is required"));
   }
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
 
   //  Handle database connection error
-  if (error)
-    return res
-      .status(503)
-      .json({ success: false, msg: "Database connection error" });
+  if (error) {
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
+  }
 
   try {
     const existingJob = await connectedClient.query(
@@ -95,11 +92,7 @@ export default async function toggleFavoriteJob(req, res) {
       },
     });
   } catch (err) {
-    logError(`Toggle favorite error: ${err}`);
-    return res.status(500).json({
-      success: false,
-      msg: "Failed to toggle favorite",
-    });
+    return next(createHttpError(500, "Failed to toggle favorite"));
   } finally {
     if (endConnection) await endConnection();
   }

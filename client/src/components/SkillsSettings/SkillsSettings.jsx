@@ -328,7 +328,8 @@ export default function SkillsSettings() {
                   <button
                     className="skill-remove-btn"
                     onClick={() => {
-                      skillInputRef.current.value = s;
+                      skillInputRef.current &&
+                        (skillInputRef.current.value = s);
                       handleInputSkill();
                     }}
                     aria-label={`Add ${s}`}

@@ -3,21 +3,20 @@
 import "dotenv/config";
 import express from "express";
 import cron from "node-cron";
+import { logInfo, logError } from "./util/logging.js";
+
+import cleanupDatabase from "./services/cleanupDatabase.js";
+import validateEnvironment from "./config/validateEnvironment.js";
+validateEnvironment();
 
 import app from "./app.js";
-import { logInfo, logError } from "./util/logging.js";
-import cleanupDatabase from "./services/cleanupDatabase.js";
-
+import errorHandler from "./middleware/errorHandler.js";
 /*
 Maintenance & Operations Implementation:
 - Daily Cleanup: Removal of old cache entries and expired data (see cleanupDatabase function below) and Cron jobs for scheduled maintenance tasks
 - Error Monitoring: Comprehensive logging and alerting (see logging utility)
 */
-
 const port = process.env.PORT;
-if (port == null) {
-  logError(new Error("Cannot find a PORT number, did you create a .env file?"));
-}
 
 // Schedule cleanup in format "12 23 * * 4", where:
 // 12 = 12th minute
@@ -70,5 +69,5 @@ if (process.env.NODE_ENV === "production") {
 
 /****** Removed test router import and mounting. The `testRouter.js` file was deleted and is no longer used. ******/
 
-// Start the server
+app.use(errorHandler);
 startServer();

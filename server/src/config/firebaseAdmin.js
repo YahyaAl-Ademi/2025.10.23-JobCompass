@@ -1,21 +1,11 @@
 import admin from "firebase-admin";
 
-if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  throw new Error(
-    "GOOGLE_APPLICATION_CREDENTIALS environment variable is not set",
-  );
-}
-
-if (!process.env.STORAGE_BUCKET) {
-  throw new Error("STORAGE_BUCKET environment variable is not set");
-}
-
 let serviceAccount;
 try {
   serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-} catch (error) {
+} catch (err) {
   throw new Error(
-    "Invalid GOOGLE_APPLICATION_CREDENTIALS format. Must be valid JSON.",
+    `Configuration error: GOOGLE_APPLICATION_CREDENTIALS must contain valid JSON. Original error: ${err.message}`,
   );
 }
 

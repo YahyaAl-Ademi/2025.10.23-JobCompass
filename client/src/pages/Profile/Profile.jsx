@@ -6,6 +6,10 @@ import ChangePassword from "../../components/ChangePassword";
 import cleanUpText from "../../util/cleanUpText";
 import validateAddressTextInputs from "../../util/addressTextsValidation";
 import validateHouseNoInput from "../../util/addressHouseNoValidation";
+import {
+  validatePassword,
+  validatePasswordMatch,
+} from "../../util/AuthValidation";
 import { UseUser } from "../../context/UserContext";
 import useFetch from "../../hooks/useFetch";
 import AvatarUploader from "../../components/AvatarUploader/AvatarUploader";
@@ -16,13 +20,15 @@ import { gif } from "../../assets/index.js";
 
 export default function Profile() {
   const [alert, setAlert] = useState({ type: "", message: "" });
-  const first_nameInputRef = useRef(null);
-  const last_nameInputRef = useRef(null);
-  const changePasswordRef = useRef(null);
-  const streetInputRef = useRef(null);
-  const houseInputRef = useRef(null);
-  const cityInputRef = useRef(null);
-  const countryInputRef = useRef(null);
+  const first_nameInputRef = useRef("");
+  const last_nameInputRef = useRef("");
+  const streetInputRef = useRef("");
+  const houseInputRef = useRef("");
+  const cityInputRef = useRef("");
+  const countryInputRef = useRef("");
+  const currentPasswordInputRef = useRef("");
+  const newPasswordInputRef = useRef("");
+  const confirmPasswordInputRef = useRef("");
   const { user, dispatch } = UseUser();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
@@ -36,68 +42,97 @@ export default function Profile() {
     }, DELAYED_CLEAR_INTERVAL);
   }
 
-  const {
-    error: updateProfileError,
-    isLoading: isUpdateLoading,
-    performFetch: performUpdateProfile,
-  } = useFetch("/users/profile", (data) => {
-    dispatch({
-      type: "UPDATE_USER",
-      payload: {
-        ...data.user,
-        skills: Array.isArray(data.user.skills) ? data.user.skills : [],
-      },
-    });
-    setAlert({ type: "success", message: "Profile updated successfully!" });
-    delayedClearAlert();
-  });
-
   useEffect(() => {
-    if (updateProfileError)
-      setAlert({ type: "error", message: String(updateProfileError) });
-    delayedClearAlert();
-  }, [updateProfileError]);
+    if (!user) return;
 
-  useEffect(() => {
-    if (
-      first_nameInputRef.current &&
-      last_nameInputRef.current &&
-      streetInputRef.current &&
-      houseInputRef.current &&
-      cityInputRef.current &&
-      countryInputRef.current
-    ) {
-      first_nameInputRef.current.value = user.first_name;
-      last_nameInputRef.current.value = user.last_name;
-      streetInputRef.current.value = user.street;
-      houseInputRef.current.value = user.house_number;
-      cityInputRef.current.value = user.city;
-      countryInputRef.current.value = user.country;
-    }
+    if (first_nameInputRef.current)
+      first_nameInputRef.current.value = user.first_name ?? "";
+    if (last_nameInputRef.current)
+      last_nameInputRef.current.value = user.last_name ?? "";
+    if (streetInputRef.current)
+      streetInputRef.current.value = user.street ?? "";
+    if (houseInputRef.current)
+      houseInputRef.current.value = user.house_number ?? "";
+    if (cityInputRef.current) cityInputRef.current.value = user.city ?? "";
+    if (countryInputRef.current)
+      countryInputRef.current.value = user.country ?? "";
+
+    if (currentPasswordInputRef.current)
+      currentPasswordInputRef.current.value = "";
+    if (newPasswordInputRef.current) newPasswordInputRef.current.value = "";
+    if (confirmPasswordInputRef.current)
+      confirmPasswordInputRef.current.value = "";
   }, [user]);
+
+  const { error, isLoading, performFetch } = useFetch(
+    "/users/profile",
+    (data) => {
+      dispatch({
+        type: "UPDATE_USER",
+        payload: {
+          ...data.user,
+          skills: Array.isArray(data.user.skills) ? data.user.skills : [],
+        },
+      });
+      setAlert({ type: "success", message: "Profile updated successfully!" });
+      delayedClearAlert();
+    },
+  );
+
+  useEffect(() => {
+    if (error) setAlert({ type: "error", message: String(error) });
+    delayedClearAlert();
+  }, [error]);
 
   function handleDeleteClick() {
     setShowDeletePopup(true);
   }
 
-  function handlePasswordChangeSuccess() {
-    setAlert({
-      type: "success",
-      message: "Password changed successfully!",
-    });
-    delayedClearAlert();
+  function getPasswordChangeValues() {
+    const currentPassword = currentPasswordInputRef?.current?.value;
+    const newPassword = newPasswordInputRef?.current?.value;
+    const confirmPassword = confirmPasswordInputRef?.current?.value;
+
+    let result = {
+      passwordValidationError: null,
+      currentPassword: null,
+      newPassword: null,
+    };
+
+    if (currentPassword || newPassword || confirmPassword) {
+      if (!(newPassword && confirmPassword && currentPassword)) {
+        result.passwordValidationError = {
+          type: "error",
+          message: "To change your password, please fill in all fields.",
+        };
+      } else if (!validatePassword(newPassword)) {
+        result.passwordValidationError = {
+          type: "error",
+          message:
+            "Password must be at least 8 characters and meet at least 2 complexity rules.",
+        };
+      } else {
+        const matchCheck = validatePasswordMatch(newPassword, confirmPassword);
+        if (!matchCheck.valid) {
+          result.passwordValidationError = {
+            type: "error",
+            message: matchCheck.message,
+          };
+        } else {
+          result.currentPassword = currentPassword;
+          result.newPassword = newPassword;
+        }
+      }
+    }
+
+    return result;
   }
 
-  function handlePasswordChangeError(message) {
-    setAlert({ type: "error", message: String(message) });
-    delayedClearAlert();
-  }
-
-  async function handleSaveClick() {
+  function handleSaveClick() {
     handleClearAlert();
 
-    const passwordResult =
-      await changePasswordRef.current.handlePasswordChange();
+    const { passwordValidationError, currentPassword, newPassword } =
+      getPasswordChangeValues();
 
     const updatedFields = {};
 
@@ -107,9 +142,6 @@ export default function Profile() {
     const house_number = cleanUpText(houseInputRef?.current.value);
     const city = cleanUpText(cityInputRef?.current.value);
     const country = cleanUpText(countryInputRef?.current.value);
-
-    if (first_name !== user.first_name) updatedFields.first_name = first_name;
-    if (last_name !== user.last_name) updatedFields.last_name = last_name;
 
     const streetValidationError = validateAddressTextInputs({ text: street });
     const cityValidationError = validateAddressTextInputs({
@@ -127,30 +159,29 @@ export default function Profile() {
       cityValidationError ||
       countryValidationError ||
       houseValidationError ||
-      passwordResult.validationError;
+      passwordValidationError;
 
     if (validationError) {
-      setAlert({
-        type: "error",
-        message:
-          validationError === passwordResult.validationError
-            ? passwordResult.validationError
-            : validationError,
-      });
+      setAlert(validationError);
       delayedClearAlert();
     } else {
+      if (first_name !== user.first_name) updatedFields.first_name = first_name;
+      if (last_name !== user.last_name) updatedFields.last_name = last_name;
       if (street !== user.street) updatedFields.street = street;
       if (city !== user.city) updatedFields.city = city;
       if (country !== user.country) updatedFields.country = country;
       if (house_number !== user.house_number)
         updatedFields.house_number = house_number;
+      if (currentPassword && newPassword) {
+        updatedFields.currentPassword = currentPassword;
+        updatedFields.newPassword = newPassword;
+      }
 
       if (Object.keys(updatedFields).length === 0) {
-        if (passwordResult.inputsFilled === false)
-          setAlert({ type: "info", message: "No changes detected." });
+        setAlert({ type: "info", message: "No changes detected." });
         delayedClearAlert();
       } else {
-        performUpdateProfile({
+        performFetch({
           method: "PUT",
           body: JSON.stringify(updatedFields),
           credentials: "include",
@@ -219,11 +250,12 @@ export default function Profile() {
       </div>
 
       <ChangePassword
-        ref={changePasswordRef}
         onKeyDown={pressEnterKey}
-        onInputChange={handleClearAlert}
-        onSuccess={handlePasswordChangeSuccess}
-        onError={handlePasswordChangeError}
+        clearAlert={handleClearAlert}
+        currentPasswordInputRef={currentPasswordInputRef}
+        newPasswordInputRef={newPasswordInputRef}
+        confirmPasswordInputRef={confirmPasswordInputRef}
+        isLoading={isLoading}
       />
       {/* <!-- Save Button --> */}
       <div className="profile-save-row">
@@ -239,7 +271,7 @@ export default function Profile() {
             className="profile-save-btn"
           >
             Save
-            {isUpdateLoading && (
+            {isLoading && (
               <img src={gif.spinner} alt="Loading..." className="spinner" />
             )}
           </button>

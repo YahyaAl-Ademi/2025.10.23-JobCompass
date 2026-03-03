@@ -1,16 +1,22 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
+import { createHttpError } from "../middleware/errorHandler.js";
+import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
 import { logError } from "../util/logging.js";
 
-export default async function resetPassword(req, res) {
+export default async function resetPassword(req, res, next) {
   const { token, newPassword } = req.body;
 
   if (!token || !newPassword)
-    return res
-      .status(400)
-      .json({ success: false, msg: "Missing token or password" });
+    return next(createHttpError(400, "Missing token or password"));
 
-  const { connectedClient, endConnection } = await connectNeonDB();
+  const { connectedClient, endConnection, error } = await connectNeonDB();
+
+  if (error) {
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
+  }
 
   try {
     const result = await connectedClient.query(
@@ -19,14 +25,14 @@ export default async function resetPassword(req, res) {
     );
 
     if (result.rows.length === 0)
-      return res.status(400).json({ success: false, msg: "Invalid token" });
+      return next(createHttpError(400, "Invalid token"));
 
     const { id: user_id, reset_token_expires } = result.rows[0];
 
     if (new Date() > new Date(reset_token_expires))
-      return res.status(400).json({ success: false, msg: "Token expired" });
+      return next(createHttpError(400, "Token expired"));
 
-    const hashed = await bcrypt.hash(newPassword, 12);
+    const hashed = await bcrypt.hash(newPassword, PASSWORD_HASH_COST_FACTOR);
 
     await connectedClient.query(
       "UPDATE users SET password=$1, reset_token=NULL, reset_token_expires=NULL WHERE id=$2",
@@ -35,8 +41,7 @@ export default async function resetPassword(req, res) {
 
     res.json({ success: true, msg: "Password updated" });
   } catch (err) {
-    logError(err);
-    res.status(500).json({ success: false, msg: "Server error" });
+    return next(createHttpError(500, "Server error"));
   } finally {
     await endConnection();
   }

@@ -14,9 +14,6 @@ Apify LinkedIn Scraper Integration Details:
 const apifyBase = "https://api.apify.com/v2";
 const pollIntervalMs = 30 * 1000;
 const waitTimeoutMs = 10 * 60 * 1000;
-if (!process.env.LINKEDIN_SCRAPER_KEY) {
-  throw new Error("LINKEDIN_SCRAPER_KEY environment variable is not set");
-}
 
 export default async function linkedInScraperFetch(
   search_string,

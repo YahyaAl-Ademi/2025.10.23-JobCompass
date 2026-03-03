@@ -1,24 +1,9 @@
 import { Client } from "pg";
 import { logError } from "../util/logging.js";
 
-async function connectNeonDB() {
+export default async function connectNeonDB() {
   let error = null;
   let connectedClient = null;
-
-  //validation check
-  if (!process.env.DATABASE_URL) {
-    const errMessage =
-      "DATABASE_URL is not defined in environment variables. Please check your .env file";
-    logError(errMessage);
-    error = new Error(errMessage);
-    return {
-      error,
-      connectedClient,
-      endConnection: () => {
-        logError("Cannot close connection: Client never connected");
-      },
-    };
-  }
 
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -29,7 +14,7 @@ async function connectNeonDB() {
       try {
         await connectedClient.end();
       } catch (err) {
-        logError(`Error closing database connection: ${err.message}`);
+        logError(`Error closing database connection: ${err}`);
       }
     }
   }
@@ -39,15 +24,11 @@ async function connectNeonDB() {
     connectedClient = client;
   } catch (err) {
     error = err;
-    logError(`Database connection error: ${err.message}`);
+    logError(`DB Connection Error: ${err}`);
     await client
       .end()
-      .catch((e) =>
-        logError(`Error during failed connection cleanup: ${e.message}`),
-      );
+      .catch((e) => logError(`Error during failed connection cleanup: ${e}`));
   }
 
   return { error, connectedClient, endConnection };
 }
-
-export default connectNeonDB;

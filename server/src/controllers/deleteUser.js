@@ -1,7 +1,8 @@
 import connectNeonDB from "../db/connectNeonDB.js";
+import { createHttpError } from "../middleware/errorHandler.js";
 import { logError } from "../util/logging.js";
 
-export default async function deleteUser(req, res) {
+export default async function deleteUser(req, res, next) {
   // This API endpoint is secured via `verifyToken` middleware,
   // ensuring the request is authenticated.
 
@@ -13,20 +14,20 @@ export default async function deleteUser(req, res) {
   if (!targetUserId) {
     // If the authenticated token somehow lacks a valid ID payload, respond with 401.
     // This suggests an issue with the token payload itself.
-    return res.status(401).json({
-      success: false,
-      message: "Authentication failed: No valid User ID found in token.",
-    });
+    return next(
+      createHttpError(
+        401,
+        "Authentication failed: No valid User ID found in token.",
+      ),
+    );
   }
 
   // Connect to the database
   const { error, connectedClient, endConnection } = await connectNeonDB();
   if (error) {
-    logError(`DB connection failed: ${error}`);
-    return res.status(500).json({
-      success: false,
-      message: "Database connection failed",
-    });
+    if (endConnection) await endConnection();
+    logError(`DB Connection Error: ${error}`);
+    return next(createHttpError(503, "DB Connection Error"));
   }
 
   try {
@@ -35,10 +36,7 @@ export default async function deleteUser(req, res) {
     const result = await connectedClient.query(query, [targetUserId]);
 
     if (result.rowCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found (or already deleted)",
-      });
+      return next(createHttpError(404, "User not found (or already deleted)"));
     }
 
     // Successfully deleted
@@ -48,11 +46,7 @@ export default async function deleteUser(req, res) {
       deletedUser: result.rows,
     });
   } catch (err) {
-    logError(`Error deleting user: ${err.message}`);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return next(createHttpError(500, "Internal server error"));
   } finally {
     await endConnection();
   }
