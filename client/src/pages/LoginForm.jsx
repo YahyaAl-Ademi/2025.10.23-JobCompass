@@ -81,10 +81,10 @@ export default function LoginForm({
     e.preventDefault();
     performFetch({
       method: "POST",
-      body: JSON.stringify({
+      body: {
         email: loginData.email,
         password: loginData.password,
-      }),
+      },
       credentials: "include",
     });
   }

@@ -26,7 +26,7 @@ export default function SearchInput() {
     setSearchString(inputValue);
     performJobFetch({
       method: "POST",
-      body: JSON.stringify({ search_string: inputValue }),
+      body: { search_string: inputValue },
       credentials: "include",
     });
     navigate("/jobs");

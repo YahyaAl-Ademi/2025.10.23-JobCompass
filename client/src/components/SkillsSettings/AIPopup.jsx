@@ -86,7 +86,7 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
 
     performFetch({
       method: "POST",
-      body: JSON.stringify({ isCV, prompt: aiInputText }),
+      body: { isCV, prompt: aiInputText },
     });
   }
 

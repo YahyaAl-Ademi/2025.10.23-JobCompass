@@ -33,7 +33,7 @@ export default function ForgotPasswordForm({ switchToLogin }) {
     e.preventDefault(); // Prevent page reload when the form is submitted
     performFetch({
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: { email },
     });
   }
 

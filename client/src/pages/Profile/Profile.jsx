@@ -183,7 +183,7 @@ export default function Profile() {
       } else {
         performFetch({
           method: "PUT",
-          body: JSON.stringify(updatedFields),
+          body: updatedFields,
           credentials: "include",
         });
       }

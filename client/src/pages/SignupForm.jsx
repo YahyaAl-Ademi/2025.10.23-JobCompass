@@ -112,7 +112,7 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
 
     performFetch({
       method: "POST",
-      body: JSON.stringify({
+      body: {
         user: {
           ...defaultUser,
           skills: defaultUser.skills,
@@ -121,7 +121,7 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
           email: signupData.email,
           password: signupData.password,
         },
-      }),
+      },
       credentials: "include",
     });
   }

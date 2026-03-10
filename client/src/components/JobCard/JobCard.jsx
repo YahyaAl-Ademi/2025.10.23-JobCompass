@@ -52,7 +52,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     if (user.id) {
       performFetch({
         method: "POST",
-        body: JSON.stringify({ job }),
+        body: { job },
         credentials: "include",
       });
     } else {
