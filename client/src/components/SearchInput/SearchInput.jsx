@@ -14,8 +14,8 @@ export default function SearchInput() {
   const navigate = useNavigate();
 
   async function handleSearch() {
-    const inputValue = inputRef.current?.value ?? "";
-    const validationError = validateJobInput({ text: cleanUpText(inputValue) });
+    const inputValue = cleanUpText(inputRef.current?.value ?? "");
+    const validationError = validateJobInput({ text: inputValue });
     if (validationError) {
       setAlert(validationError);
       return;
@@ -26,7 +26,7 @@ export default function SearchInput() {
     setSearchString(inputValue);
     performJobFetch({
       method: "POST",
-      body: JSON.stringify({ search_string: inputValue }),
+      body: { search_string: inputValue },
       credentials: "include",
     });
     navigate("/jobs");

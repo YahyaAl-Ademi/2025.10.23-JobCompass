@@ -83,7 +83,7 @@ function JobsProvider({ children }) {
 
     performTravelFetch({
       method: "POST",
-      body: JSON.stringify({ homeAddress, workCities: citiesToFetch }),
+      body: { homeAddress, workCities: citiesToFetch },
     });
   }
 

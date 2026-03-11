@@ -76,7 +76,7 @@ export default function SkillsSettings() {
   async function changeSkillsHelper(skills) {
     performFetch({
       method: "POST",
-      body: JSON.stringify({ skills }),
+      body: { skills },
       credentials: "include",
     });
   }

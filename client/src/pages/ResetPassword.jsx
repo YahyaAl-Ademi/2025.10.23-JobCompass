@@ -62,10 +62,10 @@ export default function ResetPasswordForm() {
 
     performFetch({
       method: "POST",
-      body: JSON.stringify({
+      body: {
         token,
         newPassword,
-      }),
+      },
     });
   }
 

@@ -43,6 +43,8 @@ export default function useFetch(route, onReceived) {
     setIsLoading(true);
 
     const isFormData = options?.body instanceof FormData;
+    const isObject =
+      options?.body && typeof options.body === "object" && !isFormData;
 
     const baseOptions = {
       method: "GET",
@@ -52,6 +54,10 @@ export default function useFetch(route, onReceived) {
             "content-type": "application/json",
           },
     };
+
+    if (isObject) {
+      options.body = JSON.stringify(options.body);
+    }
 
     async function fetchData() {
       // We add the /api subsection here to make it a single point of change if our configuration changes
