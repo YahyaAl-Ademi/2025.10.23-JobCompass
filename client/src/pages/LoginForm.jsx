@@ -4,6 +4,7 @@ import { UseUser } from "../context/UserContext";
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
+import useAlert from "../hooks/useAlert";
 import DonationPopup from "../components/DonationPopup/DonationPopup";
 
 export default function LoginForm({
@@ -13,13 +14,9 @@ export default function LoginForm({
 }) {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert, clearAlert } = useAlert();
   const [donationPopup, setDonationPopup] = useState(false);
   const { dispatch } = UseUser();
-
-  function handleClearAlert() {
-    setAlert({ type: "", message: "" });
-  }
 
   function handleLoginResults(data) {
     const favoriteJobs = Array.isArray(data.user.favorites)
@@ -74,7 +71,7 @@ export default function LoginForm({
   function handleChange(e) {
     const { name, value } = e.target;
     setLoginData({ ...loginData, [name]: value });
-    handleClearAlert();
+    clearAlert();
   }
 
   async function handleSubmit(e) {

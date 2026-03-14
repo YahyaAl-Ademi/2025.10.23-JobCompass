@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import useAlert from "../../hooks/useAlert";
 import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
 import AddressSettings from "../../components/AddressSettings/AddressSettings";
 import AlertMessage from "../../components/AlertMessage/AlertMessage";
@@ -14,12 +15,11 @@ import { UseUser } from "../../context/UserContext";
 import useFetch from "../../hooks/useFetch";
 import AvatarUploader from "../../components/AvatarUploader/AvatarUploader";
 import DeleteProfilePopup from "../../components/DeleteProfilePopup/DeleteProfilePopup";
-import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import "./Profile.css";
 import { gif } from "../../assets/index.js";
 
 export default function Profile() {
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert, clearAlert, delayedClearAlert } = useAlert();
   const first_nameInputRef = useRef("");
   const last_nameInputRef = useRef("");
   const streetInputRef = useRef("");
@@ -31,16 +31,6 @@ export default function Profile() {
   const confirmPasswordInputRef = useRef("");
   const { user, dispatch } = UseUser();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-
-  function handleClearAlert() {
-    setAlert({ type: "", message: "" });
-  }
-
-  function delayedClearAlert() {
-    setTimeout(() => {
-      handleClearAlert();
-    }, DELAYED_CLEAR_INTERVAL);
-  }
 
   useEffect(() => {
     if (!user) return;
@@ -129,7 +119,7 @@ export default function Profile() {
   }
 
   function handleSaveClick() {
-    handleClearAlert();
+    clearAlert();
 
     const { passwordValidationError, currentPassword, newPassword } =
       getPasswordChangeValues();
@@ -200,7 +190,7 @@ export default function Profile() {
 
       <div className="profile-avatar-row">
         {/* <!-- Avatar with the editing/updating button --> */}
-        <AvatarUploader setAlert={setAlert} />
+        <AvatarUploader setAlert={setAlert} delayedClearAlert={delayedClearAlert} />
         <div className="avatar-uploader-info">
           <h3 className="avatar-uploader-title">Profile photo</h3>
           <span className="avatar-uploader-subtitle">
@@ -221,7 +211,7 @@ export default function Profile() {
               defaultValue={user?.first_name || ""}
               className="profile-input"
               onKeyDown={pressEnterKey}
-              onChange={handleClearAlert}
+              onChange={clearAlert}
             />
           </div>
           <div className="profile-info">
@@ -232,7 +222,7 @@ export default function Profile() {
               defaultValue={user?.last_name || ""}
               className="profile-input"
               onKeyDown={pressEnterKey}
-              onChange={handleClearAlert}
+              onChange={clearAlert}
             />
           </div>
         </div>
@@ -245,13 +235,13 @@ export default function Profile() {
           houseInputRef={houseInputRef}
           cityInputRef={cityInputRef}
           countryInputRef={countryInputRef}
-          clearAlert={handleClearAlert}
+          clearAlert={clearAlert}
         />
       </div>
 
       <ChangePassword
         onKeyDown={pressEnterKey}
-        clearAlert={handleClearAlert}
+        clearAlert={clearAlert}
         currentPasswordInputRef={currentPasswordInputRef}
         newPasswordInputRef={newPasswordInputRef}
         confirmPasswordInputRef={confirmPasswordInputRef}

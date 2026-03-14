@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
 import useFetch from "../hooks/useFetch";
+import useAlert from "../hooks/useAlert";
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 import {
   validatePassword,
@@ -15,7 +16,7 @@ export default function ResetPasswordForm() {
   const token = searchParams.get("token");
   const navigate = useNavigate();
   const [resetSuccess, setResetSuccess] = useState(false);
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert, delayedClearAlert } = useAlert();
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,15 +31,11 @@ export default function ResetPasswordForm() {
 
   useEffect(() => {
     if (error) {
-      (async () => {
-        setResetSuccess(false);
-        setAlert({ type: "error", message: String(error) });
-        setTimeout(() => {
-          setAlert({ type: "", message: "" });
-        }, 2000);
-      })();
+      setResetSuccess(false);
+      setAlert({ type: "error", message: String(error) });
+      delayedClearAlert();
     }
-  }, [error, setAlert, setResetSuccess]);
+  }, [error, setAlert, setResetSuccess, delayedClearAlert]);
 
   async function handleSubmit(e) {
     e.preventDefault();

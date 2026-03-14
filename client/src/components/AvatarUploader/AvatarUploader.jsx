@@ -3,17 +3,10 @@ import { UseUser } from "../../context/UserContext";
 import "./AvatarUploader.css";
 import useFetch from "../../hooks/useFetch";
 import { gif } from "../../assets";
-import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 
-export default function AvatarUploader({ setAlert }) {
+export default function AvatarUploader({ setAlert, delayedClearAlert }) {
   const { user, dispatch } = UseUser();
   const fileInputRef = useRef(null);
-
-  function delayedClearAlert() {
-    setTimeout(() => {
-      setAlert({ type: "", message: "" });
-    }, DELAYED_CLEAR_INTERVAL);
-  }
 
   const { isLoading, error, performFetch } = useFetch(
     "/users/update-avatar",

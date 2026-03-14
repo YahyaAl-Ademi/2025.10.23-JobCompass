@@ -9,18 +9,18 @@ import SkillsTipPopup from "../SuccessPopup/SkillsTipPopup";
 import AIPopup from "./AIPopup";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
+import useAlert from "../../hooks/useAlert";
 import cleanUpText from "../../util/cleanUpText";
 import normalizeText from "../../../../shared/normalizeText";
 import validateSkillInput from "../../util/skillValidation";
 import { gif } from "../../assets/index.js";
-import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 // Styles
 import "./SkillsSettings.css";
 
 export default function SkillsSettings() {
   const navigate = useNavigate();
   const skillInputRef = useRef(null);
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert, clearAlert, delayedClearAlert } = useAlert();
   const [showAll, setShowAll] = useState(false);
   const [showTipPopup, setShowTipPopup] = useState(false);
   const maxVisible = 4;
@@ -30,16 +30,6 @@ export default function SkillsSettings() {
   const [showAIPopup, setShowAIPopup] = useState(false);
   const handleSkillsResultsRef = useRef(() => {});
   const [aiSkills, setAiSkills] = useState([]);
-
-  function handleClearAlert() {
-    setAlert({ type: "", message: "" });
-  }
-
-  function delayedClearAlert() {
-    setTimeout(() => {
-      handleClearAlert();
-    }, DELAYED_CLEAR_INTERVAL);
-  }
 
   const {
     isLoading,
@@ -201,7 +191,7 @@ export default function SkillsSettings() {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleInputSkill();
             }}
-            onChange={handleClearAlert}
+            onChange={clearAlert}
           />
 
           <button

@@ -1,5 +1,6 @@
 // React hooks
 import { useMemo, useState, useEffect } from "react";
+import useAlert from "../../hooks/useAlert";
 // Lucide React icons
 import {
   GraduationCap,
@@ -20,7 +21,6 @@ import { UseJobs } from "../../context/JobsContext";
 import { UseUser } from "../../context/UserContext";
 // Utils
 import createSortComparator from "../../util/createSortComparator";
-import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { findFilterOptions, filterJobs } from "../../util/filterJobs";
 import getSkillsInDescription from "../../util/getSkillsInDescription";
 // Assets
@@ -30,7 +30,7 @@ import "./OpenPositions.css";
 
 export default function OpenPositions() {
   const { user } = UseUser();
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert, delayedClearAlert } = useAlert();
 
   const {
     allJobs,
@@ -61,16 +61,6 @@ export default function OpenPositions() {
     "Most skill matches",
     "Newest first",
   ]);
-
-  function handleClearAlert() {
-    setAlert({ type: "", message: "" });
-  }
-
-  function delayedClearAlert() {
-    setTimeout(() => {
-      handleClearAlert();
-    }, DELAYED_CLEAR_INTERVAL);
-  }
 
   useEffect(() => {
     if (jobFetchError) {
