@@ -31,12 +31,12 @@ export default function ResetPasswordForm() {
 
   useEffect(() => {
     if (error) {
-      setResetSuccess(false);
+      const reset = () => setResetSuccess(false);
+      reset();
       setAlert({ type: "error", message: String(error) });
       delayedClearAlert();
     }
-  }, [error, setAlert, setResetSuccess, delayedClearAlert]);
-
+  }, [error, setAlert, delayedClearAlert]);
   async function handleSubmit(e) {
     e.preventDefault();
     if (!token) {

@@ -190,7 +190,10 @@ export default function Profile() {
 
       <div className="profile-avatar-row">
         {/* <!-- Avatar with the editing/updating button --> */}
-        <AvatarUploader setAlert={setAlert} delayedClearAlert={delayedClearAlert} />
+        <AvatarUploader
+          setAlert={setAlert}
+          delayedClearAlert={delayedClearAlert}
+        />
         <div className="avatar-uploader-info">
           <h3 className="avatar-uploader-title">Profile photo</h3>
           <span className="avatar-uploader-subtitle">
