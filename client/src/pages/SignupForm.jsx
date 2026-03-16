@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useAlert from "../hooks/useAlert";
 import {
   UserPlus,
   CheckCircle,
@@ -41,15 +42,11 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
     password: "",
     confirmPassword: "",
   });
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert, clearAlert } = useAlert();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmationPassword, setShowConfirmationPassword] =
     useState(false);
   const { dispatch } = UseUser();
-
-  function handleClearAlert() {
-    setAlert({ type: "", message: "" });
-  }
 
   function handleSignupResults(data) {
     dispatch({
@@ -78,7 +75,7 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
   function handleChange(e) {
     const { name, value } = e.target;
     setSignupData({ ...signupData, [name]: value });
-    handleClearAlert();
+    clearAlert();
   }
 
   async function handleSubmit(e) {
@@ -288,7 +285,7 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
           className="switch-link"
           onClick={() => {
             switchToLogin();
-            handleClearAlert();
+            clearAlert();
           }}
         >
           Login

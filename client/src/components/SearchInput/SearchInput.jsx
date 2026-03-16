@@ -1,15 +1,15 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { UseJobs } from "../../context/JobsContext";
 import AlertMessage from "../AlertMessage/AlertMessage";
 import validateJobInput from "../../util/searchValidation";
+import useAlert from "../../hooks/useAlert";
 import "./SearchInput.css";
 import cleanUpText from "../../util/cleanUpText";
 
 export default function SearchInput() {
   const { setSearchString, setAllJobs, performJobFetch } = UseJobs();
-
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert } = useAlert();
   const inputRef = useRef(null);
   const navigate = useNavigate();
 

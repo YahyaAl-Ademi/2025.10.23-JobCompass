@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import useFetch from "../hooks/useFetch";
+import useAlert from "../hooks/useAlert";
 import { UseUser } from "../context/UserContext";
 import { Mail } from "lucide-react";
 import { gif } from "../assets";
@@ -9,7 +10,7 @@ export default function ForgotPasswordForm({ switchToLogin }) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const { setMessage } = UseUser();
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert, delayedClearAlert } = useAlert();
 
   const { isLoading, error, performFetch } = useFetch(
     "/users/forgot-password",
@@ -22,12 +23,9 @@ export default function ForgotPasswordForm({ switchToLogin }) {
   useEffect(() => {
     if (error) {
       setAlert({ type: "error", message: String(error) });
-      const timer = setTimeout(() => {
-        setAlert({ type: "", message: "" });
-      }, 2000);
-      return () => clearTimeout(timer);
+      delayedClearAlert();
     }
-  }, [error]);
+  }, [error, setAlert, delayedClearAlert]);
 
   async function handleSubmit(e) {
     e.preventDefault(); // Prevent page reload when the form is submitted

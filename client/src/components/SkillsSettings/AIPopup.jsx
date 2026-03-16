@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import useFetch from "../../hooks/useFetch";
+import useAlert from "../../hooks/useAlert";
 import { gif } from "../../assets/index.js";
 import AlertMessage from "../AlertMessage/AlertMessage";
-import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { UseUser } from "../../context/UserContext";
 import validateSkillInput from "../../util/skillValidation";
 import normalizeText from "../../../../shared/normalizeText.js";
@@ -10,17 +10,8 @@ import normalizeText from "../../../../shared/normalizeText.js";
 export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
   const { user } = UseUser();
   const [aiInputText, setAiInputText] = useState("");
-  const [alert, setAlert] = useState({ type: "", message: "" });
+  const { alert, setAlert, clearAlert, delayedClearAlert } = useAlert();
   const isCVRef = useRef(true);
-
-  function handleClearAlert() {
-    setAlert({ type: "", message: "" });
-  }
-  function delayedClearAlert() {
-    setTimeout(() => {
-      handleClearAlert();
-    }, DELAYED_CLEAR_INTERVAL);
-  }
 
   const { isLoading, error, performFetch } = useFetch(
     "/ai/assist-skills",
@@ -81,7 +72,7 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
   }, [error]);
 
   async function handleGetSkills(isCV) {
-    handleClearAlert();
+    clearAlert();
     isCVRef.current = isCV;
 
     performFetch({
