@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { createHttpError } from "../middleware/errorHandler.js";
 import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
 import { logError } from "../util/logging.js";
+import mapUserFromJoinRows from "../util/map_user_details_with_favorites.js";
 
 const USER_FULL_INFO_QUERY = `
   SELECT
@@ -133,47 +134,7 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
       throw createHttpError(404, "User not found after update");
     }
 
-    const rows = result.rows;
-    const userDataRow = rows[0];
-
-    const updatedUser = {
-      id: userDataRow.user_id,
-      email: userDataRow.email,
-      first_name: userDataRow.first_name,
-      last_name: userDataRow.last_name,
-      avatar: userDataRow.avatar,
-      street: userDataRow.street,
-      house_number: userDataRow.house_number,
-      city: userDataRow.city,
-      country: userDataRow.country,
-      skills: userDataRow.skills ? userDataRow.skills.split(",") : [],
-      favorites: [],
-    };
-
-    rows.forEach((row) => {
-      if (row.job_id) {
-        const jobFavorite = {
-          id: row.job_id,
-          date_posted: row.date_posted,
-          title: row.title,
-          organization: row.organization,
-          organization_url: row.organization_url,
-          employment_type: row.employment_type,
-          url: row.url,
-          organization_logo: row.organization_logo,
-          display_location: row.display_location,
-          work_mode: row.work_mode,
-          seniority: row.seniority,
-          description_text: row.description_text,
-          travel_time: row.travel_time,
-          least_transfers: row.least_transfers,
-          normalized_description: row.normalized_description,
-        };
-        updatedUser.favorites.push(jobFavorite);
-      }
-    });
-
-    return updatedUser;
+    return mapUserFromJoinRows(result.rows);
   } finally {
     if (endConnection) await endConnection();
   }

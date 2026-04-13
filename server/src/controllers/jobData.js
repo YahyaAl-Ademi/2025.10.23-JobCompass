@@ -57,8 +57,7 @@ export default async function searchJobs(req, res, next) {
       const searchWords = search_string.split(/[\s\-/]+/).filter(Boolean);
       // If the DB has already responded with the job title which is the single keyword, there's no need to break it down further and re-query for the same keyword.
       if (is_whole_string === undefined || searchWords.length > 1) {
-        for (let i = 0; i < searchWords.length; i++) {
-          const searchWord = searchWords[i];
+        for (const searchWord of searchWords) {
           const cachedResult = await getCachedJobsBySearchString(
             connectedClient,
             searchWord,
@@ -66,7 +65,7 @@ export default async function searchJobs(req, res, next) {
           );
           let fetchedJobs = [];
           if (cachedResult.cachedJobsPerSearchString.length > 0) {
-            fetchedJobs = [...cachedResult.cachedJobsPerSearchString];
+            fetchedJobs = cachedResult.cachedJobsPerSearchString;
           } else {
             fetchedJobs = await rapidAPIfetchPersister(searchWord, is_auth);
           }

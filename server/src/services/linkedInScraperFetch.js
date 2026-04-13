@@ -13,7 +13,7 @@ Apify LinkedIn Scraper Integration Details:
 */
 const apifyBase = "https://api.apify.com/v2";
 const pollIntervalMs = 30 * 1000;
-const waitTimeoutMs = 10 * 60 * 1000;
+const waitTimeoutMs = 20 * 60 * 1000;
 
 export default async function linkedInScraperFetch(
   search_string,
