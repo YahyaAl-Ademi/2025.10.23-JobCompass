@@ -19,26 +19,7 @@ export default function LoginForm({
   const { dispatch } = UseUser();
 
   function handleLoginResults(data) {
-    const favoriteJobs = Array.isArray(data.user.favorites)
-      ? data.user.favorites.map((job) => ({
-          id: job.id,
-          title: job.title,
-          organization: job.organization,
-          organization_url: job.organization_url,
-          employment_type: job.employment_type,
-          url: job.url,
-          organization_logo: job.organization_logo,
-          display_location: job.display_location,
-          work_mode: job.work_mode,
-          seniority: job.seniority,
-          description_text: job.description_text,
-          date_posted: job.date_posted,
-          adding_date: job.adding_date,
-          travel_time: job.travel_time,
-          least_transfers: job.least_transfers,
-          normalized_description: job.normalized_description,
-        }))
-      : [];
+    const favoriteJobs = data.user.favorites;
 
     dispatch({
       type: "LOGIN",
