@@ -49,39 +49,35 @@ export default async function toggleFavoriteJob(req, res, next) {
   }
 
   try {
-    const existingJob = await connectedClient.query(
-      "SELECT id FROM jobs WHERE id = $1",
-      [jobId],
-    );
-    // 1 If it does not exist → insert it into the jobs table
-    if (existingJob.rows.length === 0) {
-      // Insert core job data (without per-user travel fields)
-      await connectedClient.query(
-        `INSERT INTO jobs 
-          (id, title, organization, organization_url, employment_type, url, 
-           organization_logo, display_location, work_mode, seniority, description_text,
-           date_posted, normalized_description)
-         VALUES
-          ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
-        [
-          jobId,
-          job.title,
-          job.organization,
-          job.organization_url,
-          job.employment_type,
-          job.url,
-          job.organization_logo,
-          job.display_location,
-          job.work_mode,
-          job.seniority,
-          job.description_text,
-          job.date_posted,
-          job.normalized_description,
-        ],
-      );
-    }
+    await connectedClient.query("BEGIN");
 
-    // 3️ Check if this favorite exists for this user
+    // 1 Insert core job data if it does not exist (atomically)
+    await connectedClient.query(
+      `INSERT INTO jobs 
+        (id, title, organization, organization_url, employment_type, url, 
+         organization_logo, display_location, work_mode, seniority, description_text,
+         date_posted, normalized_description)
+       VALUES
+        ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        jobId,
+        job.title,
+        job.organization,
+        job.organization_url,
+        job.employment_type,
+        job.url,
+        job.organization_logo,
+        job.display_location,
+        job.work_mode,
+        job.seniority,
+        job.description_text,
+        job.date_posted,
+        job.normalized_description,
+      ],
+    );
+
+    // 2 Check if this favorite exists for this user
     const exists = await connectedClient.query(
       "SELECT 1 FROM user_favorites WHERE user_id = $1 AND job_id = $2",
       [user_id, jobId],
@@ -89,14 +85,14 @@ export default async function toggleFavoriteJob(req, res, next) {
 
     let action;
     if (exists.rows.length > 0) {
-      //  Remove favorite
+      // 3 Remove favorite
       await connectedClient.query(
         "DELETE FROM user_favorites WHERE user_id = $1 AND job_id = $2",
         [user_id, jobId],
       );
       action = "removed";
     } else {
-      //  Add favorite
+      // 4 Add favorite
       await connectedClient.query(
         "INSERT INTO user_favorites (user_id, job_id, adding_date, travel_time, least_transfers) VALUES ($1, $2, NOW(), $3, $4)",
         [user_id, jobId, job.travel_time, job.least_transfers],
@@ -104,11 +100,13 @@ export default async function toggleFavoriteJob(req, res, next) {
       action = "added";
     }
 
-    // Fetch the updated user favorites list
+    // 5 Fetch the updated user favorites list
     const result = await connectedClient.query(
       `${USER_FULL_INFO_QUERY} WHERE u.id = $1`,
       [user_id],
     );
+
+    await connectedClient.query("COMMIT");
 
     const updatedUser = mapUserFromJoinRows(result.rows);
 
@@ -118,6 +116,8 @@ export default async function toggleFavoriteJob(req, res, next) {
       favorites: updatedUser.favorites,
     });
   } catch (err) {
+    await connectedClient.query("ROLLBACK");
+    logError(`Error in toggleFavoriteJob: ${err}`);
     return next(createHttpError(500, "Failed to toggle favorite"));
   } finally {
     if (endConnection) await endConnection();
