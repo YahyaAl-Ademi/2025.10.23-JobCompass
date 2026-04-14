@@ -22,7 +22,6 @@ export default async function toggleFavoriteJob(req, res, next) {
     "url",
     "organization_logo",
     "display_location",
-    "work_mode",
     "seniority",
     "description_text",
     "date_posted",
