@@ -1,6 +1,20 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 import { logError } from "../util/logging.js";
+import mapUserFromJoinRows from "../util/map_user_details_with_favorites.js";
+
+const USER_FAVORITES_QUERY = `
+  SELECT
+    u.id AS user_id, u.email, u.first_name, u.last_name, u.avatar,
+    u.street, u.house_number, u.city, u.country, u.skills,
+    uf.travel_time, uf.least_transfers, uf.adding_date,
+    j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
+    j.employment_type, j.url, j.organization_logo, j.display_location,
+    j.work_mode, j.seniority, j.description_text, j.normalized_description
+  FROM users u
+  LEFT JOIN user_favorites uf ON u.id = uf.user_id
+  LEFT JOIN jobs j ON uf.job_id = j.id
+`;
 
 export default async function toggleFavoriteJob(req, res, next) {
   const user_id = req.user?.id;
@@ -67,29 +81,35 @@ export default async function toggleFavoriteJob(req, res, next) {
       [user_id, jobId],
     );
 
+    let action;
     if (exists.rows.length > 0) {
       //  Remove favorite
-      //  Best practice: Consider wrapping delete and insert operations in a transaction
       await connectedClient.query(
         "DELETE FROM user_favorites WHERE user_id = $1 AND job_id = $2",
         [user_id, jobId],
       );
-      return res.status(200).json({ success: true, action: "removed", job });
+      action = "removed";
+    } else {
+      //  Add favorite
+      await connectedClient.query(
+        "INSERT INTO user_favorites (user_id, job_id, adding_date, travel_time, least_transfers) VALUES ($1, $2, NOW(), $3, $4)",
+        [user_id, jobId, job.travel_time, job.least_transfers],
+      );
+      action = "added";
     }
 
-    //  Add favorite and store per-user travel metadata on the relation
-    const insertFavoriteResult = await connectedClient.query(
-      "INSERT INTO user_favorites (user_id, job_id, adding_date, travel_time, least_transfers) VALUES ($1, $2, NOW(), $3, $4) RETURNING adding_date",
-      [user_id, jobId, job.travel_time, job.least_transfers],
+    // Fetch the updated user favorites list
+    const result = await connectedClient.query(
+      `${USER_FAVORITES_QUERY} WHERE u.id = $1`,
+      [user_id],
     );
+
+    const updatedUser = mapUserFromJoinRows(result.rows);
 
     return res.status(200).json({
       success: true,
-      action: "added",
-      job: {
-        ...job,
-        adding_date: insertFavoriteResult.rows[0].adding_date,
-      },
+      action,
+      favorites: updatedUser.favorites,
     });
   } catch (err) {
     return next(createHttpError(500, "Failed to toggle favorite"));

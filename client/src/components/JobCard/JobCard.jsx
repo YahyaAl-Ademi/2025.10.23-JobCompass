@@ -39,7 +39,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
   const { isLoading: isToggleFavoriteLoading, performFetch } = useFetch(
     "/users/favorites/toggle",
     (data) => {
-      dispatch({ type: "TOGGLE_FAVORITE", payload: data.job });
+      dispatch({ type: "TOGGLE_FAVORITE", payload: data.favorites });
       setMessage(
         data.action === "added"
           ? "Job added to favorites!"
