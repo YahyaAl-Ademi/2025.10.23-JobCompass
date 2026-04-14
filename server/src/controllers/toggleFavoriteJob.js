@@ -108,6 +108,9 @@ export default async function toggleFavoriteJob(req, res, next) {
 
     await connectedClient.query("COMMIT");
 
+    if (result.rows.length === 0) {
+      return next(createHttpError(404, "User not found"));
+    }
     const updatedUser = mapUserFromJoinRows(result.rows);
 
     return res.status(200).json({
@@ -116,7 +119,11 @@ export default async function toggleFavoriteJob(req, res, next) {
       favorites: updatedUser.favorites,
     });
   } catch (err) {
-    await connectedClient.query("ROLLBACK");
+    try {
+      await connectedClient.query("ROLLBACK");
+    } catch (rollbackError) {
+      logError(`Rollback error in toggleFavoriteJob: ${rollbackError}`);
+    }
     logError(`Error in toggleFavoriteJob: ${err}`);
     return next(createHttpError(500, "Failed to toggle favorite"));
   } finally {

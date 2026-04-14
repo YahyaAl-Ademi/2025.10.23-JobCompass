@@ -6,25 +6,29 @@ import { UseUser } from "../../context/UserContext";
 import UserMenu from "../UserMenu";
 
 export default function Header() {
-  const { message, clearMessage } = UseUser();
+  const { message, setMessage } = UseUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
-        clearMessage();
+        setMessage(null);
       }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [message, clearMessage]);
+  }, [message, setMessage]);
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
     <header className="app-header">
       {message && (
-        <div className="alert-message" onClick={clearMessage} role="alert">
+        <div
+          className="alert-message"
+          onClick={() => setMessage(null)}
+          role="alert"
+        >
           <p>{message}</p>
         </div>
       )}

@@ -126,7 +126,11 @@ export default async function persistJobSearch(
 
       await connectedClient.query("COMMIT");
     } catch (error) {
-      await connectedClient.query("ROLLBACK");
+      try {
+        await connectedClient.query("ROLLBACK");
+      } catch (rollbackError) {
+        logError(`Rollback error in persistJobSearch: ${rollbackError}`);
+      }
       logError(`Transaction error: ${error}`);
     }
   } else {

@@ -6,7 +6,7 @@ Apify LinkedIn Scraper Integration Details:
 - Service: Apify LinkedIn Jobs Scraper
 - Background Processing: Asynchronous execution for authenticated users
 - Enhanced Data: Company information and detailed job descriptions
-- Polling: Status monitoring with configurable timeouts (30s intervals, 10min timeout)
+- Polling: Status monitoring with configurable timeouts (30s intervals, 20min timeout)
 - Data Processing: Job validation and normalization through processScraperJob utility
 - Error Handling: Comprehensive error logging and status monitoring
 - Reliability: Robust polling mechanism with timeout protection

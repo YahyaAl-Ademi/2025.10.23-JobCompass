@@ -17,10 +17,6 @@ function UseUser() {
 function UserContextProvider({ children }) {
   const [user, dispatch] = useReducer(userReducer, defaultUser);
   const [message, setMessage] = useState(null);
-  function clearMessage() {
-    setMessage(null);
-  }
-
   // -------------------- GET CURRENT USER --------------------
   function handleFetchMeResults(data) {
     if (data.user) {
@@ -36,7 +32,7 @@ function UserContextProvider({ children }) {
     } else {
       dispatch({ type: "LOGOUT" });
     }
-    clearMessage();
+    setMessage(null);
   }
 
   const {
