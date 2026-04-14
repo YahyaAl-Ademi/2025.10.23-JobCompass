@@ -11,6 +11,7 @@ import uploadImage from "../services/ImageUpload.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 import { logError } from "../util/logging.js";
 import mapUserFromJoinRows from "../util/map_user_details_with_favorites.js";
+import { USER_FULL_INFO_QUERY } from "../constants/queries.js";
 
 /*
 Personalization Features Implementation:
@@ -27,18 +28,6 @@ Personalization Features Implementation:
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
-const USER_FULL_INFO_QUERY = `
-  SELECT
-    u.id AS user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
-    u.street, u.house_number, u.city, u.country, u.skills, u.number_of_logins,
-    uf.travel_time, uf.least_transfers, uf.adding_date,
-    j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
-    j.employment_type, j.url, j.organization_logo, j.display_location,
-    j.work_mode, j.seniority, j.description_text, j.normalized_description
-  FROM users u
-  LEFT JOIN user_favorites uf ON u.id = uf.user_id
-  LEFT JOIN jobs j ON uf.job_id = j.id
-`;
 
 // SIGNUP - Create a new user
 

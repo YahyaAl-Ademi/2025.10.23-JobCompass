@@ -4,19 +4,7 @@ import { createHttpError } from "../middleware/errorHandler.js";
 import { PASSWORD_HASH_COST_FACTOR } from "../config/security.js";
 import { logError } from "../util/logging.js";
 import mapUserFromJoinRows from "../util/map_user_details_with_favorites.js";
-
-const USER_FULL_INFO_QUERY = `
-  SELECT
-    u.id AS user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
-    u.street, u.house_number, u.city, u.country, u.skills,
-    uf.travel_time, uf.least_transfers,
-    j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
-    j.employment_type, j.url, j.organization_logo, j.display_location,
-    j.work_mode, j.seniority, j.description_text, j.normalized_description
-  FROM users u
-  LEFT JOIN user_favorites uf ON u.id = uf.user_id
-  LEFT JOIN jobs j ON uf.job_id = j.id
-`;
+import { USER_FULL_INFO_QUERY } from "../constants/queries.js";
 
 const ALLOWED_PROFILE_FIELDS = new Set([
   "first_name",

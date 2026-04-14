@@ -2,19 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 import { logError } from "../util/logging.js";
 import mapUserFromJoinRows from "../util/map_user_details_with_favorites.js";
-
-const USER_FAVORITES_QUERY = `
-  SELECT
-    u.id AS user_id, u.email, u.first_name, u.last_name, u.avatar,
-    u.street, u.house_number, u.city, u.country, u.skills,
-    uf.travel_time, uf.least_transfers, uf.adding_date,
-    j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
-    j.employment_type, j.url, j.organization_logo, j.display_location,
-    j.work_mode, j.seniority, j.description_text, j.normalized_description
-  FROM users u
-  LEFT JOIN user_favorites uf ON u.id = uf.user_id
-  LEFT JOIN jobs j ON uf.job_id = j.id
-`;
+import { USER_FULL_INFO_QUERY } from "../constants/queries.js";
 
 export default async function toggleFavoriteJob(req, res, next) {
   const user_id = req.user?.id;
@@ -24,12 +12,31 @@ export default async function toggleFavoriteJob(req, res, next) {
   //  Check if user is authenticated
   if (!user_id) return next(createHttpError(401, "User not authenticated"));
 
-  //  Check if jobId is provided
-  if (!jobId) return next(createHttpError(400, "job.id is required"));
-
   //  Validate job object
-  if (!job || !job.title) {
-    return next(createHttpError(400, "Invalid job: title is required"));
+  const requiredFields = [
+    "id",
+    "title",
+    "organization",
+    "organization_url",
+    "employment_type",
+    "url",
+    "organization_logo",
+    "display_location",
+    "work_mode",
+    "seniority",
+    "description_text",
+    "date_posted",
+    "normalized_description",
+  ];
+
+  if (!job) {
+    return next(createHttpError(400, "Invalid job: job object is required"));
+  }
+
+  for (const field of requiredFields) {
+    if (job[field] === undefined || job[field] === null) {
+      return next(createHttpError(400, `Invalid job: ${field} is required`));
+    }
   }
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
@@ -46,8 +53,7 @@ export default async function toggleFavoriteJob(req, res, next) {
       "SELECT id FROM jobs WHERE id = $1",
       [jobId],
     );
-    // 2️ If it does not exist → insert it into the jobs table
-    //  Best practice: Consider using transactions when inserting multiple tables
+    // 1 If it does not exist → insert it into the jobs table
     if (existingJob.rows.length === 0) {
       // Insert core job data (without per-user travel fields)
       await connectedClient.query(
@@ -59,18 +65,18 @@ export default async function toggleFavoriteJob(req, res, next) {
           ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
         [
           jobId,
-          job.title || null,
-          job.organization || null,
-          job.organization_url || null,
-          job.employment_type || null,
-          job.url || null,
-          job.organization_logo || null,
-          job.display_location || null,
-          job.work_mode || null,
-          job.seniority || null,
-          job.description_text || null,
-          job.date_posted || null,
-          job.normalized_description || null,
+          job.title,
+          job.organization,
+          job.organization_url,
+          job.employment_type,
+          job.url,
+          job.organization_logo,
+          job.display_location,
+          job.work_mode,
+          job.seniority,
+          job.description_text,
+          job.date_posted,
+          job.normalized_description,
         ],
       );
     }
@@ -100,7 +106,7 @@ export default async function toggleFavoriteJob(req, res, next) {
 
     // Fetch the updated user favorites list
     const result = await connectedClient.query(
-      `${USER_FAVORITES_QUERY} WHERE u.id = $1`,
+      `${USER_FULL_INFO_QUERY} WHERE u.id = $1`,
       [user_id],
     );
 
