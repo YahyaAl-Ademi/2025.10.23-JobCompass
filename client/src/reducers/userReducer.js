@@ -14,14 +14,7 @@ export default function userReducer(state, action) {
       return { ...state, skills: action.payload };
     }
     case "TOGGLE_FAVORITE": {
-      const job = action.payload;
-      const jobId = job?.id;
-      const prevFavorites = state.favorites;
-      const exists = prevFavorites.some((fav) => fav.id === jobId);
-      const newFavorites = exists
-        ? prevFavorites.filter((fav) => fav.id !== jobId)
-        : [...prevFavorites, job];
-      return { ...state, favorites: newFavorites };
+      return { ...state, favorites: action.payload };
     }
     default:
       return state;

@@ -10,6 +10,8 @@ import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
 import { createHttpError } from "../middleware/errorHandler.js";
 import { logError } from "../util/logging.js";
+import mapUserFromJoinRows from "../util/map_user_details_with_favorites.js";
+import { USER_FULL_INFO_QUERY } from "../constants/queries.js";
 
 /*
 Personalization Features Implementation:
@@ -26,18 +28,6 @@ Personalization Features Implementation:
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
-const USER_FULL_INFO_QUERY = `
-  SELECT
-    u.id AS user_id, u.email, u.password, u.first_name, u.last_name, u.avatar,
-    u.street, u.house_number, u.city, u.country, u.skills, u.number_of_logins,
-    uf.travel_time, uf.least_transfers, uf.adding_date,
-    j.id AS job_id, j.date_posted, j.title, j.organization, j.organization_url,
-    j.employment_type, j.url, j.organization_logo, j.display_location,
-    j.work_mode, j.seniority, j.description_text, j.normalized_description
-  FROM users u
-  LEFT JOIN user_favorites uf ON u.id = uf.user_id
-  LEFT JOIN jobs j ON uf.job_id = j.id
-`;
 
 // SIGNUP - Create a new user
 
@@ -175,50 +165,7 @@ export async function loginUser(req, res, next) {
       [result.rows[0].user_id],
     );
 
-    const rows = result.rows;
-    const userDataRow = rows[0];
-
-    const user = {
-      id: userDataRow.user_id,
-      email: userDataRow.email,
-      first_name: userDataRow.first_name,
-      last_name: userDataRow.last_name,
-      avatar: userDataRow.avatar,
-      street: userDataRow.street,
-      house_number: userDataRow.house_number,
-      city: userDataRow.city,
-      country: userDataRow.country,
-      skills: userDataRow.skills ? userDataRow.skills.split(",") : [],
-      favorites: [],
-      time_to_donate:
-        userDataRow.number_of_logins + 1 === 5
-          ? process.env.DONATION_URL
-          : false,
-    };
-
-    rows.forEach((row) => {
-      if (row.job_id) {
-        const jobFavorite = {
-          id: row.job_id,
-          date_posted: row.date_posted,
-          title: row.title,
-          organization: row.organization,
-          organization_url: row.organization_url,
-          employment_type: row.employment_type,
-          url: row.url,
-          organization_logo: row.organization_logo,
-          display_location: row.display_location,
-          work_mode: row.work_mode,
-          seniority: row.seniority,
-          description_text: row.description_text,
-          travel_time: row.travel_time,
-          least_transfers: row.least_transfers,
-          adding_date: row.adding_date,
-          normalized_description: row.normalized_description,
-        };
-        user.favorites.push(jobFavorite);
-      }
-    });
+    const user = mapUserFromJoinRows(result.rows, { includeDonation: true });
 
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
@@ -266,6 +213,8 @@ export async function logoutUser(req, res, next) {
   }
 }
 
+// AUTOLOGIN - Authenticate user
+
 export async function getMe(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
@@ -295,45 +244,8 @@ export async function getMe(req, res, next) {
     if (result.rows.length === 0) {
       return next(createHttpError(401, "User not found"));
     }
-    const rows = result.rows;
-    const userDataRow = rows[0];
 
-    const user = {
-      id: userDataRow.user_id,
-      email: userDataRow.email,
-      first_name: userDataRow.first_name,
-      last_name: userDataRow.last_name,
-      avatar: userDataRow.avatar,
-      street: userDataRow.street,
-      house_number: userDataRow.house_number,
-      city: userDataRow.city,
-      country: userDataRow.country,
-      skills: userDataRow.skills ? userDataRow.skills.split(",") : [],
-      favorites: [],
-    };
-    rows.forEach((row) => {
-      if (row.job_id) {
-        const jobFavorite = {
-          id: row.job_id,
-          date_posted: row.date_posted,
-          title: row.title,
-          organization: row.organization,
-          organization_url: row.organization_url,
-          employment_type: row.employment_type,
-          url: row.url,
-          organization_logo: row.organization_logo,
-          display_location: row.display_location,
-          work_mode: row.work_mode,
-          seniority: row.seniority,
-          description_text: row.description_text,
-          travel_time: row.travel_time,
-          least_transfers: row.least_transfers,
-          adding_date: row.adding_date,
-          normalized_description: row.normalized_description,
-        };
-        user.favorites.push(jobFavorite);
-      }
-    });
+    const user = mapUserFromJoinRows(result.rows);
 
     res.json({ success: true, user: user });
   } catch (err) {
