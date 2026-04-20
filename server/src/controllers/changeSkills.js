@@ -8,11 +8,15 @@ export default async function changeSkills(req, res, next) {
 
   if (!user_id) return next(createHttpError(401, "User not authenticated"));
 
-  if (
-    !skills ||
-    !Array.isArray(skills) ||
-    (skills.length !== 0 && skills.some((skill) => typeof skill !== "string"))
-  )
+  if (!Array.isArray(skills))
+    return next(
+      createHttpError(
+        400,
+        "Only an array of strings (or empty array) is allowed",
+      ),
+    );
+
+  if (skills.some((s) => typeof s !== "string"))
     return next(
       createHttpError(
         400,
