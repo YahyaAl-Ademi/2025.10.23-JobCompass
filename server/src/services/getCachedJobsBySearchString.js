@@ -52,7 +52,7 @@ export default async function getCachedJobsBySearchString(
     // 3. Joins with search_strings to access auth requirements
     // 4. Filters by: the specific search string ($1)
     //    AND either: is_auth from the user is NULL (unauthenticated) OR is_auth from the search string table is not NULL (authenticated previous search)
-    // It forces the function not to return jobs for the authenticated user if the previous search was performed by an unauthenticated user, otherwise the number of jobs will be too few for the authenticated user)
+    // It forces the function not to return jobs for the authenticated user if the previous search was performed by an unauthenticated user, otherwise the number of jobs will be too few for the authenticated user
     const cachedJobsResult = await connectedClient.query(
       `SELECT j.* FROM jobs j
        JOIN search_strings_jobs swj ON j.id = swj.job_id
