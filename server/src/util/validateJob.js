@@ -10,7 +10,7 @@ export default function validateJob(job) {
 
   const datePosted = new Date(job.date_posted);
   const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  if (!Number.isFinite(datePosted.getTime()) || datePosted < oneMonthAgo) {
+  if (isNaN(datePosted) || datePosted < oneMonthAgo) {
     return false;
   }
 
