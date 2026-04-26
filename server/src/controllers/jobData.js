@@ -57,15 +57,13 @@ export default async function searchJobs(req, res, next) {
     // If the same search was performed before, then the DB has already responded search_string which cannot be undefined, which means that it is worth to query the DB further only if the search string contains multiple words
     if (is_whole_string === undefined || searchWords.length > 1) {
       for (const searchWord of searchWords) {
-        const cachedResult = await getCachedJobsBySearchString(
-          connectedClient,
-          searchWord,
-          is_auth,
-        );
-        let fetchedJobs = [];
-        if (cachedResult.cachedJobsPerSearchString.length > 0) {
-          fetchedJobs = cachedResult.cachedJobsPerSearchString;
-        } else {
+        let { cachedJobsPerSearchString: fetchedJobs } =
+          await getCachedJobsBySearchString(
+            connectedClient,
+            searchWord,
+            is_auth,
+          );
+        if (fetchedJobs.length === 0) {
           fetchedJobs = await rapidAPIfetchPersister(searchWord, is_auth);
         }
 
