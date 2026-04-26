@@ -42,12 +42,10 @@ export default async function searchJobs(req, res, next) {
         is_auth,
       );
 
-    if (cachedJobsPerSearchString.length > 0) {
-      cachedJobsPerSearchString.forEach((job) => {
-        aggregatedJobs.push(job);
-        if (job.id) aggregatedJobsIdsSet.add(job.id);
-      });
-    }
+    cachedJobsPerSearchString.forEach((job) => {
+      aggregatedJobs.push(job);
+      if (job.id) aggregatedJobsIdsSet.add(job.id);
+    });
 
     const msg = apifyScraperFetchPersister(
       search_string,
