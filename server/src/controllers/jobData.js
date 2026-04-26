@@ -15,7 +15,6 @@ export default async function searchJobs(req, res, next) {
   } = await connectNeonDB();
 
   if (connectionError) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${connectionError}`);
     return next(createHttpError(503, "DB Connection Error"));
   } else {
