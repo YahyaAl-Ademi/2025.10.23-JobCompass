@@ -34,6 +34,7 @@ export default async function searchJobs(req, res, next) {
     }
 
     search_string = search_string.toLowerCase();
+    // is_whole_string parameter shows whether the previous search was performed for the whole string, part of it or not at all (undefined)
     const { is_whole_string, cachedJobsPerSearchString } =
       await getCachedJobsBySearchString(
         connectedClient,
@@ -55,7 +56,7 @@ export default async function searchJobs(req, res, next) {
     );
 
     const searchWords = search_string.split(/[\s\-/]+/).filter(Boolean);
-    // If the DB has already responded with the job title which is the single keyword, there's no need to break it down further and re-query for the same keyword.
+    // If the same search was performed before, then the DB has already responded search_string which cannot be undefined, which means that it is worth to query the DB further only if the search string contains multiple words
     if (is_whole_string === undefined || searchWords.length > 1) {
       for (const searchWord of searchWords) {
         const cachedResult = await getCachedJobsBySearchString(
