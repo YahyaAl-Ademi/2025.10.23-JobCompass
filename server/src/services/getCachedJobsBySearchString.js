@@ -6,24 +6,21 @@
  * both whole string and partial matches, and respects authentication requirements.
  *
  * @async
- * @param {Object} connectedClient - A database client instance with query capability
- *                                   (typically a PostgreSQL client connection)
- * @param {string} searchWord - The search string to look up in the cache. This is the
- *                              term that users searched for previously
- * @param {string|null} is_auth - Authentication context identifier. If provided, only
- *                                 jobs marked as requiring authentication will be returned.
- *                                 If null, all cached jobs are returned regardless of
- *                                 authentication requirement
+ * @param {string|null} is_auth - Authentication context identifier used to decide
+ *                                 whether cache entries created from an authenticated
+ *                                 search may be used. If null, any cache entry for the
+ *                                 search string may be returned. If provided, only cache
+ *                                 entries whose stored search_string has a non-null
+ *                                 `ss.is_auth` are eligible.
  *
- * @returns {Promise<Object>} A promise that resolves to an object containing:
- *   @returns {Promise<Object>} .is_whole_string - Boolean indicating whether the cached
- *                               search string represents a whole string match (true) or
- *                               partial match (false). Returns undefined if search string
- *                               not found in cache
- *   @returns {Promise<Object>} .cachedJobsPerSearchString - Array of job objects matching
- *                               the search string. Each job object contains all columns
- *                               from the jobs table. Returns empty array if no matching
- *                               jobs are found or if the search string doesn't exist
+ * @returns {Promise<{is_whole_string: (boolean|undefined), cachedJobsPerSearchString: Object[]}>}
+ * A promise that resolves to the cached search result object.
+ * @property {(boolean|undefined)} is_whole_string - Indicates whether the cached
+ * search string represents a whole string match (`true`) or partial match (`false`).
+ * Returns `undefined` if the search string is not found in cache.
+ * @property {Object[]} cachedJobsPerSearchString - Array of job objects matching the
+ * search string. Each job object contains all columns from the `jobs` table. Returns an
+ * empty array if no matching jobs are found or if the search string does not exist.
  *
  * @example
  * const result = await getCachedJobsBySearchString(dbClient, 'React Developer', userId);
