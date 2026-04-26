@@ -1,5 +1,6 @@
 import { logError } from "../util/logging.js";
 import connectNeonDB from "../db/connectNeonDB.js";
+import validateJob from "../util/validateJob.js";
 
 export default async function persistJobSearch(
   fetchedJobs,
@@ -34,20 +35,8 @@ export default async function persistJobSearch(
       }
 
       // Process all jobs and collect data for batch operations
-      const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
       for (const job of fetchedJobs) {
-        if (
-          !Object.entries(job)
-            .filter(
-              ([key]) =>
-                key !== "travel_time" &&
-                key !== "least_transfers" &&
-                key !== "work_mode",
-            )
-            .some(([, value]) => value === null) &&
-          new Date(job.date_posted) >= oneMonthAgo
-        ) {
+        if (validateJob(job)) {
           if (!idSet.has(job.id)) {
             idSet.add(job.id);
             jobsToInsert.push(job);
