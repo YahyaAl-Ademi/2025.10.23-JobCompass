@@ -60,31 +60,33 @@ export default async function linkedInScraperFetch(
 
     // Polling requests for completion
     const startTime = Date.now();
-    for (;;) {
+    // Check immediately, then sleep between polls.
+    // This avoids an unnecessary initial 30s delay.
+    let isDone = false;
+    while (!isDone) {
       if (Date.now() - startTime > waitTimeoutMs) {
         throw new Error(
           `The waiting time for ${runId} for ${search_string} has expired`,
         );
       }
 
-      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
       const response = await fetch(runUrl, { headers });
       if (!response.ok) throw new Error("Failed to fetch run status");
       const run = await response.json();
       const runStatus = run?.data?.status;
       logInfo(`Run ${runId} for ${search_string} status: ${runStatus}`);
-      switch (runStatus) {
-        case "SUCCEEDED":
-          break;
-        case "FAILED":
-        case "ABORTED":
-          throw new Error(
-            `The run ${runId} for ${search_string} has finished with status ${runStatus}`,
-          );
-        default:
-          continue;
+
+      if (runStatus === "SUCCEEDED") {
+        isDone = true;
+        continue;
       }
-      break;
+      if (runStatus === "FAILED" || runStatus === "ABORTED") {
+        throw new Error(
+          `The run ${runId} for ${search_string} has finished with status ${runStatus}`,
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
     }
 
     // Collecting the data
