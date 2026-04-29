@@ -110,8 +110,11 @@ export default function Profile() {
   function handleSaveClick() {
     clearAlert();
 
-    const { passwordValidationError, currentPassword: pwdCurrent, newPassword: pwdNew } =
-      getPasswordChangeValues();
+    const {
+      passwordValidationError,
+      currentPassword: pwdCurrent,
+      newPassword: pwdNew,
+    } = getPasswordChangeValues();
 
     const updatedFields = {};
 
@@ -122,7 +125,9 @@ export default function Profile() {
     const cityVal = cleanUpText(city);
     const countryVal = cleanUpText(country);
 
-    const streetValidationError = validateAddressTextInputs({ text: streetVal });
+    const streetValidationError = validateAddressTextInputs({
+      text: streetVal,
+    });
     const cityValidationError = validateAddressTextInputs({
       text: cityVal,
       type: "city",
