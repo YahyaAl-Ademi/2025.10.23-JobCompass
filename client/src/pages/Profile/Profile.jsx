@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import useAlert from "../../hooks/useAlert";
 import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
 import AddressSettings from "../../components/AddressSettings/AddressSettings";
@@ -20,38 +20,31 @@ import { gif } from "../../assets/index.js";
 
 export default function Profile() {
   const { alert, setAlert, clearAlert, delayedClearAlert } = useAlert();
-  const first_nameInputRef = useRef("");
-  const last_nameInputRef = useRef("");
-  const streetInputRef = useRef("");
-  const houseInputRef = useRef("");
-  const cityInputRef = useRef("");
-  const countryInputRef = useRef("");
-  const currentPasswordInputRef = useRef("");
-  const newPasswordInputRef = useRef("");
-  const confirmPasswordInputRef = useRef("");
   const { user, dispatch } = UseUser();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [street, setStreet] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     if (!user) return;
 
-    if (first_nameInputRef.current)
-      first_nameInputRef.current.value = user.first_name ?? "";
-    if (last_nameInputRef.current)
-      last_nameInputRef.current.value = user.last_name ?? "";
-    if (streetInputRef.current)
-      streetInputRef.current.value = user.street ?? "";
-    if (houseInputRef.current)
-      houseInputRef.current.value = user.house_number ?? "";
-    if (cityInputRef.current) cityInputRef.current.value = user.city ?? "";
-    if (countryInputRef.current)
-      countryInputRef.current.value = user.country ?? "";
-
-    if (currentPasswordInputRef.current)
-      currentPasswordInputRef.current.value = "";
-    if (newPasswordInputRef.current) newPasswordInputRef.current.value = "";
-    if (confirmPasswordInputRef.current)
-      confirmPasswordInputRef.current.value = "";
+    setFirstName(user.first_name ?? "");
+    setLastName(user.last_name ?? "");
+    setStreet(user.street ?? "");
+    setHouseNumber(user.house_number ?? "");
+    setCity(user.city ?? "");
+    setCountry(user.country ?? "");
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
   }, [user]);
 
   const { error, isLoading, performFetch } = useFetch(
@@ -79,10 +72,6 @@ export default function Profile() {
   }
 
   function getPasswordChangeValues() {
-    const currentPassword = currentPasswordInputRef?.current?.value;
-    const newPassword = newPasswordInputRef?.current?.value;
-    const confirmPassword = confirmPasswordInputRef?.current?.value;
-
     let result = {
       passwordValidationError: null,
       currentPassword: null,
@@ -121,25 +110,25 @@ export default function Profile() {
   function handleSaveClick() {
     clearAlert();
 
-    const { passwordValidationError, currentPassword, newPassword } =
+    const { passwordValidationError, currentPassword: pwdCurrent, newPassword: pwdNew } =
       getPasswordChangeValues();
 
     const updatedFields = {};
 
-    const first_name = cleanUpText(first_nameInputRef?.current.value);
-    const last_name = cleanUpText(last_nameInputRef?.current.value);
-    const street = cleanUpText(streetInputRef?.current.value);
-    const house_number = cleanUpText(houseInputRef?.current.value);
-    const city = cleanUpText(cityInputRef?.current.value);
-    const country = cleanUpText(countryInputRef?.current.value);
+    const first_name = cleanUpText(firstName);
+    const last_name = cleanUpText(lastName);
+    const streetVal = cleanUpText(street);
+    const house_number = cleanUpText(houseNumber);
+    const cityVal = cleanUpText(city);
+    const countryVal = cleanUpText(country);
 
-    const streetValidationError = validateAddressTextInputs({ text: street });
+    const streetValidationError = validateAddressTextInputs({ text: streetVal });
     const cityValidationError = validateAddressTextInputs({
-      text: city,
+      text: cityVal,
       type: "city",
     });
     const countryValidationError = validateAddressTextInputs({
-      text: country,
+      text: countryVal,
       type: "country",
     });
     const houseValidationError = validateHouseNoInput({ text: house_number });
@@ -157,14 +146,14 @@ export default function Profile() {
     } else {
       if (first_name !== user.first_name) updatedFields.first_name = first_name;
       if (last_name !== user.last_name) updatedFields.last_name = last_name;
-      if (street !== user.street) updatedFields.street = street;
-      if (city !== user.city) updatedFields.city = city;
-      if (country !== user.country) updatedFields.country = country;
+      if (streetVal !== user.street) updatedFields.street = streetVal;
+      if (cityVal !== user.city) updatedFields.city = cityVal;
+      if (countryVal !== user.country) updatedFields.country = countryVal;
       if (house_number !== user.house_number)
         updatedFields.house_number = house_number;
-      if (currentPassword && newPassword) {
-        updatedFields.currentPassword = currentPassword;
-        updatedFields.newPassword = newPassword;
+      if (pwdCurrent && pwdNew) {
+        updatedFields.currentPassword = pwdCurrent;
+        updatedFields.newPassword = pwdNew;
       }
 
       if (Object.keys(updatedFields).length === 0) {
@@ -209,23 +198,27 @@ export default function Profile() {
           <div className="profile-info-left">
             <label className="profile-field-label">First name</label>
             <input
-              ref={first_nameInputRef}
               type="text"
-              defaultValue={user?.first_name || ""}
+              value={firstName}
               className="profile-input"
               onKeyDown={pressEnterKey}
-              onChange={clearAlert}
+              onChange={(e) => {
+                clearAlert();
+                setFirstName(e.target.value);
+              }}
             />
           </div>
           <div className="profile-info">
             <label className="profile-field-label">Last name</label>
             <input
-              ref={last_nameInputRef}
               type="text"
-              defaultValue={user?.last_name || ""}
+              value={lastName}
               className="profile-input"
               onKeyDown={pressEnterKey}
-              onChange={clearAlert}
+              onChange={(e) => {
+                clearAlert();
+                setLastName(e.target.value);
+              }}
             />
           </div>
         </div>
@@ -234,10 +227,15 @@ export default function Profile() {
       <div className="profile-section">
         <h3 className="profile-section-title">Address</h3>
         <AddressSettings
-          streetInputRef={streetInputRef}
-          houseInputRef={houseInputRef}
-          cityInputRef={cityInputRef}
-          countryInputRef={countryInputRef}
+          street={street}
+          houseNumber={houseNumber}
+          city={city}
+          country={country}
+          onStreetChange={setStreet}
+          onHouseNumberChange={setHouseNumber}
+          onCityChange={setCity}
+          onCountryChange={setCountry}
+          onKeyDown={pressEnterKey}
           clearAlert={clearAlert}
         />
       </div>
@@ -245,9 +243,12 @@ export default function Profile() {
       <ChangePassword
         onKeyDown={pressEnterKey}
         clearAlert={clearAlert}
-        currentPasswordInputRef={currentPasswordInputRef}
-        newPasswordInputRef={newPasswordInputRef}
-        confirmPasswordInputRef={confirmPasswordInputRef}
+        currentPassword={currentPassword}
+        newPassword={newPassword}
+        confirmPassword={confirmPassword}
+        onCurrentPasswordChange={setCurrentPassword}
+        onNewPasswordChange={setNewPassword}
+        onConfirmPasswordChange={setConfirmPassword}
         isLoading={isLoading}
       />
       {/* <!-- Save Button --> */}

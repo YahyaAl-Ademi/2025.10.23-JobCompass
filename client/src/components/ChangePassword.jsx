@@ -5,9 +5,12 @@ import { gif } from "../assets/index.js";
 export default function ChangePassword({
   onKeyDown,
   clearAlert,
-  currentPasswordInputRef,
-  newPasswordInputRef,
-  confirmPasswordInputRef,
+  currentPassword,
+  newPassword,
+  confirmPassword,
+  onCurrentPasswordChange,
+  onNewPasswordChange,
+  onConfirmPasswordChange,
   isLoading,
 }) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -30,12 +33,15 @@ export default function ChangePassword({
         <div className="profile-input-wrapper">
           <input
             id="currentPasswordInput"
-            ref={currentPasswordInputRef}
             type={showCurrentPassword ? "text" : "password"}
+            value={currentPassword}
             placeholder="Type 8 characters or more"
             className="profile-input profile-input-with-icon"
             onKeyDown={onKeyDown}
-            onChange={clearAlert}
+            onChange={(e) => {
+              clearAlert?.();
+              onCurrentPasswordChange(e.target.value);
+            }}
           />
           {showCurrentPassword ? (
             <EyeOff
@@ -58,12 +64,15 @@ export default function ChangePassword({
           <div className="profile-input-wrapper">
             <input
               id="newPasswordInput"
-              ref={newPasswordInputRef}
               type={showNewPassword ? "text" : "password"}
+              value={newPassword}
               placeholder="Type 8 characters or more"
               className="profile-input profile-input-with-icon"
               onKeyDown={onKeyDown}
-              onChange={clearAlert}
+              onChange={(e) => {
+                clearAlert?.();
+                onNewPasswordChange(e.target.value);
+              }}
             />
             {showNewPassword ? (
               <EyeOff
@@ -86,12 +95,15 @@ export default function ChangePassword({
           <div className="profile-input-wrapper">
             <input
               id="confirmPasswordInput"
-              ref={confirmPasswordInputRef}
               type={showConfirmationPassword ? "text" : "password"}
+              value={confirmPassword}
               placeholder="Write the same password again"
               className="profile-input profile-input-with-icon"
               onKeyDown={onKeyDown}
-              onChange={clearAlert}
+              onChange={(e) => {
+                clearAlert?.();
+                onConfirmPasswordChange(e.target.value);
+              }}
             />
             {showConfirmationPassword ? (
               <EyeOff
