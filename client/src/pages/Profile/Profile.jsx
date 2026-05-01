@@ -34,14 +34,12 @@ export default function Profile() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    if (!user) return;
-
-    setFirstName(user.first_name ?? "");
-    setLastName(user.last_name ?? "");
-    setStreet(user.street ?? "");
-    setHouseNumber(user.house_number ?? "");
-    setCity(user.city ?? "");
-    setCountry(user.country ?? "");
+    setFirstName(user.first_name);
+    setLastName(user.last_name);
+    setStreet(user.street);
+    setHouseNumber(user.house_number);
+    setCity(user.city);
+    setCountry(user.country);
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
@@ -71,39 +69,68 @@ export default function Profile() {
     setShowDeletePopup(true);
   }
 
+  function getPasswordInputs() {
+    return {
+      current: currentPassword,
+      new: newPassword,
+      confirm: confirmPassword,
+    };
+  }
+
+  /**
+   * False when user started filling the password triple but omitted a field (invalid for save).
+   * True when all three are empty or all three are filled.
+   */
+  function validatePasswordChange(passwords) {
+    const { current, new: newPass, confirm } = passwords;
+    const hasAnyPassword = [current, newPass, confirm].some(Boolean);
+    const hasAllPasswords = [current, newPass, confirm].every(Boolean);
+    return !(hasAnyPassword && !hasAllPasswords);
+  }
+
   function getPasswordChangeValues() {
+    const passwords = getPasswordInputs();
+    const { current, new: newPass, confirm } = passwords;
+
     let result = {
       passwordValidationError: null,
       currentPassword: null,
       newPassword: null,
     };
 
-    if (currentPassword || newPassword || confirmPassword) {
-      if (!(newPassword && confirmPassword && currentPassword)) {
-        result.passwordValidationError = {
-          type: "error",
-          message: "To change your password, please fill in all fields.",
-        };
-      } else if (!validatePassword(newPassword)) {
-        result.passwordValidationError = {
-          type: "error",
-          message:
-            "Password must be at least 8 characters and meet at least 2 complexity rules.",
-        };
-      } else {
-        const matchCheck = validatePasswordMatch(newPassword, confirmPassword);
-        if (!matchCheck.valid) {
-          result.passwordValidationError = {
-            type: "error",
-            message: matchCheck.message,
-          };
-        } else {
-          result.currentPassword = currentPassword;
-          result.newPassword = newPassword;
-        }
-      }
+    if (!validatePasswordChange(passwords)) {
+      result.passwordValidationError = {
+        type: "error",
+        message: "To change your password, please fill in all fields.",
+      };
+      return result;
     }
 
+    const hasAnyPassword = [current, newPass, confirm].some(Boolean);
+    if (!hasAnyPassword) {
+      return result;
+    }
+
+    if (!validatePassword(newPass)) {
+      result.passwordValidationError = {
+        type: "error",
+        message:
+          "Password must be at least 8 characters and meet at least 2 complexity rules.",
+      };
+      return result;
+    }
+
+    const matchCheck = validatePasswordMatch(newPass, confirm);
+    if (!matchCheck.valid) {
+      result.passwordValidationError = {
+        type: "error",
+        message: matchCheck.message,
+      };
+      return result;
+    }
+
+    result.currentPassword = current;
+    result.newPassword = newPass;
     return result;
   }
 
