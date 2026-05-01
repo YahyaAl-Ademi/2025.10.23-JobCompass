@@ -1,5 +1,5 @@
-import "../JobCard/JobCard.css";
 import handleKeyDown from "../../util/handleKeyDown";
+import SuccessPopup from "./SuccessPopup";
 
 export default function PopupForSave({
   title = "Want to save your settings?",
@@ -8,27 +8,25 @@ export default function PopupForSave({
   setShowSavePopup,
 }) {
   return (
-    <div className="popup-overlay">
-      <div className="popup-card">
-        <h2>{title}</h2>
-        <p>{message}</p>
-        <div className="popup-buttons">
-          <button
-            className="btn-primary"
-            onClick={handleLoginRedirect}
-            onKeyDown={(e) => handleKeyDown(e, handleLoginRedirect)}
-          >
-            Log in
-          </button>
-          <button
-            className="btn-secondary"
-            onClick={() => setShowSavePopup(false)}
-            onKeyDown={(e) => handleKeyDown(e, () => setShowSavePopup(false))}
-          >
-            Cancel
-          </button>
-        </div>
+    <SuccessPopup>
+      <h2>{title}</h2>
+      <p>{message}</p>
+      <div className="popup-buttons">
+        <button
+          className="btn-primary"
+          onClick={handleLoginRedirect}
+          onKeyDown={(e) => handleKeyDown(e, handleLoginRedirect)}
+        >
+          Log in
+        </button>
+        <button
+          className="btn-secondary"
+          onClick={() => setShowSavePopup(false)}
+          onKeyDown={(e) => handleKeyDown(e, () => setShowSavePopup(false))}
+        >
+          Cancel
+        </button>
       </div>
-    </div>
+    </SuccessPopup>
   );
 }
