@@ -24,7 +24,7 @@ export default function AddressSettings({
             className="address-input"
             onKeyDown={onKeyDown}
             onChange={(e) => {
-              clearAlert?.();
+              clearAlert();
               onStreetChange(e.target.value);
             }}
           />
@@ -38,7 +38,7 @@ export default function AddressSettings({
             className="address-input"
             onKeyDown={onKeyDown}
             onChange={(e) => {
-              clearAlert?.();
+              clearAlert();
               onHouseNumberChange(e.target.value);
             }}
           />
@@ -55,7 +55,7 @@ export default function AddressSettings({
             className="address-input"
             onKeyDown={onKeyDown}
             onChange={(e) => {
-              clearAlert?.();
+              clearAlert();
               onCityChange(e.target.value);
             }}
           />
@@ -69,7 +69,7 @@ export default function AddressSettings({
             className="address-input"
             onKeyDown={onKeyDown}
             onChange={(e) => {
-              clearAlert?.();
+              clearAlert();
               onCountryChange(e.target.value);
             }}
           />
