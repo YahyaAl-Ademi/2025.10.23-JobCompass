@@ -37,7 +37,7 @@ export default function Profile() {
     setFirstName(user.first_name);
     setLastName(user.last_name);
     setStreet(user.street);
-    setHouseNumber(user.house_number);
+    setHouseNumber(String(user.house_number ?? ""));
     setCity(user.city);
     setCountry(user.country);
     setCurrentPassword("");
@@ -181,7 +181,8 @@ export default function Profile() {
       if (streetVal !== user.street) updatedFields.street = streetVal;
       if (cityVal !== user.city) updatedFields.city = cityVal;
       if (countryVal !== user.country) updatedFields.country = countryVal;
-      if (house_number !== user.house_number)
+      const savedHouseNumber = cleanUpText(String(user.house_number ?? ""));
+      if (house_number !== savedHouseNumber)
         updatedFields.house_number = house_number;
       if (pwdCurrent && pwdNew) {
         updatedFields.currentPassword = pwdCurrent;
