@@ -7,6 +7,7 @@ import "./index.css";
 import MyFavorites from "./pages/MyFavorites/MyFavorites";
 import AuthForms from "./components/AuthForms/AuthForms";
 import About from "./pages/About/About";
+import Privacy from "./pages/Privacy/Privacy";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ResetPasswordForm from "./pages/ResetPassword";
 
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="reset-password" element={<ResetPasswordForm />} />
         <Route path="login" element={<AuthForms />} />
         <Route path="about" element={<About />} />
+        <Route path="privacy" element={<Privacy />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

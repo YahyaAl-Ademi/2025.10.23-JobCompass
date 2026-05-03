@@ -1,21 +1,48 @@
+import { Link } from "react-router-dom";
+import { Mail, ShieldCheck } from "lucide-react";
 import "./Footer.css";
+
+const mailSupport =
+  "mailto:jobcompass2025@gmail.com?subject=Question%20about%20JobCompass";
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-inner content-container">
-        <div className="footer-left">
+        <div className="footer-brand">
+          <p className="footer-brand-title">Job Compass</p>
           <p className="copyright">
-            © {new Date().getFullYear()} JobCompass. All rights reserved.
+            © {new Date().getFullYear()} Job Compass. All rights reserved.
           </p>
         </div>
 
-        <div className="support-footer">
-          <span className="support-label">Support:</span>
-          <a
-            href="mailto:jobcompass2025@gmail.com?subject=Question about JobCompass"
-            className="support-link"
-          >
+        <nav className="footer-nav" aria-label="Footer">
+          <Link className="footer-nav-link" to="/privacy">
+            <ShieldCheck
+              className="footer-nav-icon"
+              size={16}
+              strokeWidth={2}
+              aria-hidden
+            />
+            Privacy
+          </Link>
+          <span className="footer-nav-divider" aria-hidden="true">
+            ·
+          </span>
+          <Link className="footer-nav-link" to="/about#contact">
+            <Mail
+              className="footer-nav-icon"
+              size={16}
+              strokeWidth={2}
+              aria-hidden
+            />
+            Contact
+          </Link>
+        </nav>
+
+        <div className="footer-support">
+          <span className="support-label">Support</span>
+          <a href={mailSupport} className="support-link">
             jobcompass2025@gmail.com
           </a>
         </div>

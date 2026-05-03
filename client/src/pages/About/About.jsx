@@ -1,9 +1,20 @@
 import "./About.css";
 
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { images } from "../../assets";
 import { Filter, Map, Lock, User, Heart, Zap } from "lucide-react";
 
 export default function About() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash !== "#contact") return;
+    document.getElementById("contact")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [location.pathname, location.hash]);
   const contributors = [
     {
       name: "Yaroslav Kazeev",
@@ -190,7 +201,7 @@ export default function About() {
           ))}
         </div>
 
-        <div className="contact-section">
+        <div className="contact-section" id="contact">
           <h2 className="contact-title">Get in touch?</h2>
           <p className="contact-text-primary">
             Have questions or feedback? We would love to hear from you.
@@ -199,7 +210,7 @@ export default function About() {
           <p className="contact-text-secondary">
             Drop us a line at{" "}
             <a
-              href="mailto:jobcompass2025@gmail.com?subject=Question about JobCompass"
+              href="mailto:jobcompass2025@gmail.com?subject=Question%20about%20JobCompass"
               className="email-link"
             >
               jobcompass2025@gmail.com
