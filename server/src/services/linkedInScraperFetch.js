@@ -21,6 +21,10 @@ export default async function linkedInScraperFetch(
 ) {
   const aggregated = [];
   const token = process.env.LINKEDIN_SCRAPER_KEY;
+  if (!token) {
+    logError("linkedInScraperFetch error: missing LINKEDIN_SCRAPER_KEY");
+    return aggregated;
+  }
   const startUrl = `https://www.linkedin.com/jobs/search?keywords=${encodeURIComponent(search_string)}&location=${encodeURIComponent(location)}`;
   const headers = {
     Accept: "application/json",
@@ -56,30 +60,33 @@ export default async function linkedInScraperFetch(
 
     // Polling requests for completion
     const startTime = Date.now();
-    let polling = true;
-
-    while (polling) {
-      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
-      const response = await fetch(runUrl, { headers });
-      if (!response.ok) throw new Error("Failed to fetch run status");
-      const run = await response.json();
-      const runStatus = run?.data?.status;
-      logInfo(`Run ${runId} for ${search_string} status: ${runStatus}`);
-      switch (runStatus) {
-        case "SUCCEEDED":
-          polling = false;
-          break;
-        case "FAILED":
-        case "ABORTED":
-          throw new Error(
-            `The run ${runId} for ${search_string} has finished with status ${runStatus}`,
-          );
-      }
+    // Check immediately, then sleep between polls.
+    // This avoids an unnecessary initial 30s delay.
+    let isDone = false;
+    while (!isDone) {
       if (Date.now() - startTime > waitTimeoutMs) {
         throw new Error(
           `The waiting time for ${runId} for ${search_string} has expired`,
         );
       }
+
+      const response = await fetch(runUrl, { headers });
+      if (!response.ok) throw new Error("Failed to fetch run status");
+      const run = await response.json();
+      const runStatus = run?.data?.status;
+      logInfo(`Run ${runId} for ${search_string} status: ${runStatus}`);
+
+      if (runStatus === "SUCCEEDED") {
+        isDone = true;
+        continue;
+      }
+      if (runStatus === "FAILED" || runStatus === "ABORTED") {
+        throw new Error(
+          `The run ${runId} for ${search_string} has finished with status ${runStatus}`,
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
     }
 
     // Collecting the data
@@ -102,7 +109,11 @@ export default async function linkedInScraperFetch(
       );
     }
   } catch (error) {
-    logError(`linkedInScraperFetch error: ${error}`);
+    logError(
+      `linkedInScraperFetch error: ${
+        error instanceof Error ? (error.stack ?? error.message) : String(error)
+      }`,
+    );
   }
 
   return aggregated;
