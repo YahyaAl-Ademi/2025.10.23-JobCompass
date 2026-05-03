@@ -2,18 +2,61 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { gif } from "../assets/index.js";
 
+function getPasswordFieldState(current, next, confirm) {
+  const hasAnyPassword = Boolean(
+    current.trim() || next.trim() || confirm.trim(),
+  );
+  const hasAllPasswords = Boolean(
+    current.trim() && next.trim() && confirm.trim(),
+  );
+  return { hasAnyPassword, hasAllPasswords };
+}
+
 export default function ChangePassword({
   onKeyDown,
   clearAlert,
-  currentPasswordInputRef,
-  newPasswordInputRef,
-  confirmPasswordInputRef,
+  currentPassword,
+  newPassword,
+  confirmPassword,
+  onCurrentPasswordChange,
+  onNewPasswordChange,
+  onConfirmPasswordChange,
   isLoading,
 }) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmationPassword, setShowConfirmationPassword] =
     useState(false);
+
+  function dispatchPasswordEdit(nextCurrent, nextNew, nextConfirm, applyValue) {
+    const { hasAnyPassword, hasAllPasswords } = getPasswordFieldState(
+      nextCurrent,
+      nextNew,
+      nextConfirm,
+    );
+    if (hasAnyPassword || !hasAllPasswords) {
+      clearAlert();
+    }
+    applyValue();
+  }
+
+  function handleCurrentPasswordChange(value) {
+    dispatchPasswordEdit(value, newPassword, confirmPassword, () =>
+      onCurrentPasswordChange(value),
+    );
+  }
+
+  function handleNewPasswordChange(value) {
+    dispatchPasswordEdit(currentPassword, value, confirmPassword, () =>
+      onNewPasswordChange(value),
+    );
+  }
+
+  function handleConfirmPasswordChange(value) {
+    dispatchPasswordEdit(currentPassword, newPassword, value, () =>
+      onConfirmPasswordChange(value),
+    );
+  }
 
   return (
     <div className="profile-section">
@@ -30,12 +73,12 @@ export default function ChangePassword({
         <div className="profile-input-wrapper">
           <input
             id="currentPasswordInput"
-            ref={currentPasswordInputRef}
             type={showCurrentPassword ? "text" : "password"}
+            value={currentPassword}
             placeholder="Type 8 characters or more"
             className="profile-input profile-input-with-icon"
             onKeyDown={onKeyDown}
-            onChange={clearAlert}
+            onChange={(e) => handleCurrentPasswordChange(e.target.value)}
           />
           {showCurrentPassword ? (
             <EyeOff
@@ -58,12 +101,12 @@ export default function ChangePassword({
           <div className="profile-input-wrapper">
             <input
               id="newPasswordInput"
-              ref={newPasswordInputRef}
               type={showNewPassword ? "text" : "password"}
+              value={newPassword}
               placeholder="Type 8 characters or more"
               className="profile-input profile-input-with-icon"
               onKeyDown={onKeyDown}
-              onChange={clearAlert}
+              onChange={(e) => handleNewPasswordChange(e.target.value)}
             />
             {showNewPassword ? (
               <EyeOff
@@ -86,12 +129,12 @@ export default function ChangePassword({
           <div className="profile-input-wrapper">
             <input
               id="confirmPasswordInput"
-              ref={confirmPasswordInputRef}
               type={showConfirmationPassword ? "text" : "password"}
+              value={confirmPassword}
               placeholder="Write the same password again"
               className="profile-input profile-input-with-icon"
               onKeyDown={onKeyDown}
-              onChange={clearAlert}
+              onChange={(e) => handleConfirmPasswordChange(e.target.value)}
             />
             {showConfirmationPassword ? (
               <EyeOff

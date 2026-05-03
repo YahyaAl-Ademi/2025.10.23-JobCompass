@@ -35,7 +35,7 @@ export const defaultUser = {
   avatar: images.defaultAvatar,
 
   street: "Keizersgracht",
-  house_number: 123,
+  house_number: "123",
   city: "Amsterdam",
   country: "Netherlands",
   skills: [...defaultSkillNames].sort((a, b) =>

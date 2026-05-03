@@ -1,26 +1,17 @@
-import { UseUser } from "../../context/UserContext";
 import "./AddressSettings.css";
 
 export default function AddressSettings({
-  handleSaveClick,
-  streetInputRef,
-  houseInputRef,
-  cityInputRef,
-  countryInputRef,
+  street,
+  houseNumber,
+  city,
+  country,
+  onStreetChange,
+  onHouseNumberChange,
+  onCityChange,
+  onCountryChange,
+  onKeyDown,
   clearAlert,
 }) {
-  const { user } = UseUser();
-
-  function pressEnterKey(e) {
-    if (e.key === "Enter") {
-      handleSaveClick(
-        streetInputRef,
-        houseInputRef,
-        cityInputRef,
-        countryInputRef,
-      );
-    }
-  }
   return (
     <div className="mb-6">
       <div className="address-fields-grid">
@@ -28,24 +19,28 @@ export default function AddressSettings({
           <label className="address-label">Street</label>
           <input
             id="streetInput"
-            ref={streetInputRef}
             type="text"
-            defaultValue={user?.street ?? ""}
+            value={street}
             className="address-input"
-            onKeyDown={pressEnterKey}
-            onChange={clearAlert}
+            onKeyDown={onKeyDown}
+            onChange={(e) => {
+              clearAlert();
+              onStreetChange(e.target.value);
+            }}
           />
         </div>
         <div>
           <label className="address-label">House no.</label>
           <input
             id="houseInput"
-            ref={houseInputRef}
             type="text"
-            defaultValue={user?.house_number ?? ""}
+            value={houseNumber}
             className="address-input"
-            onKeyDown={pressEnterKey}
-            onChange={clearAlert}
+            onKeyDown={onKeyDown}
+            onChange={(e) => {
+              clearAlert();
+              onHouseNumberChange(e.target.value);
+            }}
           />
         </div>
         <div>
@@ -54,25 +49,29 @@ export default function AddressSettings({
           </label>
           <input
             id="cityInput"
-            ref={cityInputRef}
             type="text"
-            defaultValue={user?.city ?? ""}
+            value={city}
             aria-required="true"
             className="address-input"
-            onKeyDown={pressEnterKey}
-            onChange={clearAlert}
+            onKeyDown={onKeyDown}
+            onChange={(e) => {
+              clearAlert();
+              onCityChange(e.target.value);
+            }}
           />
         </div>
         <div>
           <label className="address-label">Country</label>
           <input
             id="countryInput"
-            ref={countryInputRef}
             type="text"
-            defaultValue={user?.country ?? ""}
+            value={country}
             className="address-input"
-            onKeyDown={pressEnterKey}
-            onChange={clearAlert}
+            onKeyDown={onKeyDown}
+            onChange={(e) => {
+              clearAlert();
+              onCountryChange(e.target.value);
+            }}
           />
         </div>
       </div>
