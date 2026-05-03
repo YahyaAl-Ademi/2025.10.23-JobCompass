@@ -210,7 +210,7 @@ export default function About() {
           <p className="contact-text-secondary">
             Drop us a line at{" "}
             <a
-              href="mailto:jobcompass2025@gmail.com?subject=Question about JobCompass"
+              href="mailto:jobcompass2025@gmail.com?subject=Question%20about%20JobCompass"
               className="email-link"
             >
               jobcompass2025@gmail.com

@@ -3,7 +3,7 @@ import { Mail, ShieldCheck } from "lucide-react";
 import "./Footer.css";
 
 const mailSupport =
-  "mailto:jobcompass2025@gmail.com?subject=Question about JobCompass";
+  "mailto:jobcompass2025@gmail.com?subject=Question%20about%20JobCompass";
 
 export default function Footer() {
   return (

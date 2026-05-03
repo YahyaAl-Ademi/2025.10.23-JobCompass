@@ -9,7 +9,7 @@ export default function Privacy() {
           This page describes how Job Compass handles information when you use
           the app. For questions, reach us via{" "}
           <a
-            href="mailto:jobcompass2025@gmail.com?subject=Privacy question"
+            href="mailto:jobcompass2025@gmail.com?subject=Privacy%20question"
             className="privacy-link"
           >
             jobcompass2025@gmail.com
@@ -30,9 +30,9 @@ export default function Privacy() {
         <section className="privacy-block">
           <h2>How we use information</h2>
           <p>
-            We use your data to run Job Compass — authentication, favorites,
-            profile features, and improving reliability. We do not sell your
-            personal information.
+            We use your data to run Job Compass: authentication, favorites,
+            profile features, and reliability. We do not sell your personal
+            information.
           </p>
         </section>
 
