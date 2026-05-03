@@ -18,9 +18,6 @@ const ALLOWED_PROFILE_FIELDS = new Set([
 
 export default async function updateUserProfile(user_id, fieldsToUpdate) {
   const { currentPassword, newPassword, ...profileFields } = fieldsToUpdate;
-  let setParts = [];
-  let values = [];
-  let i = 1;
 
   const providedProfileKeys = Object.keys(profileFields).filter(
     (key) => profileFields[key] !== undefined,
@@ -44,19 +41,18 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
     );
   }
 
-  for (const key of providedProfileKeys) {
-    let value = profileFields[key];
-
+  const setParts = providedProfileKeys.map(
+    (key, idx) => `${key} = $${idx + 1}`,
+  );
+  const values = providedProfileKeys.map((key) => {
+    const value = profileFields[key];
     if (key === "skills") {
-      if (Array.isArray(value)) value = value.join(",");
-      else if (value === null) value = null;
-      else value = String(value);
+      if (Array.isArray(value)) return value.join(",");
+      if (value === null) return null;
+      return String(value);
     }
-
-    setParts.push(`${key} = $${i}`);
-    values.push(value);
-    i++;
-  }
+    return value;
+  });
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
@@ -95,9 +91,8 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
         newPassword,
         PASSWORD_HASH_COST_FACTOR,
       );
-      setParts.push(`password = $${i}`);
+      setParts.push(`password = $${values.length + 1}`);
       values.push(hashedPassword);
-      i++;
     }
 
     if (setParts.length === 0) {
@@ -105,11 +100,10 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
     }
 
     values.push(user_id);
-    const updateUserIdIndex = i;
     const updateQuery = `
       UPDATE users
       SET ${setParts.join(", ")}
-      WHERE id = $${updateUserIdIndex}
+      WHERE id = $${values.length}
     `;
 
     await connectedClient.query(updateQuery, values);
