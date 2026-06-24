@@ -25,7 +25,7 @@ function isTokenBlacklisted(token) {
   return true;
 }
 
-/** Requires a valid JWT cookie that has not been logged out */
+/** Requires a valid JWT cookie that has not been logged out*/
 export function verifyToken(req, res, next) {
   try {
     const token = req.cookies?.token;
