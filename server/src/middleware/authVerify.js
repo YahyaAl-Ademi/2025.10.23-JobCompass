@@ -5,13 +5,28 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 /** token -> blacklistUntilMs (drops automatically once past JWT exp) */
 const tokenBlacklist = new Map();
+const BLACKLIST_SWEEP_INTERVAL_MS = 60 * 60 * 1000;
+
+function pruneExpiredBlacklistedTokens(now = Date.now()) {
+  for (const [token, until] of tokenBlacklist) {
+    if (now >= until) tokenBlacklist.delete(token);
+  }
+}
+
+const blacklistSweep = setInterval(
+  pruneExpiredBlacklistedTokens,
+  BLACKLIST_SWEEP_INTERVAL_MS,
+);
+blacklistSweep.unref?.();
 
 export function addTokenToBlacklist(token) {
   const payload = jwt.decode(token);
+  const now = Date.now();
   const until =
     typeof payload?.exp === "number"
       ? payload.exp * 1000
-      : Date.now() + 7 * 24 * 60 * 60 * 1000;
+      : now + 7 * 24 * 60 * 60 * 1000;
+  if (until <= now) return;
   tokenBlacklist.set(token, until);
 }
 
@@ -25,43 +40,34 @@ function isTokenBlacklisted(token) {
   return true;
 }
 
-/** Requires a valid JWT cookie that has not been logged out*/
-export function verifyToken(req, res, next) {
+/** Returns the decoded payload or null. Does not throw. */
+function decodeAndValidateToken(token) {
+  if (!token) return null;
   try {
-    const token = req.cookies?.token;
-    if (!token) {
-      return next(createHttpError(401, "No token provided"));
-    }
     const decoded = jwt.verify(token, JWT_SECRET);
-    if (isTokenBlacklisted(token)) {
-      return next(createHttpError(401, "Token expired or logged out"));
-    }
-    req.user = decoded;
-    next();
+    if (isTokenBlacklisted(token)) return null;
+    return decoded;
   } catch {
-    next(createHttpError(401, "Invalid or expired token"));
+    return null;
   }
 }
 
-/**
- * Sets req.user when the cookie is valid; otherwise req.user is null (guest).
- */
-export function attachUserFromCookie(req, res, next) {
+export function verifyToken(req, res, next) {
   const token = req.cookies?.token;
-  if (!token) {
-    req.user = null;
-    return next();
+  const decoded = decodeAndValidateToken(token);
+  if (!decoded) {
+    return next(
+      createHttpError(
+        401,
+        token ? "Invalid or expired token" : "No token provided",
+      ),
+    );
   }
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    if (isTokenBlacklisted(token)) {
-      req.user = null;
-      return next();
-    }
-    req.user = decoded;
-    next();
-  } catch {
-    req.user = null;
-    next();
-  }
+  req.user = decoded;
+  next();
+}
+
+export function attachUserFromCookie(req, res, next) {
+  req.user = decodeAndValidateToken(req.cookies?.token);
+  next();
 }
